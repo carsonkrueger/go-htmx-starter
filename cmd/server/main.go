@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
+	router "github.com/carsonkrueger/main/internal"
 )
 
 func main() {
-	fmt.Println("Hello World!")
+	router.SetupRouter()
 }
