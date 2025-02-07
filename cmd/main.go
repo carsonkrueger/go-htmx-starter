@@ -17,6 +17,7 @@ func main() {
 	appRouter.Setup(&ctx)
 	appRouter.BuildRouter()
 	err := appRouter.Start("0.0.0.0", 3000)
+
 	if err != nil {
 		fmt.Println(err)
 	}

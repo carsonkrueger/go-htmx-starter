@@ -3,6 +3,7 @@ package routes
 import (
 	"net/http"
 
+	"github.com/carsonkrueger/main/internal/builders"
 	"github.com/carsonkrueger/main/internal/types"
 	"github.com/go-chi/chi/v5"
 )
@@ -16,9 +17,9 @@ func (r HelloWorld) Path() string {
 }
 
 func (r HelloWorld) Route() chi.Router {
-	router := chi.NewRouter()
-	router.Get("/", get)
-	return router
+	builder := builders.NewPrivateRouteBuilder("/helloworld")
+	builder.NewHandle().RegisterRoute("get", "/", get, types.HelloWorldGet).Build()
+	return builder.Build()
 }
 
 func get(res http.ResponseWriter, req *http.Request) {
