@@ -1,20 +1,21 @@
-package helloworld
+package routes
 
 import (
 	"net/http"
 
+	"github.com/carsonkrueger/main/internal/types"
 	"github.com/go-chi/chi/v5"
 )
 
-type HWRouter struct {
-	test string
+type HelloWorld struct {
+	Ctx *types.AppContext
 }
 
-func (r HWRouter) Path() string {
+func (r HelloWorld) Path() string {
 	return "/helloworld"
 }
 
-func (r HWRouter) Route() chi.Router {
+func (r HelloWorld) Route() chi.Router {
 	router := chi.NewRouter()
 	router.Get("/", get)
 	return router
