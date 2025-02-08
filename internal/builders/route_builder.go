@@ -2,22 +2,22 @@ package builders
 
 import "github.com/go-chi/chi/v5"
 
-type privateRouteBuilder struct {
+type PrivateRouteBuilder struct {
 	router chi.Router
 }
 
-func NewPrivateRouteBuilder(path string) privateRouteBuilder {
-	return privateRouteBuilder{
+func NewPrivateRouteBuilder() PrivateRouteBuilder {
+	return PrivateRouteBuilder{
 		router: chi.NewRouter(),
 	}
 }
 
-func (rb *privateRouteBuilder) NewHandle() *privateMethodBuilder {
+func (rb *PrivateRouteBuilder) NewHandle() *privateMethodBuilder {
 	return &privateMethodBuilder{
 		router: rb.router,
 	}
 }
 
-func (mb *privateRouteBuilder) Build() chi.Router {
+func (mb *PrivateRouteBuilder) Build() chi.Router {
 	return mb.router
 }

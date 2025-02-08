@@ -1,4 +1,4 @@
-package types
+package enums
 
 type Permission string
 

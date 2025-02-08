@@ -5,32 +5,38 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/carsonkrueger/main/internal/builders"
 	"github.com/carsonkrueger/main/internal/routes"
 	"github.com/carsonkrueger/main/internal/types"
 	"github.com/go-chi/chi/v5"
 )
 
 type AppRouter struct {
-	public  []types.AppRoute
-	private []types.AppRoute
+	public  []types.AppPublicRoute
+	private []types.AppPrivateRoute
 	addr    string
 	router  chi.Router
 }
 
-func (a *AppRouter) Setup(ctx *types.AppContext) {
-	a.public = []types.AppRoute{
-		routes.HelloWorld{Ctx: ctx},
+func (a *AppRouter) Setup() {
+	a.public = []types.AppPublicRoute{
+		routes.HelloWorld{},
 	}
-	a.private = []types.AppRoute{}
+	a.private = []types.AppPrivateRoute{
+		routes.HelloWorld2{},
+	}
 }
 
-func (a *AppRouter) BuildRouter() {
+func (a *AppRouter) BuildRouter(ctx *types.AppContext) {
 	a.router = chi.NewRouter()
 
 	fmt.Println("Creating public routes")
 	for _, r := range a.public {
+		r.SetCtx(ctx)
+		router := chi.NewRouter()
+		r.PublicRoute(router)
+		a.router.Mount(r.Path(), router)
 		fmt.Printf("Registered %v\n", r.Path())
-		a.router.Mount(r.Path(), r.Route())
 	}
 
 	// enforce auth mw
@@ -38,8 +44,11 @@ func (a *AppRouter) BuildRouter() {
 
 	fmt.Println("Creating private routes")
 	for _, r := range a.private {
+		r.SetCtx(ctx)
+		builder := builders.NewPrivateRouteBuilder()
+		r.PrivateRoute(&builder)
+		a.router.Mount(r.Path(), builder.Build())
 		fmt.Printf("Registered %v\n", r.Path())
-		a.router.Mount(r.Path(), r.Route())
 	}
 }
 

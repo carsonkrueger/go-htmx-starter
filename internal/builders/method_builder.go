@@ -3,8 +3,9 @@ package builders
 import (
 	"net/http"
 
+	"github.com/carsonkrueger/main/internal/enums"
 	"github.com/carsonkrueger/main/internal/middlewares"
-	"github.com/carsonkrueger/main/internal/types"
+	// "github.com/carsonkrueger/main/internal/types"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -14,10 +15,10 @@ type privateMethodBuilder struct {
 	method     string
 	pattern    string
 	handle     http.HandlerFunc
-	permission types.Permission
+	permission enums.Permission
 }
 
-func (mb *privateMethodBuilder) RegisterRoute(method string, pattern string, handle http.HandlerFunc, permission types.Permission) *privateMethodBuilder {
+func (mb *privateMethodBuilder) RegisterRoute(method string, pattern string, handle http.HandlerFunc, permission enums.Permission) *privateMethodBuilder {
 	mb.method = method
 	mb.pattern = pattern
 	mb.handle = handle
