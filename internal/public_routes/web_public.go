@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/carsonkrueger/main/internal/types"
-	"github.com/carsonkrueger/main/pkg"
+	"github.com/carsonkrueger/main/tools"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -40,7 +40,7 @@ func (w *WebPublic) get(res http.ResponseWriter, req *http.Request) {
 	info, err := f.Stat()
 	types.ReportIfErr(err, nil)
 
-	contentType := pkg.GetMimeType(filename)
+	contentType := tools.GetMimeType(filename)
 
 	res.Header().Set("Content-Type", contentType)
 	res.Header().Set("Content-Length", fmt.Sprintf("%d", info.Size()))
