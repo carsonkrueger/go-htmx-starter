@@ -19,7 +19,7 @@
         "tw:w": "npx @tailwindcss/cli -i ./web/index.css -o ./web/public/output.css --watch",
         "templ": "templ generate",
         "templ:w": "templ generate -watch",
-        "all:w": "npm run tw:w & npm run templ:w & air"
+        "all:w": "npm run templ:w & npm run tw:w"
     },
     "dependencies": {
         "@tailwindcss/cli": "^4.0.5",

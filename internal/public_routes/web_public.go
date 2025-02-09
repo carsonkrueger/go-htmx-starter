@@ -24,24 +24,27 @@ func (w *WebPublic) PublicRoute(r chi.Router) {
 
 func (w *WebPublic) get(res http.ResponseWriter, req *http.Request) {
 	filename := chi.URLParam(req, "name")
-	fmt.Printf("%s\n", filename)
 	if filename == "" {
+		res.WriteHeader(404)
 		return
 	}
-	filename = fmt.Sprintf("/home/carson/Repos/go-test/web/public/%v", filename)
+
+	dir, err := os.Getwd()
+	types.ReportIfErr(err, nil)
+
+	filename = fmt.Sprintf("%v/web/public/%v", dir, filename)
 
 	f, err := os.Open(filename)
 	types.ReportIfErr(err, nil)
 
-	info, e := f.Stat()
-	types.ReportIfErr(e, nil)
+	info, err := f.Stat()
+	types.ReportIfErr(err, nil)
 
 	contentType := pkg.GetMimeType(filename)
-	fmt.Println(contentType)
 
 	res.Header().Set("Content-Type", contentType)
 	res.Header().Set("Content-Length", fmt.Sprintf("%d", info.Size()))
 
-	_, err3 := f.WriteTo(res)
-	types.ReportIfErr(err3, nil)
+	_, err = f.WriteTo(res)
+	types.ReportIfErr(err, nil)
 }

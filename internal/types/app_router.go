@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/carsonkrueger/main/internal/builders"
 	"github.com/go-chi/chi/v5"
@@ -34,6 +35,7 @@ type AppPrivateRoute interface {
 func ReportIfErr(e error, db any) {
 	if e != nil {
 		fmt.Println(e.Error())
+		os.Exit(1)
 		// report error to db
 	}
 }
