@@ -6,7 +6,8 @@ import (
 	"net/http"
 
 	"github.com/carsonkrueger/main/internal/builders"
-	"github.com/carsonkrueger/main/internal/routes"
+	"github.com/carsonkrueger/main/internal/private_routes"
+	"github.com/carsonkrueger/main/internal/public_routes"
 	"github.com/carsonkrueger/main/internal/types"
 	"github.com/go-chi/chi/v5"
 )
@@ -20,10 +21,10 @@ type AppRouter struct {
 
 func (a *AppRouter) Setup() {
 	a.public = []types.AppPublicRoute{
-		routes.HelloWorld{},
+		&public_routes.HelloWorld{},
 	}
 	a.private = []types.AppPrivateRoute{
-		routes.HelloWorld2{},
+		&private_routes.HelloWorld2{},
 	}
 }
 

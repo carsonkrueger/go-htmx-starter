@@ -5,10 +5,6 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type SetCtx interface {
-	SetCtx(ctx *AppContext)
-}
-
 type RoutePath interface {
 	Path() string
 }

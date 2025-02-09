@@ -1,4 +1,8 @@
-<html>
+package layouts
+
+templ Index(body templ.Component) {
+	<!DOCTYPE html>
+	<html>
     <head>
         <script
             src="https://unpkg.com/htmx.org@2.0.4"
@@ -6,5 +10,8 @@
             crossorigin="anonymous"
         ></script>
     </head>
-    <body></body>
-</html>
+    <body>
+    	@body
+    </body>
+	</html>
+}
