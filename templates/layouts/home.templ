@@ -1,5 +1,6 @@
 package layouts
 
 templ Home() {
-	<h1>Home</h1>
+	<button hx-get="/home" hx-trigger="click" hx-target="#test">Home</button>
+	<div id="test">test</div>
 }

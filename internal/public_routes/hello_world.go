@@ -25,13 +25,12 @@ func (hw *HelloWorld) PublicRoute(r chi.Router) {
 }
 
 func (hw *HelloWorld) index(res http.ResponseWriter, req *http.Request) {
-	home := layouts.Index(layouts.Home())
-	err := home.Render(context.Background(), res)
-	fmt.Println(err)
+	http.Redirect(res, req, "/home", http.StatusMovedPermanently)
 }
 
 func (hw *HelloWorld) home(res http.ResponseWriter, req *http.Request) {
-	err := hw.GetCtx().Templates.Render(res, "home.html", nil)
+	home := layouts.Index(layouts.Home())
+	err := home.Render(context.Background(), res)
 	fmt.Println(err)
 }
 
