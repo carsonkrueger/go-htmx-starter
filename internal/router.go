@@ -22,6 +22,7 @@ type AppRouter struct {
 func (a *AppRouter) Setup() {
 	a.public = []types.AppPublicRoute{
 		&public_routes.HelloWorld{},
+		&public_routes.WebPublic{},
 	}
 	a.private = []types.AppPrivateRoute{
 		&private_routes.HelloWorld2{},

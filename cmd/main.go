@@ -5,13 +5,10 @@ import (
 
 	router "github.com/carsonkrueger/main/internal"
 	app_context "github.com/carsonkrueger/main/internal/types"
-	"github.com/carsonkrueger/main/templates"
 )
 
 func main() {
-	ctx := app_context.AppContext{
-		Templates: templates.NewTemplates(),
-	}
+	ctx := app_context.AppContext{}
 
 	appRouter := router.AppRouter{}
 	appRouter.Setup()

@@ -17,8 +17,8 @@ func (r HelloWorld2) Path() string {
 }
 
 func (hw *HelloWorld2) PrivateRoute(b *builders.PrivateRouteBuilder) {
-	b.NewHandle().RegisterRoute("get", "/", hw.get2, enums.HelloWorldGet).Build()
-	b.NewHandle().RegisterRoute("get", "/test", hw.get3, enums.HelloWorldGet).Build()
+	b.NewHandle().RegisterRoute("get", "/", hw.get2).SetPermission(enums.HelloWorldGet).Build()
+	b.NewHandle().RegisterRoute("get", "/test", hw.get3).SetPermission(enums.HelloWorldGet).Build()
 }
 
 func (hw *HelloWorld2) get2(res http.ResponseWriter, req *http.Request) {

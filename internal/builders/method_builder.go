@@ -5,6 +5,7 @@ import (
 
 	"github.com/carsonkrueger/main/internal/enums"
 	"github.com/carsonkrueger/main/internal/middlewares"
+
 	// "github.com/carsonkrueger/main/internal/types"
 	"github.com/go-chi/chi/v5"
 )
@@ -18,10 +19,14 @@ type privateMethodBuilder struct {
 	permission enums.Permission
 }
 
-func (mb *privateMethodBuilder) RegisterRoute(method string, pattern string, handle http.HandlerFunc, permission enums.Permission) *privateMethodBuilder {
+func (mb *privateMethodBuilder) RegisterRoute(method string, pattern string, handle http.HandlerFunc) *privateMethodBuilder {
 	mb.method = method
 	mb.pattern = pattern
 	mb.handle = handle
+	return mb
+}
+
+func (mb *privateMethodBuilder) SetPermission(permission enums.Permission) *privateMethodBuilder {
 	mb.permission = permission
 	return mb
 }
@@ -32,7 +37,10 @@ func (mb *privateMethodBuilder) SetMiddlewares(middlewares ...func(next http.Han
 }
 
 func (mb *privateMethodBuilder) Build() {
-	r := mb.router.With(middlewares.ApplyPermission(mb.permission))
+	var r chi.Router
+	if mb.permission != "" {
+		r = mb.router.With(middlewares.ApplyPermission(mb.permission))
+	}
 	if len(mb.mw) > 0 {
 		r = r.With(mb.mw...)
 	}
