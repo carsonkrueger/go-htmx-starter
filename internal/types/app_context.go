@@ -1,15 +1,29 @@
 package types
 
-type AppContext struct{}
+import (
+	"go.uber.org/zap"
+)
 
-type SetCtx interface {
-	SetCtx(ctx *AppContext)
+type AppContext struct {
+	lgr zap.Logger
 }
 
-type WithContext struct {
-	Ctx *AppContext
+func NewAppContext(lgr zap.Logger) *AppContext {
+	return &AppContext{lgr}
 }
 
-func (b *WithContext) SetCtx(ctx *AppContext) {
-	b.Ctx = ctx
+func (a *AppContext) GetLgr() *zap.Logger {
+	return &a.lgr
+}
+
+type SetAppContext interface {
+	SetAppCtx(ctx *AppContext)
+}
+
+type WithAppContext struct {
+	App *AppContext
+}
+
+func (b *WithAppContext) SetAppCtx(ctx *AppContext) {
+	b.App = ctx
 }

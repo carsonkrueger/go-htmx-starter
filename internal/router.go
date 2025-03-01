@@ -34,7 +34,6 @@ func (a *AppRouter) BuildRouter(ctx *types.AppContext) {
 
 	fmt.Println("Creating public routes")
 	for _, r := range a.public {
-		r.SetCtx(ctx)
 		router := chi.NewRouter()
 		r.PublicRoute(router)
 		a.router.Mount(r.Path(), router)
@@ -46,7 +45,6 @@ func (a *AppRouter) BuildRouter(ctx *types.AppContext) {
 
 	fmt.Println("Creating private routes")
 	for _, r := range a.private {
-		r.SetCtx(ctx)
 		builder := builders.NewPrivateRouteBuilder()
 		r.PrivateRoute(&builder)
 		a.router.Mount(r.Path(), builder.Build())

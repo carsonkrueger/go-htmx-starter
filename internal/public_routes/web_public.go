@@ -11,7 +11,7 @@ import (
 )
 
 type WebPublic struct {
-	types.WithContext
+	types.WithAppContext
 }
 
 func (w *WebPublic) Path() string {
@@ -29,22 +29,18 @@ func (w *WebPublic) get(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	dir, err := os.Getwd()
-	types.ReportIfErr(err, nil)
+	dir, _ := os.Getwd()
 
-	filename = fmt.Sprintf("%v/web/public/%v", dir, filename)
+	filename = fmt.Sprintf("%v/../../assets/%v", dir, filename)
 
-	f, err := os.Open(filename)
-	types.ReportIfErr(err, nil)
+	f, _ := os.Open(filename)
 
-	info, err := f.Stat()
-	types.ReportIfErr(err, nil)
+	info, _ := f.Stat()
 
 	contentType := tools.GetMimeType(filename)
 
 	res.Header().Set("Content-Type", contentType)
 	res.Header().Set("Content-Length", fmt.Sprintf("%d", info.Size()))
 
-	_, err = f.WriteTo(res)
-	types.ReportIfErr(err, nil)
+	_, _ = f.WriteTo(res)
 }

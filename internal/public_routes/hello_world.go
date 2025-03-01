@@ -11,7 +11,7 @@ import (
 )
 
 type HelloWorld struct {
-	types.WithContext
+	types.WithAppContext
 }
 
 func (r *HelloWorld) Path() string {
@@ -30,8 +30,7 @@ func (hw *HelloWorld) redirect_home(res http.ResponseWriter, req *http.Request) 
 
 func (hw *HelloWorld) home(res http.ResponseWriter, req *http.Request) {
 	home := layouts.Main(pages.Home(), pages.Home())
-	err := home.Render(context.Background(), res)
-	types.ReportIfErr(err, nil)
+	home.Render(context.Background(), res)
 }
 
 func (hw *HelloWorld) about(res http.ResponseWriter, req *http.Request) {
