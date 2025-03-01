@@ -1,7 +1,6 @@
 package public_routes
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"path"
@@ -23,8 +22,7 @@ func (w *WebPublic) PublicRoute(r chi.Router) {
 	if err != nil {
 		panic(err)
 	}
-	dir_path := path.Join(wd, "public")
-	fmt.Println(dir_path)
+	dir_path := path.Join(wd, w.Path())
 	dir := http.FileServer(http.Dir(dir_path))
-	r.Handle("/*", http.StripPrefix("/public/", dir))
+	r.Handle("/*", http.StripPrefix(w.Path(), dir))
 }

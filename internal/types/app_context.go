@@ -5,15 +5,15 @@ import (
 )
 
 type AppContext struct {
-	lgr zap.Logger
+	lgr *zap.Logger
 }
 
-func NewAppContext(lgr zap.Logger) *AppContext {
+func NewAppContext(lgr *zap.Logger) *AppContext {
 	return &AppContext{lgr}
 }
 
 func (a *AppContext) GetLgr() *zap.Logger {
-	return &a.lgr
+	return a.lgr
 }
 
 type SetAppContext interface {
@@ -21,9 +21,9 @@ type SetAppContext interface {
 }
 
 type WithAppContext struct {
-	App *AppContext
+	AppCtx *AppContext
 }
 
 func (b *WithAppContext) SetAppCtx(ctx *AppContext) {
-	b.App = ctx
+	b.AppCtx = ctx
 }

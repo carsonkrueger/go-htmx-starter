@@ -23,7 +23,7 @@ func (hw *HelloWorld2) PrivateRoute(b *builders.PrivateRouteBuilder) {
 }
 
 func (hw *HelloWorld2) get2(res http.ResponseWriter, req *http.Request) {
-	lgr := hw.App.GetLgr()
+	lgr := hw.AppCtx.GetLgr()
 	_, e := res.Write([]byte("Hello World2!"))
 	if e != nil {
 		tools.RequestHttpError(lgr, res, e, http.StatusInternalServerError)
