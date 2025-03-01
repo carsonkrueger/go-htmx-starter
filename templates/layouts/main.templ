@@ -1,0 +1,22 @@
+package layouts
+
+import (
+	"github.com/carsonkrueger/main/templates"
+)
+
+templ Main(main templ.Component, footer templ.Component) {
+	@Index() {
+		<div class="flex flex-col bg-blue-600">
+			<header class="flex justify-between items-center">
+				<h1>Go + HTMX</h1>
+				<div>
+					<a href="/home">Home</a>
+					<a href="/about">About</a>
+					<a href="/contact">Contact</a>
+				</div>
+			</header>
+			<main>@main</main>
+			<footer>@footer</footer>
+		</div>
+	}
+}

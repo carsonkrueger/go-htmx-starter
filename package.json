@@ -14,11 +14,8 @@
     "author": "",
     "type": "commonjs",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "tw": "npx @tailwindcss/cli -i ./web/index.css -o ./web/public/output.css",
-        "tw:w": "npx @tailwindcss/cli -i ./web/index.css -o ./web/public/output.css --watch",
-        "templ": "templ generate",
-        "templ:w": "templ generate -watch"
+        "tw": "npx @tailwindcss/cli -i ./assets/index.css -o ./assets/output.css",
+        "tw:w": "npx @tailwindcss/cli -i ./assets/index.css -o ./assets/output.css --watch"
     },
     "dependencies": {
         "@tailwindcss/cli": "^4.0.5",
