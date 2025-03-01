@@ -13,10 +13,7 @@
     "license": "ISC",
     "author": "",
     "type": "commonjs",
-    "scripts": {
-        "tw": "npx @tailwindcss/cli -i ./assets/index.css -o ./assets/output.css",
-        "tw:w": "npx @tailwindcss/cli -i ./assets/index.css -o ./assets/output.css --watch"
-    },
+    "scripts": {},
     "dependencies": {
         "@tailwindcss/cli": "^4.0.5",
         "tailwindcss": "^4.0.5"

@@ -2,17 +2,18 @@ package layouts
 
 import (
 	"github.com/carsonkrueger/main/templates"
+	"github.com/carsonkrueger/main/templates/partials"
 )
 
 templ Main(main templ.Component, footer templ.Component) {
-	@Index() {
+	@templates.Index() {
 		<div class="flex flex-col bg-blue-600">
 			<header class="flex justify-between items-center">
 				<h1>Go + HTMX</h1>
 				<div>
-					<a href="/home">Home</a>
-					<a href="/about">About</a>
-					<a href="/contact">Contact</a>
+					@partials.NavItem("/home", "Home")
+					@partials.NavItem("/about", "About")
+					@partials.NavItem("/contact", "Contact")
 				</div>
 			</header>
 			<main>@main</main>

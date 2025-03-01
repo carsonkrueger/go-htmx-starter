@@ -1,0 +1,10 @@
+@import "tailwindcss" source("../**/*.{templ,html}");
+
+@layer base {
+}
+
+@layer components {
+    .test {
+        @apply rounded-md text-lg text-blue-300;
+    }
+}
