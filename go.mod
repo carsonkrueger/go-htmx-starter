@@ -10,4 +10,7 @@ require (
 	go.uber.org/zap v1.27.0
 )
 
-require go.uber.org/multierr v1.11.0 // indirect
+require (
+	github.com/go-jet/jet/v2 v2.12.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
+)
