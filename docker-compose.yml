@@ -1,0 +1,21 @@
+services:
+    # db:
+    #     container_name: db
+    #     image: postgres
+    #     environment:
+    #       POSTGRES_USER: ${DB_USER}
+    #       POSTGRES_PASSWORD: ${DB_PASSWORD}
+    #       POSTGRES_DB: ${DB_NAME}
+    #     ports:
+    #       - '50031:5432'
+    #     volumes:
+    #       - ./volumes/postgres_data:/var/lib/postgresql/data
+
+    backend:
+        container_name: backend
+        build:
+            dockerfile: Dockerfile
+        ports:
+            - "${EXTERNAL_PORT}:${PORT}"
+        env_file:
+            - .env
