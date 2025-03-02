@@ -1,18 +1,18 @@
 services:
-    # db:
-    #     container_name: db
-    #     image: postgres
-    #     environment:
-    #       POSTGRES_USER: ${DB_USER}
-    #       POSTGRES_PASSWORD: ${DB_PASSWORD}
-    #       POSTGRES_DB: ${DB_NAME}
-    #     ports:
-    #       - '50031:5432'
-    #     volumes:
-    #       - ./volumes/postgres_data:/var/lib/postgresql/data
+    go_db:
+        container_name: go_db
+        image: postgres
+        environment:
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: ${DB_NAME}
+        ports:
+            - "${DB_EXTERNAL_PORT}:${DB_PORT}"
+        volumes:
+            - ./volumes/postgres_data:/var/lib/postgresql/data
 
-    backend:
-        container_name: backend
+    go_backend:
+        container_name: go_backend
         build:
             dockerfile: Dockerfile
         ports:

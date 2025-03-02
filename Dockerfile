@@ -12,8 +12,6 @@ RUN npm install
 
 COPY . .
 
-RUN make tw
-RUN make templ
 RUN make build
 
 EXPOSE 8080
