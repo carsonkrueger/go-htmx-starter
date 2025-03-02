@@ -1,5 +1,5 @@
 # A Start Kit for Web Servers Using Go + HTMX
-An easy way to get started with web servers using Go, HTMX, and PostgreSQL.
+An easy way to get started with web servers using key features: Go, HTMX, and PostgreSQL.
 
 # Features
 ### Go
@@ -17,46 +17,64 @@ Go is a statically typed, compiled language designed at Google. It is a fast, ef
 endpoint can be done using the `PrivateRouteBuilder`. See [HelloWorld](https://github.com/carsonkrueger/go-test/blob/main/internal/private_routes/hello_world2.go) private route for an example.
 
 ### Postgres
-PostgreSQL is a powerful, open-source object-relational database system. It is a popular choice for building scalable and reliable web applications.
+PostgreSQL is a beloved, open-source object-relational database system. It is a popular choice for building scalable and reliable web applications.
+
+### [Jet](https://github.com/go-jet/jet)
+Jet is a powerful Query Builder for Go. It provides a simple and highly customizable way to build queries and automatically generate Go code from your database.
+
+### [Zap](https://github.com/uber-go/zap) Logging
+Zap is a powerful, lightweight logging library for Go. Configured with level logging using the `APP_ENV` in your `.env` file.
 
 ### Docker
 This project uses Docker to containerize the application and its dependencies. Docker provides a consistent and reproducible environment for running the application, making it easy to deploy and manage.
 
-### Air
+### [Air](https://github.com/air-verse/air)
 Air enabled live reloading of the application for local development.
 
 ### Make
 Make is a build automation tool that is used to automate the building of software. Many recipes are provided to help you build your application quickly and easily.
 - After following the installation instructions, you can run the application using the following command: `make live`.
 - Creating a new migration can be done using the following command: `make migrate-generate`.
+- View the rest of the `make` targets and recipes [here](https://github.com/carsonkrueger/go-test/blob/main/Makefile).
+- Targets with a -external suffix use the DB_EXTERNAL_PORT env variable. This is used when running the server outside of the docker container.
+- Conversly targets with a -internal suffix use the DB_PORT env variable. This is used when running the server within the docker container OR if using a local database (not a docker database).
 
 # Dependencies
 - Go
 - Docker
+- Docker-Compose
 - Postgres
 - [Templ](https://templ.guide)
 - NPM (for TailwindCSS)
 - [Air](https://github.com/air-verse/air)
 - [Migrate](https://github.com/golang-migrate/migrate)
+- [Jet](https://github.com/go-jet/jet)
 
 # Installation
 To run the application locally, follow these steps:
 
 1. Clone the repository and navigate to the project directory.
+2. Install Go, Docker, and Docker-Compose.
+3. Setup your `.env` using the `.env.example` file as a template.
 
 ## Running the Application with Docker
 
-2. Setup your `.env` using the `.env.example` file as a template.
-3. Build and run the Docker image using the command `make docker`.
-4. Open your browser and navigate to `http://localhost:40080` to access the application.
-    - If you changed the external port in your `.env` file, update this URL accordingly.
+4. Build and run the Docker image using the command `make docker`.
+5. Open your browser and navigate to `http://localhost:40080` to access the application.
+    - If you changed the `DB_EXTERNAL_PORT` in your `.env` file, update this URL accordingly (`http://localhost:<DB_EXTERNAL_PORT>`)
+    - If you changed the `PORT` in your `.env` file, you will also need to update the Dockerfile.
 
-## Running the Application Locally without Docker
-2. Install Go, Docker, PostgreSQL, Make, and NPM on your machine. Start your PostgreSQL service.
-3. `go mod download`
-4. `npm install`
-5. `go install github.com/a-h/templ/cmd/templ@latest`
-6. `go install github.com/air-verse/air@latest`
-7. `go install github.com/golang-migrate/migrate/v4/cmd/migrate@latest`
-8. `make migrate`
-9. `make live` to begin live development!
+## Running the Application Locally without Docker (Postgres still containerized)
+4. Install PostgreSQL, Make, and NPM on your machine. Start your PostgreSQL service.
+5. `go mod download`
+6. `npm install`
+7. `go install github.com/a-h/templ/cmd/templ@latest`
+8. `go install github.com/air-verse/air@latest`
+9. `go install github.com/golang-migrate/migrate/v4/cmd/migrate@latest`
+10. `go install github.com/go-jet/jet/v2/cmd/jet@latest`
+11. Start the PostgreSQL container using the command: `make docker-postgres`
+12. Run migrations on the postgres container: `make migrate-external`
+13. `make live` to begin live development!
+    - This will watch .go, .templ, and tailwind classes for changes.
+14. Navigate to `http://localhost:8080` to view your changes!
+    - If you changed the port in your `.env` file, update this URL accordingly.

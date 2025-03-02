@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/carsonkrueger/main/cfg"
 	router "github.com/carsonkrueger/main/internal"
 	app_context "github.com/carsonkrueger/main/internal/types"
@@ -12,13 +10,14 @@ import (
 func main() {
 	cfg := cfg.LoadConfig()
 	lgr := logger.NewLogger(&cfg)
-	ctx := app_context.NewAppContext(lgr)
+	ctx := app_context.NewAppContext(lgr, &cfg)
+	defer ctx.CleanUp()
 
 	appRouter := router.Setup()
 	appRouter.BuildRouter(ctx)
 	err := appRouter.Start(cfg)
 
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 }
