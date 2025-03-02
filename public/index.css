@@ -1,10 +1,22 @@
 @import "tailwindcss" source("../**/*.{templ,html}");
 
-@layer base {
+@theme inline {
+    --color-primary-hi: #3283fc;
+    --color-primary: #1c76fc;
+    --color-primary-lo: #0a6bfc;
+
+    --color-secondary: #0a7282;
+    --color-error: #d13449;
 }
 
-@layer components {
-    .test {
-        @apply rounded-md text-lg text-blue-300;
+@layer utiltities {
+    .secondary-box {
+        @apply border-[1px] text-secondary border-secondary rounded-md;
+    }
+    .app-input {
+        @apply border-[1px] border-secondary rounded-md w-full p-2 focus:ring focus:ring-blue-200;
+    }
+    .app-input:invalid.touched {
+        @apply border-error;
     }
 }

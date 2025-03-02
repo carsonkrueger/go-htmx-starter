@@ -1,6 +1,11 @@
 package pages
 
+import (
+	"github.com/carsonkrueger/main/templates/partials"
+)
+
 templ Home() {
-	<button hx-get="/home" hx-trigger="click" hx-target="#test" hx-swap="outerHTML">Home</button>
-	<div class="test" id="test">test</div>
+	<div class="mx-auto w-full">
+		@partials.Login()
+	</div>
 }

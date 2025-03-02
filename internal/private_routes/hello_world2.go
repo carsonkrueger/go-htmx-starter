@@ -23,10 +23,11 @@ func (hw *HelloWorld2) PrivateRoute(b *builders.PrivateRouteBuilder) {
 }
 
 func (hw *HelloWorld2) get2(res http.ResponseWriter, req *http.Request) {
-	lgr := hw.AppCtx.GetLgr()
+	lgr := hw.AppCtx.Lgr
 	_, e := res.Write([]byte("Hello World2!"))
 	if e != nil {
 		tools.RequestHttpError(lgr, res, e, http.StatusInternalServerError)
+		return
 	}
 }
 

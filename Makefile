@@ -63,8 +63,8 @@ jet-all-internal:
 
 jet-external jet:
 	@DB_URL="postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable"; \
-	jet -dsn="$$DB_URL" -schema=$(schema) -path=./gen; \
+	jet -dsn="$$DB_URL" -schema=$(schema) -path=./gen;
 
 jet-internal:
 	@DB_URL="postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"; \
-	jet -dsn="$$DB_URL" -schema=$(schema) -path=./gen; \
+	jet -dsn="$$DB_URL" -schema=$(schema) -path=./gen;

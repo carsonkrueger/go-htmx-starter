@@ -8,7 +8,6 @@ import (
 	"github.com/carsonkrueger/main/templates/layouts"
 	"github.com/carsonkrueger/main/templates/pages"
 	"github.com/go-chi/chi/v5"
-	"go.uber.org/zap"
 )
 
 type HelloWorld struct {
@@ -30,7 +29,7 @@ func (hw *HelloWorld) redirect_home(res http.ResponseWriter, req *http.Request) 
 }
 
 func (hw *HelloWorld) home(res http.ResponseWriter, req *http.Request) {
-	hw.AppCtx.GetLgr().Info("Logging HelloWorld route", zap.String("key", "value"))
+	hw.AppCtx.Lgr.Info("Logging HelloWorld route")
 	home := layouts.Main(pages.Home(), pages.Home())
 	home.Render(context.Background(), res)
 }
