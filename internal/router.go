@@ -23,7 +23,8 @@ type AppRouter struct {
 func Setup() AppRouter {
 	return AppRouter{
 		public: []types.AppPublicRoute{
-			&public_routes.HelloWorld{},
+			&public_routes.Auth{},
+			&public_routes.Home{},
 			&public_routes.WebPublic{},
 		},
 		private: []types.AppPrivateRoute{

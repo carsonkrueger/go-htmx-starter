@@ -6,16 +6,19 @@ import (
 	"go.uber.org/zap"
 )
 
-func RequestHttpError(logger *zap.Logger, res http.ResponseWriter, err error, code int) {
-	logger.Error("HTTP error: ", zap.Int("code", code), zap.Error(err))
+func RequestHttpError(logger *zap.Logger, res http.ResponseWriter, code int, errs ...error) {
 	res.WriteHeader(code)
-	var e error
-	if code >= 500 {
-		_, e = res.Write([]byte("An error occurred - Please try again later"))
-	} else {
-		_, e = res.Write([]byte(err.Error()))
-	}
-	if e != nil {
-		logger.Error("Failed to write error response", zap.Error(err))
+	for _, e := range errs {
+		logger.Error("HTTP error: ", zap.Int("code", code), zap.Error(e))
+		var e error
+		if code >= 500 {
+			_, e = res.Write([]byte("An error occurred - Please try again later"))
+			return
+		} else {
+			_, e = res.Write([]byte(e.Error()))
+		}
+		if e != nil {
+			logger.Error("Failed to write error response", zap.Error(e))
+		}
 	}
 }

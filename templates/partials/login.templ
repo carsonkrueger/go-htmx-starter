@@ -5,30 +5,29 @@ import (
 )
 
 templ Login() {
-		<div class="bg-whtie p-4 max-w-128">
-			<h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Login</h2>
+	<div class="p-4 max-w-96 w-full">
+		<h2 class="text-2xl font-bold text-center text-secondary mb-10">Login</h2>
 
-			<form
-		    	hx-post="/login"
-			    hx-target="#login-message"
-			    hx-swap="innerHTML"
-			    class="space-y-4"
-			>
-				<div>
-			    	<label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-					@datainput.Input(datainput.EmailAttrs("email", true))
-				</div>
-				<div>
-			    	<label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-					@datainput.Input(datainput.PasswordAttrs("password"))
-				</div>
-				<button
-			    	type="submit"
-				    class="px-3 py-2 bg-primary text-white font-bold py-2 rounded-lg transition"
-				>
-			    Login
-				</button>
-			</form>
-			<div id="login-message" class="mt-4 text-center text-sm font-medium"></div>
-		</div>
+		<form
+	    	hx-post="/auth/login"
+		    hx-target="#login-message"
+		    hx-swap="innerHTML"
+		    class="space-y-4"
+		>
+			<div>
+		    	<label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+				@datainput.Input(datainput.EmailAttrs("email", true))
+			</div>
+			<div>
+		    	<label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+				@datainput.Input(datainput.PasswordAttrs("password"))
+			</div>
+
+			<div class="flex justify-between items-center">
+				<button type="submit" class="px-3 py-2 bg-primary text-white font-bold py-2 rounded-xl transition cursor-pointer">Login</button>
+				<button type="button" class="px-3 py-2 border-[1px] border-primary text-primary font-bold py-2 rounded-xl transition cursor-pointer">Sign Up</button>
+			</div>
+		</form>
+		<div id="login-message" class="mt-4 text-center text-sm font-medium"></div>
+	</div>
 }

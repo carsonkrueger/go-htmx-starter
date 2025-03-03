@@ -5,7 +5,9 @@
     --color-primary: #1c76fc;
     --color-primary-lo: #0a6bfc;
 
-    --color-secondary: #0a7282;
+    --color-secondary-hi: #969696;
+    --color-secondary: #7a7a7a;
+    --color-secondary-lo: #5c5c5c;
     --color-error: #d13449;
 }
 
@@ -16,7 +18,8 @@
     .app-input {
         @apply border-[1px] border-secondary rounded-md w-full p-2 focus:ring focus:ring-blue-200;
     }
-    .app-input:invalid.touched {
-        @apply border-error;
-    }
+}
+
+input:invalid.touched {
+    @apply border-error;
 }
