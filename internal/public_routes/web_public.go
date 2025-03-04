@@ -18,11 +18,15 @@ func (w *WebPublic) Path() string {
 }
 
 func (w *WebPublic) PublicRoute(r chi.Router) {
+	r.Handle("/*", w.ServePublicDir())
+}
+
+func (w *WebPublic) ServePublicDir() http.Handler {
 	wd, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
 	dir_path := path.Join(wd, w.Path())
-	dir := http.FileServer(http.Dir(dir_path))
-	r.Handle("/*", http.StripPrefix(w.Path(), dir))
+	handler := http.FileServer(http.Dir(dir_path))
+	return http.StripPrefix(w.Path(), handler)
 }
