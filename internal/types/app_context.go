@@ -7,7 +7,7 @@ import (
 
 type AppContext struct {
 	Lgr *zap.Logger
-	Sm  *ServiceManager
+	SM  *ServiceManager
 }
 
 func NewAppContext(lgr *zap.Logger, sm *ServiceManager) *AppContext {

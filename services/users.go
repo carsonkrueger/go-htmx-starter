@@ -30,7 +30,7 @@ func NewUsersService(db *sql.DB) *usersService {
 
 func (us *usersService) Index(id int64) (*model.Users, error) {
 	var user model.Users
-	err := table.Users.SELECT(table.Users.AllColumns).FROM().WHERE(table.Users.ID.EQ(postgres.Int(id))).FETCH_FIRST(postgres.Int(1)).ROWS_ONLY().Query(us.db, &user)
+	err := table.Users.SELECT(table.Users.AllColumns).FROM(table.Users).WHERE(table.Users.ID.EQ(postgres.Int(id))).FETCH_FIRST(postgres.Int(1)).ROWS_ONLY().Query(us.db, &user)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (us *usersService) Index(id int64) (*model.Users, error) {
 
 func (us *usersService) GetByEmail(email string) (*model.Users, error) {
 	var user model.Users
-	err := table.Users.SELECT(table.Users.AllColumns).FROM().WHERE(table.Users.Email.EQ(postgres.String(email))).FETCH_FIRST(postgres.Int(1)).ROWS_ONLY().Query(us.db, &user)
+	err := table.Users.SELECT(table.Users.AllColumns).FROM(table.Users).WHERE(table.Users.Email.EQ(postgres.String(email))).FETCH_FIRST(postgres.Int(1)).ROWS_ONLY().Query(us.db, &user)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,11 @@ func (us *usersService) GetByEmail(email string) (*model.Users, error) {
 }
 
 func (us *usersService) Insert(row model.Users) (int64, error) {
-	res, err := table.Users.INSERT(table.Users.AllColumns).VALUES(row).RETURNING(table.Users.ID).Exec(us.db)
+	res, err := table.Users.
+		INSERT(table.Users.AllColumns.Except(table.Users.ID, table.Users.CreatedAt, table.Users.UpdatedAt)).
+		VALUES(row).
+		RETURNING(table.Users.ID).
+		Exec(us.db)
 	if err != nil {
 		return -1, err
 	}
@@ -92,7 +96,7 @@ func (us *usersService) Upsert(row *model.Users, cols_update ...postgres.ColumnA
 }
 
 func (us *usersService) Update(row model.Users) error {
-	_, err := table.Users.UPDATE(table.Users.AllColumns).WHERE(table.Users.ID.EQ(postgres.Int(row.ID))).Exec(us.db)
+	_, err := table.Users.UPDATE(table.Users.AllColumns).FROM(table.Users).WHERE(table.Users.ID.EQ(postgres.Int(row.ID))).Exec(us.db)
 	if err != nil {
 		return err
 	}
