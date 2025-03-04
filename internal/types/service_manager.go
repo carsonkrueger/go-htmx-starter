@@ -6,20 +6,12 @@ import (
 	"github.com/carsonkrueger/main/services"
 )
 
-type IServiceManager interface {
-	UsersService() services.IUsersService
+type ServiceManager struct {
+	UsersService services.IUsersService
 }
 
-type serviceManager struct {
-	usersService services.IUsersService
-}
-
-func NewServiceManager(db *sql.DB) IServiceManager {
-	return &serviceManager{
-		usersService: services.NewUsersService(db),
+func NewServiceManager(db *sql.DB) *ServiceManager {
+	return &ServiceManager{
+		UsersService: services.NewUsersService(db),
 	}
-}
-
-func (sm *serviceManager) UsersService() services.IUsersService {
-	return sm.usersService
 }

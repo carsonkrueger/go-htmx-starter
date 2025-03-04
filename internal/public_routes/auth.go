@@ -48,8 +48,8 @@ func (a *Auth) login(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	us := a.AppCtx.Sm.UsersService()
-	user, err := us.GetByEmail(email)
+	usersService := a.AppCtx.Sm.UsersService
+	user, err := usersService.GetByEmail(email)
 	if err != nil {
 		tools.RequestHttpError(lgr, res, 403, err)
 		return
