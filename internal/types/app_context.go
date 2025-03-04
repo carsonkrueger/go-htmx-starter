@@ -1,35 +1,25 @@
 package types
 
 import (
-	"database/sql"
-
-	"github.com/carsonkrueger/main/cfg"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
 type AppContext struct {
 	Lgr *zap.Logger
-	Db  *sql.DB
+	Sm  IServiceManager
 }
 
-func NewAppContext(lgr *zap.Logger, cfg *cfg.Config) *AppContext {
-	db, err := sql.Open("postgres", cfg.DbUrl())
-	if err != nil {
-		panic(err)
-	}
+func NewAppContext(lgr *zap.Logger, sm IServiceManager) *AppContext {
 	return &AppContext{
 		lgr,
-		db,
+		sm,
 	}
 }
 
 func (ctx *AppContext) CleanUp() {
 	if err := ctx.Lgr.Sync(); err != nil {
 		ctx.Lgr.Error("failed to sync logger", zap.Error(err))
-	}
-	if err := ctx.Db.Close(); err != nil {
-		ctx.Lgr.Error("failed to close database", zap.Error(err))
 	}
 }
 
