@@ -22,6 +22,7 @@ func (r *Home) Path() string {
 func (hw *Home) PublicRoute(r chi.Router) {
 	r.Get("/", hw.redirect_home)
 	r.Get("/home", hw.home)
+	r.Get("/signup", hw.signup)
 }
 
 func (hw *Home) redirect_home(res http.ResponseWriter, req *http.Request) {
@@ -29,8 +30,17 @@ func (hw *Home) redirect_home(res http.ResponseWriter, req *http.Request) {
 }
 
 func (hw *Home) home(res http.ResponseWriter, req *http.Request) {
-	hw.AppCtx.Lgr.Info("Logging Home route")
+	hw.AppCtx.Lgr.Info("Logging /home route")
 	home := layouts.Main(pages.Home())
+	err := home.Render(context.Background(), res)
+	if err != nil {
+		tools.RequestHttpError(hw.AppCtx.Lgr, res, 500, err)
+	}
+}
+
+func (hw *Home) signup(res http.ResponseWriter, req *http.Request) {
+	hw.AppCtx.Lgr.Info("Logging /signup route")
+	home := layouts.Main(pages.HomeSignup())
 	err := home.Render(context.Background(), res)
 	if err != nil {
 		tools.RequestHttpError(hw.AppCtx.Lgr, res, 500, err)

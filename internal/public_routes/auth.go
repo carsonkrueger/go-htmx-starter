@@ -9,6 +9,7 @@ import (
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/internal/types"
 	"github.com/carsonkrueger/main/tools"
+	"github.com/carsonkrueger/main/tools/validate"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )
@@ -35,20 +36,15 @@ func (a *Auth) login(res http.ResponseWriter, req *http.Request) {
 	}
 
 	form := req.Form
-	form_errs := []error{}
+	errs := validate.ValidateLogin(form)
+
+	if len(errs) > 0 {
+		tools.RequestHttpError(lgr, res, 400, errs...)
+		return
+	}
 
 	email := form.Get("email")
 	password := form.Get("password")
-	if email == "" {
-		form_errs = append(form_errs, errors.New("Missing email"))
-	}
-	if password == "" {
-		form_errs = append(form_errs, errors.New("Missing password"))
-	}
-	if len(form_errs) > 0 {
-		tools.RequestHttpError(lgr, res, 400, form_errs...)
-		return
-	}
 
 	usersService := a.AppCtx.SM.UsersService
 	user, err := usersService.GetByEmail(email)
@@ -73,7 +69,7 @@ func (a *Auth) login(res http.ResponseWriter, req *http.Request) {
 }
 
 func (a *Auth) signup(res http.ResponseWriter, req *http.Request) {
-	lgr := a.AppCtx.Lgr.With(zap.String("Route", "/auth/signup"))
+	lgr := a.AppCtx.Lgr.With(zap.String("controller", "/signup/"))
 
 	if err := req.ParseForm(); err != nil {
 		tools.RequestHttpError(lgr, res, 400, errors.New("Error parsing form"))
@@ -81,50 +77,36 @@ func (a *Auth) signup(res http.ResponseWriter, req *http.Request) {
 	}
 
 	form := req.Form
-	form_errs := []error{}
-
-	email := form.Get("email")
-	password := form.Get("password")
-	first := form.Get("first_name")
-	last := form.Get("last_name")
-	if email == "" {
-		form_errs = append(form_errs, errors.New("Missing email"))
-	}
-	if password == "" {
-		form_errs = append(form_errs, errors.New("Missing password"))
-	}
-	if first == "" {
-		form_errs = append(form_errs, errors.New("Missing first name"))
-	}
-	if last == "" {
-		form_errs = append(form_errs, errors.New("Missing last name"))
-	}
-	if len(form_errs) > 0 {
-		tools.RequestHttpError(lgr, res, 400, form_errs...)
+	errs := validate.ValidateSignup(form)
+	if len(errs) > 0 {
+		tools.RequestHttpError(lgr, res, 400, errs...)
 		return
 	}
 
 	salt, _ := tools.GenerateSalt()
-	hash := tools.HashPassword(password, salt)
-
-	usersService := a.AppCtx.SM.UsersService
-	_, err := usersService.Insert(model.Users{
-		Email:     email,
+	auth_token, _ := tools.GenerateSalt()
+	hash := tools.HashPassword(form.Get("password"), salt)
+	user := model.Users{
+		FirstName: form.Get("first_name"),
+		LastName:  form.Get("last_name"),
+		Email:     form.Get("email"),
 		Password:  hash,
-		FirstName: first,
-		LastName:  last,
-	})
+		AuthToken: auth_token,
+	}
+
+	_, err := a.AppCtx.SM.UsersService.Insert(&user)
 	if err != nil {
-		tools.RequestHttpError(lgr, res, 403, errors.New("Failed to create user"))
+		tools.RequestHttpError(lgr, res, 500, err)
 		return
 	}
 
-	// Generate JWT token
-	// token, err := tools.GenerateJWT(user.ID)
-	// if err != nil {
-	// 	tools.RequestHttpError(lgr, res, 500, errors.New("Failed to generate JWT token"))
-	// 	return
-	// }
-
-	res.Write(fmt.Appendf(nil, "%s - %s", email, password))
+	cookie := http.Cookie{
+		Name:     "ghx_auth_token",
+		Value:    auth_token,
+		HttpOnly: true,
+	}
+	http.SetCookie(res, &cookie)
+	res.WriteHeader(http.StatusCreated)
+	res.Header().Set("Hx-Redirect", "/home")
+	res.Write([]byte{})
 }

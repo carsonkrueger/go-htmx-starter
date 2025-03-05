@@ -12,9 +12,9 @@ import (
 type IUsersService interface {
 	Index(id int64) (*model.Users, error)
 	GetByEmail(email string) (*model.Users, error)
-	Insert(row model.Users) (int64, error)
+	Insert(row *model.Users) (int64, error)
 	Upsert(row *model.Users, cols_update ...postgres.ColumnAssigment) (int64, error)
-	Update(row model.Users) error
+	Update(row *model.Users) error
 	Delete(id int64) error
 }
 
@@ -46,22 +46,17 @@ func (us *usersService) GetByEmail(email string) (*model.Users, error) {
 	return &user, nil
 }
 
-func (us *usersService) Insert(row model.Users) (int64, error) {
-	res, err := table.Users.
-		INSERT(table.Users.AllColumns.Except(table.Users.ID, table.Users.CreatedAt, table.Users.UpdatedAt)).
-		VALUES(row).
+func (us *usersService) Insert(row *model.Users) (int64, error) {
+	err := table.Users.
+		INSERT(table.Users.Email, table.Users.FirstName, table.Users.LastName, table.Users.Password, table.Users.AuthToken, table.Users.AuthTokenCreatedAt).
+		VALUES(row.Email, row.FirstName, row.LastName, row.Password, row.AuthToken, postgres.TimestampT(time.Now())).
 		RETURNING(table.Users.ID).
-		Exec(us.db)
+		Query(us.db, row)
+
 	if err != nil {
 		return -1, err
 	}
-
-	id, err := res.LastInsertId()
-	if err != nil {
-		return -1, err
-	}
-
-	return id, nil
+	return row.ID, nil
 }
 
 // Returns ID int64 if inserted.
@@ -95,7 +90,7 @@ func (us *usersService) Upsert(row *model.Users, cols_update ...postgres.ColumnA
 	return id, nil
 }
 
-func (us *usersService) Update(row model.Users) error {
+func (us *usersService) Update(row *model.Users) error {
 	_, err := table.Users.UPDATE(table.Users.AllColumns).FROM(table.Users).WHERE(table.Users.ID.EQ(postgres.Int(row.ID))).Exec(us.db)
 	if err != nil {
 		return err

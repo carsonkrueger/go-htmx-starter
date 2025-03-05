@@ -18,6 +18,15 @@ func EmailAttrs(id string, required bool) templ.Attributes {
     }
 }
 
+func NameAttrs(id string, required bool) templ.Attributes {
+	return templ.Attributes{
+		"id":id,
+    	"type": "text",
+    	"name":id,
+    	"required": required,
+    }
+}
+
 templ Input(attrs templ.Attributes) {
     <input
    		if attrs != nil{
