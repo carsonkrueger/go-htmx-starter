@@ -1,14 +1,31 @@
-package builders
+package internal
 
 import (
 	"net/http"
 
 	"github.com/carsonkrueger/main/internal/enums"
-	"github.com/carsonkrueger/main/internal/middlewares"
-
-	// "github.com/carsonkrueger/main/internal/types"
 	"github.com/go-chi/chi/v5"
 )
+
+type PrivateRouteBuilder struct {
+	router chi.Router
+}
+
+func NewPrivateRouteBuilder() PrivateRouteBuilder {
+	return PrivateRouteBuilder{
+		router: chi.NewRouter(),
+	}
+}
+
+func (rb *PrivateRouteBuilder) NewHandle() *privateMethodBuilder {
+	return &privateMethodBuilder{
+		router: rb.router,
+	}
+}
+
+func (mb *PrivateRouteBuilder) Build() chi.Router {
+	return mb.router
+}
 
 type privateMethodBuilder struct {
 	router     chi.Router
@@ -39,7 +56,7 @@ func (mb *privateMethodBuilder) SetMiddlewares(middlewares ...func(next http.Han
 func (mb *privateMethodBuilder) Build() {
 	var r chi.Router
 	if mb.permission != "" {
-		r = mb.router.With(middlewares.ApplyPermission(mb.permission))
+		r = mb.router.With(ApplyPermission(mb.permission))
 	}
 	if len(mb.mw) > 0 {
 		r = r.With(mb.mw...)

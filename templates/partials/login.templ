@@ -24,9 +24,9 @@ templ Login() {
 			</div>
 
 			<div class="flex justify-between items-center">
-				<button type="submit" hx-post="/auth/login" class="px-3 py-2 bg-primary text-white font-bold py-2 rounded-xl transition cursor-pointer">Login</button>
+				<button type="submit" hx-post="/auth/login" hx-push-url="/signup" class="px-3 py-2 bg-primary text-white font-bold py-2 rounded-sm transition cursor-pointer">Login</button>
 				<a href="/signup">
-					<button type="button" class="px-3 py-2 border-[1px] border-primary text-primary font-bold py-2 rounded-xl transition cursor-pointer">Sign Up</button>
+					<button type="button" class="px-3 py-2 border-[1px] border-primary text-primary font-bold py-2 rounded-sm transition cursor-pointer">Sign Up</button>
 				</a>
 			</div>
 		</form>

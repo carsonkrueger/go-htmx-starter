@@ -1,11 +1,11 @@
-package main
+package cmd
 
 import (
 	"database/sql"
 
 	"github.com/carsonkrueger/main/cfg"
-	router "github.com/carsonkrueger/main/internal"
-	app_context "github.com/carsonkrueger/main/internal/types"
+	"github.com/carsonkrueger/main/internal"
+	"github.com/carsonkrueger/main/internal/services"
 	"github.com/carsonkrueger/main/logger"
 )
 
@@ -21,12 +21,12 @@ func main() {
 	if db == nil {
 		panic("Database connection is nil")
 	}
-	sm := app_context.NewServiceManager(db)
+	sm := services.NewServiceManager(db)
 
-	ctx := app_context.NewAppContext(lgr, sm)
+	ctx := internal.NewAppContext(lgr, sm)
 	// defer ctx.CleanUp()
 
-	appRouter := router.Setup()
+	appRouter := Setup()
 	appRouter.BuildRouter(ctx)
 	err = appRouter.Start(cfg)
 

@@ -2,12 +2,10 @@ package public_routes
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
-	"github.com/carsonkrueger/main/internal/types"
+	"github.com/carsonkrueger/main/internal"
 	"github.com/carsonkrueger/main/tools"
 	"github.com/carsonkrueger/main/tools/validate"
 	"github.com/go-chi/chi/v5"
@@ -15,7 +13,7 @@ import (
 )
 
 type Auth struct {
-	types.WithAppContext
+	internal.WithAppContext
 }
 
 func (a *Auth) Path() string {
@@ -47,25 +45,14 @@ func (a *Auth) login(res http.ResponseWriter, req *http.Request) {
 	password := form.Get("password")
 
 	usersService := a.AppCtx.SM.UsersService
-	user, err := usersService.GetByEmail(email)
+	authToken, err := usersService.Login(email, password)
 	if err != nil {
-		tools.RequestHttpError(lgr, res, 403, errors.New("Invalid email or password"))
+		lgr.Info("Error logging in user", zap.Error(err))
+		tools.RequestHttpError(lgr, res, 403, errors.New("Invalid username or password"))
 		return
 	}
 
-	parts := strings.Split(user.Password, "$")
-	if len(parts) != 2 {
-		tools.RequestHttpError(lgr, res, 500, errors.New(fmt.Sprintf("Invalid hash: %d", user.ID)))
-		return
-	}
-
-	hash := tools.HashPassword(password, parts[0])
-	if user.Password != hash {
-		tools.RequestHttpError(a.AppCtx.Lgr, res, 403, errors.New("Invalid email or password"))
-		return
-	}
-
-	res.Write(fmt.Appendf(nil, "%s - %s", email, password))
+	tools.SetAuthCookie(res, authToken)
 }
 
 func (a *Auth) signup(res http.ResponseWriter, req *http.Request) {
@@ -84,29 +71,23 @@ func (a *Auth) signup(res http.ResponseWriter, req *http.Request) {
 	}
 
 	salt, _ := tools.GenerateSalt()
-	auth_token, _ := tools.GenerateSalt()
+	authToken, _ := tools.GenerateSalt()
 	hash := tools.HashPassword(form.Get("password"), salt)
 	user := model.Users{
 		FirstName: form.Get("first_name"),
 		LastName:  form.Get("last_name"),
 		Email:     form.Get("email"),
 		Password:  hash,
-		AuthToken: auth_token,
+		AuthToken: &authToken,
 	}
 
-	_, err := a.AppCtx.SM.UsersService.Insert(&user)
+	us := a.AppCtx.SM.UsersService
+	_, err := us.Insert(&user)
 	if err != nil {
 		tools.RequestHttpError(lgr, res, 500, err)
 		return
 	}
 
-	cookie := http.Cookie{
-		Name:     "ghx_auth_token",
-		Value:    auth_token,
-		HttpOnly: true,
-	}
-	http.SetCookie(res, &cookie)
+	tools.SetAuthCookie(res, &authToken)
 	res.WriteHeader(http.StatusCreated)
-	res.Header().Set("Hx-Redirect", "/home")
-	res.Write([]byte{})
 }

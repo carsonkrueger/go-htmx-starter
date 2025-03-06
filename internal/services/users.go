@@ -2,10 +2,13 @@ package services
 
 import (
 	"database/sql"
+	"errors"
+	"strings"
 	"time"
 
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
+	"github.com/carsonkrueger/main/tools"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
@@ -16,6 +19,8 @@ type IUsersService interface {
 	Upsert(row *model.Users, cols_update ...postgres.ColumnAssigment) (int64, error)
 	Update(row *model.Users) error
 	Delete(id int64) error
+	UpdateAuthToken(id int64, authToken string) error
+	Login(email string, password string) (*string, error)
 }
 
 type usersService struct {
@@ -91,7 +96,7 @@ func (us *usersService) Upsert(row *model.Users, cols_update ...postgres.ColumnA
 }
 
 func (us *usersService) Update(row *model.Users) error {
-	_, err := table.Users.UPDATE(table.Users.AllColumns).FROM(table.Users).WHERE(table.Users.ID.EQ(postgres.Int(row.ID))).Exec(us.db)
+	_, err := table.Users.UPDATE(table.Users.AllColumns).MODEL(row).WHERE(table.Users.ID.EQ(postgres.Int(row.ID))).Exec(us.db)
 	if err != nil {
 		return err
 	}
@@ -104,4 +109,34 @@ func (us *usersService) Delete(id int64) error {
 		return err
 	}
 	return nil
+}
+
+func (us *usersService) UpdateAuthToken(id int64, authToken string) error {
+	_, err := table.Users.UPDATE(table.Users.AuthToken).SET(authToken).WHERE(table.Users.ID.EQ(postgres.Int(id))).Exec(us.db)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (us *usersService) Login(email string, password string) (*string, error) {
+	user, err := us.GetByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	parts := strings.Split(user.Password, "$")
+	hash := tools.HashPassword(password, parts[0])
+
+	if user.Password != hash {
+		return nil, errors.New("Invalid password")
+	}
+
+	authToken, _ := tools.GenerateSalt()
+	err = us.UpdateAuthToken(user.ID, authToken)
+	if err != nil {
+		return nil, err
+	}
+
+	return &authToken, nil
 }

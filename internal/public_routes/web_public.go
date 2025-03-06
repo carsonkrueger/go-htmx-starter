@@ -5,12 +5,12 @@ import (
 	"os"
 	"path"
 
-	"github.com/carsonkrueger/main/internal/types"
+	"github.com/carsonkrueger/main/internal"
 	"github.com/go-chi/chi/v5"
 )
 
 type WebPublic struct {
-	types.WithAppContext
+	internal.WithAppContext
 }
 
 func (w *WebPublic) Path() string {

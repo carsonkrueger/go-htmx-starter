@@ -1,4 +1,4 @@
-package router
+package cmd
 
 import (
 	"errors"
@@ -6,34 +6,35 @@ import (
 	"net/http"
 
 	"github.com/carsonkrueger/main/cfg"
-	"github.com/carsonkrueger/main/internal/builders"
+	"github.com/carsonkrueger/main/internal"
 	"github.com/carsonkrueger/main/internal/private_routes"
 	"github.com/carsonkrueger/main/internal/public_routes"
-	"github.com/carsonkrueger/main/internal/types"
 	"github.com/go-chi/chi/v5"
+
+	_ "github.com/lib/pq"
 )
 
 type AppRouter struct {
-	public  []types.AppPublicRoute
-	private []types.AppPrivateRoute
+	public  []internal.AppPublicRoute
+	private []internal.AppPrivateRoute
 	addr    string
 	router  chi.Router
 }
 
 func Setup() AppRouter {
 	return AppRouter{
-		public: []types.AppPublicRoute{
+		public: []internal.AppPublicRoute{
 			&public_routes.Auth{},
 			&public_routes.Home{},
 			&public_routes.WebPublic{},
 		},
-		private: []types.AppPrivateRoute{
+		private: []internal.AppPrivateRoute{
 			&private_routes.HelloWorld2{},
 		},
 	}
 }
 
-func (a *AppRouter) BuildRouter(ctx *types.AppContext) {
+func (a *AppRouter) BuildRouter(ctx *internal.AppContext) {
 	a.router = chi.NewRouter()
 
 	fmt.Println("Creating public routes:")
@@ -51,7 +52,7 @@ func (a *AppRouter) BuildRouter(ctx *types.AppContext) {
 	fmt.Println("\nCreating private routes:")
 	for _, r := range a.private {
 		r.SetAppCtx(ctx)
-		builder := builders.NewPrivateRouteBuilder()
+		builder := internal.NewPrivateRouteBuilder()
 		r.PrivateRoute(&builder)
 		a.router.Mount(r.Path(), builder.Build())
 		fmt.Printf("\t%v\n", r.Path())

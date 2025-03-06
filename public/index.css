@@ -16,7 +16,7 @@
         @apply border-[1px] text-secondary border-secondary rounded-md;
     }
     .app-input {
-        @apply border-[1px] border-secondary rounded-md w-full p-2 focus:ring focus:ring-blue-200;
+        @apply border-[1px] border-secondary rounded-sm w-full p-2 focus:ring focus:ring-blue-200;
     }
 }
 
