@@ -14,7 +14,7 @@ import (
 )
 
 type IUsersService interface {
-	Index(id int64) (*model.Users, error)
+	GetById(id int64) (*model.Users, error)
 	GetByEmail(email string) (*model.Users, error)
 	Insert(row *model.Users) (int64, error)
 	Upsert(row *model.Users, cols_update ...postgres.ColumnAssigment) (int64, error)
@@ -35,9 +35,13 @@ func NewUsersService(db *sql.DB) *usersService {
 	}
 }
 
-func (us *usersService) Index(id int64) (*model.Users, error) {
+func (us *usersService) GetById(id int64) (*model.Users, error) {
 	var user model.Users
-	err := table.Users.SELECT(table.Users.AllColumns).FROM(table.Users).WHERE(table.Users.ID.EQ(postgres.Int(id))).FETCH_FIRST(postgres.Int(1)).ROWS_ONLY().Query(us.db, &user)
+	err := table.Users.SELECT(table.Users.AllColumns).
+		FROM(table.Users).
+		WHERE(table.Users.ID.EQ(postgres.Int(id))).
+		LIMIT(1).
+		Query(us.db, &user)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +50,11 @@ func (us *usersService) Index(id int64) (*model.Users, error) {
 
 func (us *usersService) GetByEmail(email string) (*model.Users, error) {
 	var user model.Users
-	err := table.Users.SELECT(table.Users.AllColumns).FROM(table.Users).WHERE(table.Users.Email.EQ(postgres.String(email))).FETCH_FIRST(postgres.Int(1)).ROWS_ONLY().Query(us.db, &user)
+	err := table.Users.SELECT(table.Users.AllColumns).
+		FROM(table.Users).
+		WHERE(table.Users.Email.EQ(postgres.String(email))).
+		LIMIT(1).
+		Query(us.db, &user)
 	if err != nil {
 		return nil, err
 	}

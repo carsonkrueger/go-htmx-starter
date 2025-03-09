@@ -37,7 +37,7 @@ func Setup() AppRouter {
 	}
 }
 
-func (a *AppRouter) BuildRouter(ctx *context.AppContext) {
+func (a *AppRouter) BuildRouter(ctx context.IAppContext) {
 	a.router = chi.NewRouter()
 
 	fmt.Println("Creating public routes:")

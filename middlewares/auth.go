@@ -29,7 +29,7 @@ func EnforceAuth(appCtx context.IAppContext) func(next http.Handler) http.Handle
 			context.WithToken(ctx, token)
 			context.WithUserId(ctx, id)
 
-			user, err := appCtx.SM().UsersService().Index(id)
+			user, err := appCtx.SM().UsersService().GetById(id)
 
 			if err != nil {
 				req.Header.Del(tools.AUTH_TOKEN_KEY)
