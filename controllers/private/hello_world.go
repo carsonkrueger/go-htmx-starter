@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/carsonkrueger/main/context"
+	"github.com/carsonkrueger/main/controllers"
 	"github.com/carsonkrueger/main/enums"
-	"github.com/carsonkrueger/main/routes"
 )
 
 type HelloWorld struct {
@@ -16,7 +16,7 @@ func (r HelloWorld) Path() string {
 	return "/helloworld"
 }
 
-func (hw *HelloWorld) PrivateRoute(b *routes.PrivateRouteBuilder) {
+func (hw *HelloWorld) PrivateRoute(b *controllers.PrivateRouteBuilder) {
 	b.NewHandle().RegisterRoute("get", "/", hw.hello).SetPermission(&enums.HelloWorldGet).Build()
 	b.NewHandle().RegisterRoute("get", "/get2", hw.hello2).SetPermission(&enums.HelloWorldGet2).Build()
 }
