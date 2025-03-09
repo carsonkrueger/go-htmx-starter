@@ -1,12 +1,12 @@
-package public_routes
+package public
 
 import (
 	"errors"
 	"fmt"
 	"net/http"
 
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
-	"github.com/carsonkrueger/main/internal"
 	"github.com/carsonkrueger/main/tools"
 	"github.com/carsonkrueger/main/tools/validate"
 	"github.com/go-chi/chi/v5"
@@ -14,7 +14,7 @@ import (
 )
 
 type Auth struct {
-	internal.WithAppContext
+	context.WithAppContext
 }
 
 func (a *Auth) Path() string {

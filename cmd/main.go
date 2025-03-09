@@ -4,16 +4,18 @@ import (
 	"database/sql"
 
 	"github.com/carsonkrueger/main/cfg"
-	"github.com/carsonkrueger/main/internal"
-	"github.com/carsonkrueger/main/internal/logger"
-	"github.com/carsonkrueger/main/internal/services"
+	"github.com/carsonkrueger/main/context"
+	"github.com/carsonkrueger/main/logger"
+	"github.com/carsonkrueger/main/middlewares"
+	"github.com/carsonkrueger/main/routes"
+	"github.com/carsonkrueger/main/routes/private"
+	"github.com/carsonkrueger/main/routes/public"
+	"github.com/carsonkrueger/main/services"
 
 	"errors"
 	"fmt"
 	"net/http"
 
-	"github.com/carsonkrueger/main/internal/private_routes"
-	"github.com/carsonkrueger/main/internal/public_routes"
 	"github.com/go-chi/chi/v5"
 
 	_ "github.com/lib/pq"
@@ -33,7 +35,7 @@ func main() {
 	}
 	sm := services.NewServiceManager(db)
 
-	ctx := internal.NewAppContext(lgr, sm)
+	ctx := context.NewAppContext(lgr, sm)
 	// defer ctx.CleanUp()
 
 	appRouter := Setup()
@@ -46,26 +48,26 @@ func main() {
 }
 
 type AppRouter struct {
-	public  []internal.AppPublicRoute
-	private []internal.AppPrivateRoute
+	public  []routes.AppPublicRoute
+	private []routes.AppPrivateRoute
 	addr    string
 	router  chi.Router
 }
 
 func Setup() AppRouter {
 	return AppRouter{
-		public: []internal.AppPublicRoute{
-			&public_routes.Auth{},
-			&public_routes.Home{},
-			&public_routes.WebPublic{},
+		public: []routes.AppPublicRoute{
+			&public.Auth{},
+			&public.Home{},
+			&public.WebPublic{},
 		},
-		private: []internal.AppPrivateRoute{
-			&private_routes.HelloWorld{},
+		private: []routes.AppPrivateRoute{
+			&private.HelloWorld{},
 		},
 	}
 }
 
-func (a *AppRouter) BuildRouter(ctx *internal.AppContext) {
+func (a *AppRouter) BuildRouter(ctx *context.AppContext) {
 	a.router = chi.NewRouter()
 
 	fmt.Println("Creating public routes:")
@@ -78,12 +80,12 @@ func (a *AppRouter) BuildRouter(ctx *internal.AppContext) {
 	}
 
 	// enforce authentication middleware
-	a.router = a.router.With(internal.EnforceAuth(ctx))
+	a.router = a.router.With(middlewares.EnforceAuth(ctx))
 
 	fmt.Println("\nCreating private routes:")
 	for _, r := range a.private {
 		r.SetAppCtx(ctx)
-		builder := internal.NewPrivateRouteBuilder(ctx)
+		builder := routes.NewPrivateRouteBuilder(ctx)
 		r.PrivateRoute(&builder)
 		a.router.Mount(r.Path(), builder.Build())
 		fmt.Printf("\t%v\n", r.Path())

@@ -1,16 +1,16 @@
-package public_routes
+package public
 
 import (
 	"net/http"
 	"os"
 	"path"
 
-	"github.com/carsonkrueger/main/internal"
+	"github.com/carsonkrueger/main/context"
 	"github.com/go-chi/chi/v5"
 )
 
 type WebPublic struct {
-	internal.WithAppContext
+	context.WithAppContext
 }
 
 func (w *WebPublic) Path() string {

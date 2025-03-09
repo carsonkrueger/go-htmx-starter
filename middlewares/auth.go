@@ -1,13 +1,14 @@
-package internal
+package middlewares
 
 import (
 	"errors"
 	"net/http"
 
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/tools"
 )
 
-func EnforceAuth(appCtx *AppContext) func(next http.Handler) http.Handler {
+func EnforceAuth(appCtx *context.AppContext) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			lgr := appCtx.Lgr
@@ -25,8 +26,8 @@ func EnforceAuth(appCtx *AppContext) func(next http.Handler) http.Handler {
 				return
 			}
 
-			WithToken(ctx, token)
-			WithUserId(ctx, id)
+			context.WithToken(ctx, token)
+			context.WithUserId(ctx, id)
 
 			user, err := appCtx.SM.UsersService.Index(id)
 

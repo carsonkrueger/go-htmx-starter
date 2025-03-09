@@ -1,21 +1,46 @@
-package internal
+package routes
 
 import (
 	"errors"
 	"fmt"
 	"net/http"
 
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/tools"
 	"github.com/go-chi/chi/v5"
 )
 
-type PrivateRouteBuilder struct {
-	router chi.Router
-	appCtx *AppContext
+type RoutePath interface {
+	Path() string
 }
 
-func NewPrivateRouteBuilder(appCtx *AppContext) PrivateRouteBuilder {
+type PublicRoute interface {
+	PublicRoute(r chi.Router)
+}
+
+type AppPublicRoute interface {
+	context.SetAppContext
+	RoutePath
+	PublicRoute
+}
+
+type PrivateRoute interface {
+	PrivateRoute(b *PrivateRouteBuilder)
+}
+
+type AppPrivateRoute interface {
+	context.SetAppContext
+	RoutePath
+	PrivateRoute
+}
+
+type PrivateRouteBuilder struct {
+	router chi.Router
+	appCtx *context.AppContext
+}
+
+func NewPrivateRouteBuilder(appCtx *context.AppContext) PrivateRouteBuilder {
 	return PrivateRouteBuilder{
 		router: chi.NewRouter(),
 		appCtx: appCtx,
@@ -34,7 +59,7 @@ func (mb *PrivateRouteBuilder) Build() chi.Router {
 }
 
 type privateMethodBuilder struct {
-	appCtx     *AppContext
+	appCtx     *context.AppContext
 	router     chi.Router
 	mw         []func(next http.Handler) http.Handler
 	method     string
@@ -71,7 +96,7 @@ func (mb *privateMethodBuilder) Build() {
 	r.MethodFunc(mb.method, mb.pattern, mb.handle)
 }
 
-func ApplyPermission(p *model.Privileges, appCtx *AppContext) func(next http.Handler) http.Handler {
+func ApplyPermission(p *model.Privileges, appCtx *context.AppContext) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			lgr := appCtx.Lgr

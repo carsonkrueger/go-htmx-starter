@@ -1,9 +1,9 @@
-package public_routes
+package public
 
 import (
 	"net/http"
 
-	"github.com/carsonkrueger/main/internal"
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/templates/layouts"
 	"github.com/carsonkrueger/main/templates/pages"
 	"github.com/carsonkrueger/main/tools"
@@ -11,7 +11,7 @@ import (
 )
 
 type Home struct {
-	internal.WithAppContext
+	context.WithAppContext
 }
 
 func (r *Home) Path() string {

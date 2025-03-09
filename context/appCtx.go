@@ -1,11 +1,10 @@
-package internal
+package context
 
 import (
 	"context"
+	gctx "context"
 
-	"github.com/go-chi/chi/v5"
-
-	"github.com/carsonkrueger/main/internal/services"
+	"github.com/carsonkrueger/main/services"
 	"github.com/carsonkrueger/main/tools"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
@@ -41,41 +40,18 @@ func (b *WithAppContext) SetAppCtx(ctx *AppContext) {
 	b.AppCtx = ctx
 }
 
-type RoutePath interface {
-	Path() string
-}
 
-type PublicRoute interface {
-	PublicRoute(r chi.Router)
-}
-
-type AppPublicRoute interface {
-	SetAppContext
-	RoutePath
-	PublicRoute
-}
-
-type PrivateRoute interface {
-	PrivateRoute(b *PrivateRouteBuilder)
-}
-
-type AppPrivateRoute interface {
-	SetAppContext
-	RoutePath
-	PrivateRoute
-}
-
-func WithToken(ctx context.Context, token string) context.Context {
+func WithToken(ctx gctx.Context, token string) gctx.Context {
 	return context.WithValue(ctx, tools.AUTH_TOKEN_KEY, token)
 }
 
-func GetToken(ctx context.Context) string {
+func GetToken(ctx gctx.Context) string {
 	return ctx.Value(tools.AUTH_TOKEN_KEY).(string)
 }
 
 var USER_ID_KEY = "USER_ID"
 
-func WithUserId(ctx context.Context, id int64) context.Context {
+func WithUserId(ctx gctx.Context, id int64) gctx.Context {
 	return context.WithValue(ctx, USER_ID_KEY, id)
 }
 

@@ -1,4 +1,4 @@
-package internal
+package enums
 
 import "github.com/carsonkrueger/main/gen/go_db/auth/model"
 

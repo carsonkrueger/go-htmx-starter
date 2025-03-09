@@ -3,15 +3,15 @@ package seeders
 import (
 	"database/sql"
 
+	"github.com/carsonkrueger/main/enums"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
-	"github.com/carsonkrueger/main/internal"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
 var seeds []model.Privileges = []model.Privileges{
-	internal.HelloWorldGet,
-	internal.HelloWorldGet2,
+	enums.HelloWorldGet,
+	enums.HelloWorldGet2,
 }
 
 type SeedPrivilegeLevel struct {
@@ -24,14 +24,14 @@ var basicLevel SeedPrivilegeLevel = SeedPrivilegeLevel{
 	ID:   1000,
 	Name: "basic",
 	Privileges: []model.Privileges{
-		internal.HelloWorldGet,
+		enums.HelloWorldGet,
 	},
 }
 
 var adminLevel SeedPrivilegeLevel = SeedPrivilegeLevel{
 	ID:         1001,
 	Name:       "admin",
-	Privileges: append(basicLevel.Privileges, internal.HelloWorldGet2),
+	Privileges: append(basicLevel.Privileges, enums.HelloWorldGet2),
 }
 
 func SeedPermissions(db *sql.DB) error {
