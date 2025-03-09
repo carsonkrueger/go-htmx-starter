@@ -40,6 +40,19 @@ migrate-generate:
 	@read -p "Enter migration name: " name; \
 	migrate create -ext sql -dir migrations -seq $$name
 
+seed-external seed:
+	go run cmd/seeds/seed.go -local=true
+
+seed-internal:
+	go run cmd/seeds/seed.go
+
+seed-undo-external seed-undo:
+	go run cmd/seeds/seed.go -local=true -undo=true
+
+seed-undo-internal:
+	go run cmd/seeds/seed.go -undo=true
+
+
 jet-all-external jet-all:
 	@echo "Fetching schemas from database..."
 	@DB_URL="postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable"; \

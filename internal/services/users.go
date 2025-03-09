@@ -3,6 +3,7 @@ package services
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -21,6 +22,7 @@ type IUsersService interface {
 	Delete(id int64) error
 	UpdateAuthToken(id int64, authToken string) error
 	Login(email string, password string) (*string, error)
+	IsPermitted(userId int64, privilegeId int64) bool
 }
 
 type usersService struct {
@@ -53,8 +55,8 @@ func (us *usersService) GetByEmail(email string) (*model.Users, error) {
 
 func (us *usersService) Insert(row *model.Users) (int64, error) {
 	err := table.Users.
-		INSERT(table.Users.Email, table.Users.FirstName, table.Users.LastName, table.Users.Password, table.Users.AuthToken, table.Users.AuthTokenCreatedAt).
-		VALUES(row.Email, row.FirstName, row.LastName, row.Password, row.AuthToken, postgres.TimestampT(time.Now())).
+		INSERT(table.Users.Email, table.Users.FirstName, table.Users.LastName, table.Users.Password, table.Users.AuthToken, table.Users.AuthTokenCreatedAt, table.Users.PrivilegeLevelID).
+		VALUES(row.Email, row.FirstName, row.LastName, row.Password, row.AuthToken, postgres.TimestampT(time.Now()), row.PrivilegeLevelID).
 		RETURNING(table.Users.ID).
 		Query(us.db, row)
 
@@ -132,11 +134,35 @@ func (us *usersService) Login(email string, password string) (*string, error) {
 		return nil, errors.New("Invalid password")
 	}
 
-	authToken, _ := tools.GenerateSalt()
-	err = us.UpdateAuthToken(user.ID, authToken)
+	token, _ := tools.GenerateSalt()
+	fullToken := fmt.Sprintf("%s$%d", token, user.ID)
+	err = us.UpdateAuthToken(user.ID, fullToken)
 	if err != nil {
 		return nil, err
 	}
 
-	return &authToken, nil
+	return &fullToken, nil
+}
+
+type IsPermittedResponse struct {
+	PrivilegeID int64
+}
+
+func (us *usersService) IsPermitted(userId int64, privilegeId int64) bool {
+	var res IsPermittedResponse
+
+	err := table.Users.
+		LEFT_JOIN(table.PrivilegeLevels, table.PrivilegeLevels.ID.EQ(table.Users.PrivilegeLevelID)).
+		LEFT_JOIN(table.PrivilegeLevelsPrivileges, table.PrivilegeLevelsPrivileges.PrivilegeLevelID.EQ(table.PrivilegeLevels.ID)).
+		SELECT(table.PrivilegeLevelsPrivileges.PrivilegeID.AS("IsPermittedResponse.PrivilegeID")).
+		WHERE(table.PrivilegeLevelsPrivileges.PrivilegeID.EQ(postgres.Int(privilegeId)).
+			AND(table.Users.ID.EQ(postgres.Int(userId)))).
+		LIMIT(1).
+		Query(us.db, &res)
+
+	if err != nil {
+		return false
+	}
+
+	return res.PrivilegeID == privilegeId
 }

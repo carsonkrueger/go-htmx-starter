@@ -2,6 +2,7 @@ package public_routes
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
@@ -53,6 +54,7 @@ func (a *Auth) login(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tools.SetAuthCookie(res, authToken)
+	fmt.Println(*authToken)
 }
 
 func (a *Auth) signup(res http.ResponseWriter, req *http.Request) {
@@ -74,11 +76,12 @@ func (a *Auth) signup(res http.ResponseWriter, req *http.Request) {
 	authToken, _ := tools.GenerateSalt()
 	hash := tools.HashPassword(form.Get("password"), salt)
 	user := model.Users{
-		FirstName: form.Get("first_name"),
-		LastName:  form.Get("last_name"),
-		Email:     form.Get("email"),
-		Password:  hash,
-		AuthToken: &authToken,
+		FirstName:        form.Get("first_name"),
+		LastName:         form.Get("last_name"),
+		Email:            form.Get("email"),
+		Password:         hash,
+		AuthToken:        &authToken,
+		PrivilegeLevelID: 1000,
 	}
 
 	us := a.AppCtx.SM.UsersService
@@ -89,5 +92,5 @@ func (a *Auth) signup(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tools.SetAuthCookie(res, &authToken)
-	res.WriteHeader(http.StatusCreated)
+	res.Header().Set("HX-Redirect", "/home")
 }
