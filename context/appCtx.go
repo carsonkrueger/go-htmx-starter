@@ -10,36 +10,48 @@ import (
 	"go.uber.org/zap"
 )
 
-type AppContext struct {
-	Lgr *zap.Logger
-	SM  *services.ServiceManager
+type IAppContext interface {
+	Lgr() *zap.Logger
+	SM() services.IServiceManager
 }
 
-func NewAppContext(lgr *zap.Logger, sm *services.ServiceManager) *AppContext {
-	return &AppContext{
+type appContext struct {
+	lgr *zap.Logger
+	sm  services.IServiceManager
+}
+
+func NewAppContext(lgr *zap.Logger, sm services.IServiceManager) *appContext {
+	return &appContext{
 		lgr,
 		sm,
 	}
 }
 
-func (ctx *AppContext) CleanUp() {
-	if err := ctx.Lgr.Sync(); err != nil {
-		ctx.Lgr.Error("failed to sync logger", zap.Error(err))
+func (ctx *appContext) Lgr() *zap.Logger {
+	return ctx.lgr
+}
+
+func (ctx *appContext) SM() services.IServiceManager {
+	return ctx.sm
+}
+
+func (ctx *appContext) CleanUp() {
+	if err := ctx.lgr.Sync(); err != nil {
+		ctx.lgr.Error("failed to sync logger", zap.Error(err))
 	}
 }
 
 type SetAppContext interface {
-	SetAppCtx(ctx *AppContext)
+	SetAppCtx(ctx IAppContext)
 }
 
 type WithAppContext struct {
-	AppCtx *AppContext
+	AppCtx IAppContext
 }
 
-func (b *WithAppContext) SetAppCtx(ctx *AppContext) {
+func (b *WithAppContext) SetAppCtx(ctx IAppContext) {
 	b.AppCtx = ctx
 }
-
 
 func WithToken(ctx gctx.Context, token string) gctx.Context {
 	return context.WithValue(ctx, tools.AUTH_TOKEN_KEY, token)

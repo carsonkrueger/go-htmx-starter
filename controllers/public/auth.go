@@ -27,7 +27,7 @@ func (a *Auth) PublicRoute(r chi.Router) {
 }
 
 func (a *Auth) login(res http.ResponseWriter, req *http.Request) {
-	lgr := a.AppCtx.Lgr.With(zap.String("controller", "/auth/login"))
+	lgr := a.AppCtx.Lgr().With(zap.String("controller", "/auth/login"))
 
 	if err := req.ParseForm(); err != nil {
 		tools.RequestHttpError(lgr, res, 400, errors.New("Error parsing form"))
@@ -45,7 +45,7 @@ func (a *Auth) login(res http.ResponseWriter, req *http.Request) {
 	email := form.Get("email")
 	password := form.Get("password")
 
-	usersService := a.AppCtx.SM.UsersService
+	usersService := a.AppCtx.SM().UsersService()
 	authToken, err := usersService.Login(email, password)
 	if err != nil {
 		lgr.Info("Error logging in user", zap.Error(err))
@@ -58,7 +58,7 @@ func (a *Auth) login(res http.ResponseWriter, req *http.Request) {
 }
 
 func (a *Auth) signup(res http.ResponseWriter, req *http.Request) {
-	lgr := a.AppCtx.Lgr.With(zap.String("controller", "/signup/"))
+	lgr := a.AppCtx.Lgr().With(zap.String("controller", "/signup/"))
 
 	if err := req.ParseForm(); err != nil {
 		tools.RequestHttpError(lgr, res, 400, errors.New("Error parsing form"))
@@ -84,7 +84,7 @@ func (a *Auth) signup(res http.ResponseWriter, req *http.Request) {
 		PrivilegeLevelID: 1000,
 	}
 
-	us := a.AppCtx.SM.UsersService
+	us := a.AppCtx.SM().UsersService()
 	_, err := us.Insert(&user)
 	if err != nil {
 		tools.RequestHttpError(lgr, res, 500, err)

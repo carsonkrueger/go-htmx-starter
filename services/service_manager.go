@@ -4,12 +4,20 @@ import (
 	"database/sql"
 )
 
-type ServiceManager struct {
-	UsersService IUsersService
+type IServiceManager interface {
+	UsersService() IUsersService
 }
 
-func NewServiceManager(db *sql.DB) *ServiceManager {
-	return &ServiceManager{
-		UsersService: NewUsersService(db),
+type serviceManager struct {
+	usersService IUsersService
+}
+
+func NewServiceManager(db *sql.DB) *serviceManager {
+	return &serviceManager{
+		usersService: NewUsersService(db),
 	}
+}
+
+func (sm *serviceManager) UsersService() IUsersService {
+	return sm.usersService
 }

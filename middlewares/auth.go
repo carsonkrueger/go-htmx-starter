@@ -8,28 +8,28 @@ import (
 	"github.com/carsonkrueger/main/tools"
 )
 
-func EnforceAuth(appCtx *context.AppContext) func(next http.Handler) http.Handler {
+func EnforceAuth(appCtx context.IAppContext) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-			lgr := appCtx.Lgr
+			lgr := appCtx.Lgr()
 			ctx := req.Context()
 			cookie, err := tools.GetAuthCookie(req)
 			if err != nil {
-				tools.RequestHttpError(appCtx.Lgr, res, 403, errors.New("Not Authenticated"))
+				tools.RequestHttpError(appCtx.Lgr(), res, 403, errors.New("Not Authenticated"))
 				return
 			}
 
 			token, id, err := tools.GetAuthParts(cookie)
 			if err != nil {
 				req.Header.Del(tools.AUTH_TOKEN_KEY)
-				tools.RequestHttpError(appCtx.Lgr, res, 403, err)
+				tools.RequestHttpError(appCtx.Lgr(), res, 403, err)
 				return
 			}
 
 			context.WithToken(ctx, token)
 			context.WithUserId(ctx, id)
 
-			user, err := appCtx.SM.UsersService.Index(id)
+			user, err := appCtx.SM().UsersService().Index(id)
 
 			if err != nil {
 				req.Header.Del(tools.AUTH_TOKEN_KEY)

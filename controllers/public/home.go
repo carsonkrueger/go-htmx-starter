@@ -29,21 +29,21 @@ func (hw *Home) redirect_home(res http.ResponseWriter, req *http.Request) {
 }
 
 func (hw *Home) home(res http.ResponseWriter, req *http.Request) {
-	hw.AppCtx.Lgr.Info("Logging /home route")
+	hw.AppCtx.Lgr().Info("Logging /home route")
 	ctx := req.Context()
 	home := layouts.Main(pages.Home())
 	err := home.Render(ctx, res)
 	if err != nil {
-		tools.RequestHttpError(hw.AppCtx.Lgr, res, 500, err)
+		tools.RequestHttpError(hw.AppCtx.Lgr(), res, 500, err)
 	}
 }
 
 func (hw *Home) signup(res http.ResponseWriter, req *http.Request) {
-	hw.AppCtx.Lgr.Info("Logging /signup route")
+	hw.AppCtx.Lgr().Info("Logging /signup route")
 	ctx := req.Context()
 	home := layouts.Main(pages.HomeSignup())
 	err := home.Render(ctx, res)
 	if err != nil {
-		tools.RequestHttpError(hw.AppCtx.Lgr, res, 500, err)
+		tools.RequestHttpError(hw.AppCtx.Lgr(), res, 500, err)
 	}
 }
