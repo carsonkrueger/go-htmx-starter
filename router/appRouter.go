@@ -68,6 +68,6 @@ func (a *AppRouter) Start(cfg cfg.Config) error {
 	}
 
 	a.addr = fmt.Sprintf("%v:%v", cfg.Host, cfg.Port)
-	fmt.Printf("\nListening on %v\n", a.addr)
+	fmt.Printf("\nListening on http://%v\n", a.addr)
 	return http.ListenAndServe(a.addr, a.router)
 }

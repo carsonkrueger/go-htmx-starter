@@ -24,6 +24,12 @@ include_dir = [
     "services",
     "logger",
     "cfg",
+    "context",
+    "controllers",
+    "enums",
+    "gen",
+    "middlewares",
+    "router",
 ]
 include_ext = ["go", "templ", "html", "css"]
 include_file = []

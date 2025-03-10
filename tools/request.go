@@ -1,17 +1,19 @@
 package tools
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"strconv"
 	"strings"
 
+	"github.com/carsonkrueger/main/templates/datadisplay"
 	"go.uber.org/zap"
 )
 
 var AUTH_TOKEN_KEY string = "ghx_auth_token"
 
-func RequestHttpError(logger *zap.Logger, res http.ResponseWriter, code int, errs ...error) {
+func RequestHttpError(ctx context.Context, logger *zap.Logger, res http.ResponseWriter, code int, errs ...error) {
 	res.WriteHeader(code)
 	for _, e := range errs {
 		if code >= 500 {
@@ -19,8 +21,11 @@ func RequestHttpError(logger *zap.Logger, res http.ResponseWriter, code int, err
 			res.Write([]byte("An error occurred - Please try again later"))
 		} else {
 			logger.Info("Request error: ", zap.Int("status code", code), zap.Error(e))
-			res.Write([]byte(e.Error()))
 		}
+	}
+	if code < 500 {
+		content := datadisplay.Errors(errs...)
+		content.Render(ctx, res)
 	}
 }
 

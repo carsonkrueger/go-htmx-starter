@@ -15,14 +15,14 @@ func EnforceAuth(appCtx context.IAppContext) func(next http.Handler) http.Handle
 			ctx := req.Context()
 			cookie, err := tools.GetAuthCookie(req)
 			if err != nil {
-				tools.RequestHttpError(appCtx.Lgr(), res, 403, errors.New("Not Authenticated"))
+				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("Not Authenticated"))
 				return
 			}
 
 			token, id, err := tools.GetAuthParts(cookie)
 			if err != nil {
 				req.Header.Del(tools.AUTH_TOKEN_KEY)
-				tools.RequestHttpError(appCtx.Lgr(), res, 403, err)
+				tools.RequestHttpError(ctx, lgr, res, 403, err)
 				return
 			}
 
@@ -33,12 +33,12 @@ func EnforceAuth(appCtx context.IAppContext) func(next http.Handler) http.Handle
 
 			if err != nil {
 				req.Header.Del(tools.AUTH_TOKEN_KEY)
-				tools.RequestHttpError(lgr, res, 403, errors.New("Malformed auth token"))
+				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("Malformed auth token"))
 				return
 			}
 			if *user.AuthToken != cookie.Value {
 				req.Header.Del(tools.AUTH_TOKEN_KEY)
-				tools.RequestHttpError(lgr, res, 403, errors.New("Malformed auth token"))
+				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("Malformed auth token"))
 				return
 			}
 			next.ServeHTTP(res, req)

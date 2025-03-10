@@ -28,9 +28,10 @@ func (a *Auth) PublicRoute(r chi.Router) {
 
 func (a *Auth) login(res http.ResponseWriter, req *http.Request) {
 	lgr := a.AppCtx.Lgr().With(zap.String("controller", "/auth/login"))
+	ctx := req.Context()
 
 	if err := req.ParseForm(); err != nil {
-		tools.RequestHttpError(lgr, res, 400, errors.New("Error parsing form"))
+		tools.RequestHttpError(ctx, lgr, res, 400, errors.New("Error parsing form"))
 		return
 	}
 
@@ -38,7 +39,7 @@ func (a *Auth) login(res http.ResponseWriter, req *http.Request) {
 	errs := validate.ValidateLogin(form)
 
 	if len(errs) > 0 {
-		tools.RequestHttpError(lgr, res, 400, errs...)
+		tools.RequestHttpError(ctx, lgr, res, 422, errs...)
 		return
 	}
 
@@ -49,7 +50,7 @@ func (a *Auth) login(res http.ResponseWriter, req *http.Request) {
 	authToken, err := usersService.Login(email, password)
 	if err != nil {
 		lgr.Info("Error logging in user", zap.Error(err))
-		tools.RequestHttpError(lgr, res, 403, errors.New("Invalid username or password"))
+		tools.RequestHttpError(ctx, lgr, res, 422, errors.New("Invalid username or password"))
 		return
 	}
 
@@ -59,16 +60,17 @@ func (a *Auth) login(res http.ResponseWriter, req *http.Request) {
 
 func (a *Auth) signup(res http.ResponseWriter, req *http.Request) {
 	lgr := a.AppCtx.Lgr().With(zap.String("controller", "/signup/"))
+	ctx := req.Context()
 
 	if err := req.ParseForm(); err != nil {
-		tools.RequestHttpError(lgr, res, 400, errors.New("Error parsing form"))
+		tools.RequestHttpError(ctx, lgr, res, 400, errors.New("Error parsing form"))
 		return
 	}
 
 	form := req.Form
 	errs := validate.ValidateSignup(form)
 	if len(errs) > 0 {
-		tools.RequestHttpError(lgr, res, 400, errs...)
+		tools.RequestHttpError(ctx, lgr, res, 400, errs...)
 		return
 	}
 
@@ -87,7 +89,7 @@ func (a *Auth) signup(res http.ResponseWriter, req *http.Request) {
 	us := a.AppCtx.SM().UsersService()
 	_, err := us.Insert(&user)
 	if err != nil {
-		tools.RequestHttpError(lgr, res, 500, err)
+		tools.RequestHttpError(ctx, lgr, res, 500, err)
 		return
 	}
 

@@ -6,6 +6,8 @@ func PasswordAttrs(id string) templ.Attributes {
     	"type": "password",
     	"name":"password",
     	"required": true,
+     	"pattern": validate.PasswordValidator.Regex.String(),
+     	"hx-validate": true,
 	}
 }
 
@@ -15,6 +17,8 @@ func EmailAttrs(id string, required bool) templ.Attributes {
     	"type": "email",
     	"name":"email",
     	"required": required,
+    	"pattern": validate.EmailValidator.Regex.String(),
+     	"hx-validate": true,
     }
 }
 
@@ -24,6 +28,8 @@ func NameAttrs(id string, required bool) templ.Attributes {
     	"type": "text",
     	"name":id,
     	"required": required,
+    	"hx-validate": true,
+    	"pattern": validate.NameValidator.Regex.String(),
     }
 }
 

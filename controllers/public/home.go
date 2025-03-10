@@ -8,6 +8,7 @@ import (
 	"github.com/carsonkrueger/main/templates/pages"
 	"github.com/carsonkrueger/main/tools"
 	"github.com/go-chi/chi/v5"
+	"go.uber.org/zap"
 )
 
 type Home struct {
@@ -29,21 +30,21 @@ func (hw *Home) redirect_home(res http.ResponseWriter, req *http.Request) {
 }
 
 func (hw *Home) home(res http.ResponseWriter, req *http.Request) {
-	hw.AppCtx.Lgr().Info("Logging /home route")
+	lgr := hw.AppCtx.Lgr().With(zap.String("controller", "/home"))
 	ctx := req.Context()
 	home := layouts.Main(pages.Home())
 	err := home.Render(ctx, res)
 	if err != nil {
-		tools.RequestHttpError(hw.AppCtx.Lgr(), res, 500, err)
+		tools.RequestHttpError(ctx, lgr, res, 500, err)
 	}
 }
 
 func (hw *Home) signup(res http.ResponseWriter, req *http.Request) {
-	hw.AppCtx.Lgr().Info("Logging /signup route")
+	lgr := hw.AppCtx.Lgr().With(zap.String("controller", "/signup"))
 	ctx := req.Context()
 	home := layouts.Main(pages.HomeSignup())
 	err := home.Render(ctx, res)
 	if err != nil {
-		tools.RequestHttpError(hw.AppCtx.Lgr(), res, 500, err)
+		tools.RequestHttpError(ctx, lgr, res, 500, err)
 	}
 }
