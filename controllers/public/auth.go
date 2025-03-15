@@ -86,8 +86,8 @@ func (a *Auth) signup(res http.ResponseWriter, req *http.Request) {
 		PrivilegeLevelID: 1000,
 	}
 
-	us := a.AppCtx.SM().UsersService()
-	_, err := us.Insert(&user)
+	dao := a.AppCtx.DM().UsersDAO()
+	_, err := dao.Insert(&user)
 	if err != nil {
 		tools.RequestHttpError(ctx, lgr, res, 500, err)
 		return

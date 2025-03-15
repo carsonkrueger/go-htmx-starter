@@ -1,4 +1,4 @@
-# A Start Kit for Web Servers Using Go + HTMX
+# A Starter Kit for Web Servers Using Go + HTMX
 An easy way to get started with web servers using key features: Go, HTMX, and PostgreSQL.
 
 # Features
@@ -11,8 +11,8 @@ Go is a statically typed, compiled language designed at Google. It is a fast, ef
 - Hyperscript is a scripting language for doing front end web development. It is designed to make it very easy to respond to events and do simple DOM manipulation in code that is directly embedded on elements on a web page.
 - TailwindCSS is a utility-first CSS framework that provides a set of pre-built classes that you can use to style your web pages. It is a popular choice for building modern web applications.
 
-### Auth with JWT and Permissions
-- JWT (JSON Web Token) is a compact, URL-safe means of representing claims to be transferred between two parties. It is a popular choice for authentication and authorization in web applications.
+### Auth with Auth Tokens and Private Route Permissions
+- This project uses auth tokens in the request headers and verifies them by checking the token against the database stored in the `users` table.
 - Each router endpoint with permissions attached is protected by a permission check. Users without proper permissions will be unauthorized. Attaching a permission to the
 endpoint can be done using the `PrivateRouteBuilder`. See [HelloWorld](https://github.com/carsonkrueger/go-test/blob/main/internal/private_routes/hello_world2.go) private route for an example.
 
