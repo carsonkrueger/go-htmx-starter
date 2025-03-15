@@ -1,0 +1,43 @@
+package icons
+
+import (
+	"strings"
+
+	"github.com/carsonkrueger/main/models"
+)
+
+var sizeClassMap map[models.Size]string = map[models.Size]string{
+	models.XS: "size-3",
+	models.SM: "size-4",
+	models.MD: "size-5",
+	models.LG: "size-6",
+	models.XL: "size-7",
+}
+
+var fillClassMap map[models.Color]string = map[models.Color]string{
+	models.White: "fill-white",
+	models.Black: "fill-black",
+	models.Gray:  "fill-gray-500",
+	models.Blue:  "fill-blue-500",
+	models.Red:   "fill-red-500",
+	models.Yellow:"fill-yellow-500",
+}
+
+templ Icon(iconType models.IconType, size models.Size, color models.Color) {
+	{{
+		var template templ.Component
+		classes := []string{
+			sizeClassMap[size],
+			fillClassMap[color],
+		}
+		attrs := templ.Attributes{
+			"class": strings.Join(classes, " "),
+		}
+		switch iconType {
+		case models.X:
+			template = X(attrs)
+			break
+		}
+	}}
+	@template
+}

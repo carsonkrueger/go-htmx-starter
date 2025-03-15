@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/carsonkrueger/main/templates/datadisplay"
 	"go.uber.org/zap"
 )
 
@@ -22,10 +21,6 @@ func RequestHttpError(ctx context.Context, logger *zap.Logger, res http.Response
 		} else {
 			logger.Info("Request error: ", zap.Int("status code", code), zap.Error(e))
 		}
-	}
-	if code < 500 {
-		content := datadisplay.Errors(errs...)
-		content.Render(ctx, res)
 	}
 }
 
@@ -59,4 +54,8 @@ func GetAuthParts(cookie *http.Cookie) (string, int64, error) {
 		return "", 0, errors.New("Could not parse user ID")
 	}
 	return token, int64(id), err
+}
+
+func IsHxRequest(req *http.Request) bool {
+	return req.Header.Get("HX-Request") == "true"
 }

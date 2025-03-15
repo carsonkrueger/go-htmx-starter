@@ -1,5 +1,9 @@
 package datainput
 
+import (
+	"github.com/carsonkrueger/main/tools/validate"
+)
+
 func PasswordAttrs(id string) templ.Attributes {
 	return templ.Attributes{
 		"id":id,
@@ -15,10 +19,8 @@ func EmailAttrs(id string, required bool) templ.Attributes {
 	return templ.Attributes{
 		"id":id,
     	"type": "email",
-    	"name":"email",
+    	"name": "email",
     	"required": required,
-    	"pattern": validate.EmailValidator.Regex.String(),
-     	"hx-validate": true,
     }
 }
 

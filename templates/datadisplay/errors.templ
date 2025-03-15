@@ -1,9 +1,0 @@
-package datadisplay
-
-templ Errors(errs ...error) {
-	<div>
-		for _, e := range errs {
-			<p class="text-sm text-red-400 font-medium">{e.Error()}</p>
-		}
-	</div>
-}

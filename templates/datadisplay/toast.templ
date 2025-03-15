@@ -1,0 +1,70 @@
+package datadisplay
+
+import (
+	"fmt"
+
+	"github.com/carsonkrueger/main/models"
+	"github.com/carsonkrueger/main/templates/pageLayouts"
+	"github.com/carsonkrueger/main/templates/icons"
+)
+
+templ AddToast(variant models.NotificationVariant, template templ.Component, durationSeconds int) {
+	@toast(variant, durationSeconds) {
+		@template
+	}
+}
+
+templ AddTextToast(variant models.NotificationVariant, text string, durationSeconds int) {
+	@toast(variant, durationSeconds) {
+		{ text }
+	}
+}
+
+templ AddToastErrors(durationSeconds int, errs ...error) {
+	for _, e := range errs {
+		@toast(models.Error, durationSeconds) {
+			{ e.Error() }
+		}
+	}
+}
+
+templ toast(variant models.NotificationVariant, durationSeconds int) {
+	{{
+		class := ""
+		switch variant {
+		case models.Success:
+			class = "bg-green-400"
+			break
+		case models.Error:
+			class = "bg-red-400"
+			break
+		case models.Warning:
+			class = "bg-yellow-400"
+			break
+		case models.Info:
+			class = "bg-blue-400"
+			break
+		}
+
+		durationHyperscript := ""
+		if durationSeconds > 0 {
+			durationHyperscript = fmt.Sprintf("on load wait %ds then remove me then ", durationSeconds)
+		}
+	}}
+	<div
+		hx-swap-oob={"beforeend:#"+pageLayouts.GlobalToastID}
+	>
+		<div
+			class={"relative p-3 pr-7 text-sm text-white rounded-sm shadow-sm flex items-center cursor-default w-fit "+class}
+			_={durationHyperscript + " on click remove me"}
+		>
+			{children...}
+			<button
+				type="button"
+				class="cursor-pointer absolute right-2 self-center"
+			>
+				@icons.Icon(models.X, models.SM, models.White)
+			</button>
+		</div>
+	</div>
+}

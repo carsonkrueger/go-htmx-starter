@@ -1,0 +1,73 @@
+package public
+
+import (
+	"net/http"
+
+	"github.com/carsonkrueger/main/context"
+	"github.com/carsonkrueger/main/models"
+	"github.com/carsonkrueger/main/templates/datadisplay"
+	"github.com/carsonkrueger/main/templates/pageLayouts"
+	"github.com/carsonkrueger/main/templates/pages"
+	"github.com/carsonkrueger/main/tools"
+	"github.com/carsonkrueger/main/tools/validate"
+	"github.com/go-chi/chi/v5"
+	"go.uber.org/zap"
+)
+
+type Login struct {
+	context.WithAppContext
+}
+
+func (a *Login) Path() string {
+	return "/login"
+}
+
+func (a *Login) PublicRoute(r chi.Router) {
+	r.Get("/", a.getLogin)
+	r.Post("/", a.postLogin)
+}
+
+func (a *Login) postLogin(res http.ResponseWriter, req *http.Request) {
+	lgr := a.AppCtx.Lgr().With(zap.String("controller", "/auth/login"))
+	ctx := req.Context()
+
+	if err := req.ParseForm(); err != nil {
+		noti := datadisplay.AddTextToast(models.Error, "Error parsing form", 0)
+		noti.Render(ctx, res)
+		return
+	}
+
+	form := req.Form
+	errs := validate.ValidateLogin(form)
+
+	if len(errs) > 0 {
+		noti := datadisplay.AddToastErrors(0, errs...)
+		noti.Render(ctx, res)
+		return
+	}
+
+	email := form.Get("email")
+	password := form.Get("password")
+
+	usersService := a.AppCtx.SM().UsersService()
+	authToken, err := usersService.Login(email, password)
+	if err != nil {
+		lgr.Info("Error logging in user", zap.Error(err))
+		noti := datadisplay.AddTextToast(models.Error, "Invalid username or password", 5)
+		noti.Render(ctx, res)
+		return
+	}
+
+	tools.SetAuthCookie(res, authToken)
+}
+
+func (hw *Login) getLogin(res http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	hxRequest := tools.IsHxRequest(req)
+	page := pageLayouts.MainPageLayout(pages.Login())
+	// If not hx request then user just arrived. Give them the index.html
+	if !hxRequest {
+		page = pageLayouts.Index(page)
+	}
+	page.Render(ctx, res)
+}

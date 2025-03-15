@@ -4,11 +4,10 @@ import (
 	"net/http"
 
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/templates/layouts"
+	"github.com/carsonkrueger/main/templates/pageLayouts"
 	"github.com/carsonkrueger/main/templates/pages"
 	"github.com/carsonkrueger/main/tools"
 	"github.com/go-chi/chi/v5"
-	"go.uber.org/zap"
 )
 
 type Home struct {
@@ -22,7 +21,6 @@ func (r *Home) Path() string {
 func (hw *Home) PublicRoute(r chi.Router) {
 	r.Get("/", hw.redirect_home)
 	r.Get("/home", hw.home)
-	r.Get("/signup", hw.signup)
 }
 
 func (hw *Home) redirect_home(res http.ResponseWriter, req *http.Request) {
@@ -30,21 +28,12 @@ func (hw *Home) redirect_home(res http.ResponseWriter, req *http.Request) {
 }
 
 func (hw *Home) home(res http.ResponseWriter, req *http.Request) {
-	lgr := hw.AppCtx.Lgr().With(zap.String("controller", "/home"))
 	ctx := req.Context()
-	home := layouts.Main(pages.Home())
-	err := home.Render(ctx, res)
-	if err != nil {
-		tools.RequestHttpError(ctx, lgr, res, 500, err)
+	hxRequest := tools.IsHxRequest(req)
+	page := pageLayouts.MainPageLayout(pages.Home())
+	// If not hx request then user just arrived. Give them the index.html
+	if !hxRequest {
+		page = pageLayouts.Index(page)
 	}
-}
-
-func (hw *Home) signup(res http.ResponseWriter, req *http.Request) {
-	lgr := hw.AppCtx.Lgr().With(zap.String("controller", "/signup"))
-	ctx := req.Context()
-	home := layouts.Main(pages.HomeSignup())
-	err := home.Render(ctx, res)
-	if err != nil {
-		tools.RequestHttpError(ctx, lgr, res, 500, err)
-	}
+	page.Render(ctx, res)
 }

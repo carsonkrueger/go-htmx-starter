@@ -11,7 +11,7 @@ type Validator struct {
 	Message string
 }
 
-func validate(validatorMap map[string]*Validator, form url.Values, keys ...string) []error {
+func validateForm(validatorMap map[string]*Validator, form url.Values, keys ...string) []error {
 	errs := make([]error, 0)
 	for _, key := range keys {
 		if validator, ok := validatorMap[key]; ok {

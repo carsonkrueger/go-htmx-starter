@@ -1,0 +1,51 @@
+package pages
+
+import (
+	"github.com/carsonkrueger/main/templates/datainput"
+	"github.com/carsonkrueger/main/templates/partialLayouts"
+	"github.com/carsonkrueger/main/templates/pageLayouts"
+)
+
+templ Login() {
+	@partialLayouts.CenteredLayout() {
+		<div class="p-4 max-w-96 w-full">
+			<h2 class="text-2xl font-bold text-center text-secondary mb-10">Login</h2>
+
+			<form
+		    	hx-post="/login"
+				hx-target-422="#response"
+				hx-swap="none"
+			    class="space-y-4"
+			>
+				<div>
+			    	<label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+					@datainput.Input(datainput.EmailAttrs("email", true))
+				</div>
+				<div>
+			    	<label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+					@datainput.Input(datainput.PasswordAttrs("password"))
+				</div>
+
+				<div class="flex justify-between items-center">
+					<button
+						type="submit"
+						class="px-3 py-2 bg-primary text-white font-bold py-2 rounded-sm transition cursor-pointer"
+					>
+						Login
+					</button>
+					<button
+						type="button"
+						class="px-3 py-2 border-[1px] border-primary text-primary font-bold py-2 rounded-sm transition cursor-pointer"
+						hx-get="/signup"
+						hx-target={ "#"+pageLayouts.MainContentID }
+						hx-swap="innerHTML"
+						hx-push-url="true"
+					>
+						Sign Up
+					</button>
+				</div>
+			</form>
+			<div id="response" />
+		</div>
+	}
+}
