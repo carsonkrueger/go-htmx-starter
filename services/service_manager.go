@@ -2,6 +2,8 @@ package services
 
 import (
 	"database/sql"
+
+	"github.com/carsonkrueger/main/database"
 )
 
 type IServiceManager interface {
@@ -12,9 +14,9 @@ type serviceManager struct {
 	usersService IUsersService
 }
 
-func NewServiceManager(db *sql.DB) *serviceManager {
+func NewServiceManager(dm database.IDAOManager, db *sql.DB) *serviceManager {
 	return &serviceManager{
-		usersService: NewUsersService(db),
+		usersService: NewUsersService(dm, db),
 	}
 }
 

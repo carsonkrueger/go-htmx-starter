@@ -5,6 +5,7 @@ import (
 
 	"github.com/carsonkrueger/main/cfg"
 	"github.com/carsonkrueger/main/context"
+	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/logger"
 	"github.com/carsonkrueger/main/router"
 	"github.com/carsonkrueger/main/services"
@@ -24,9 +25,10 @@ func main() {
 	if db == nil {
 		panic("Database connection is nil")
 	}
-	sm := services.NewServiceManager(db)
+	dm := database.NewDAOManager(db)
+	sm := services.NewServiceManager(dm, db)
 
-	ctx := context.NewAppContext(lgr, sm)
+	ctx := context.NewAppContext(lgr, sm, dm)
 	defer ctx.CleanUp()
 
 	appRouter := router.Setup()

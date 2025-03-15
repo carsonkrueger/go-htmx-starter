@@ -4,6 +4,7 @@ import (
 	"context"
 	gctx "context"
 
+	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/services"
 	"github.com/carsonkrueger/main/tools"
 	_ "github.com/lib/pq"
@@ -13,17 +14,20 @@ import (
 type IAppContext interface {
 	Lgr() *zap.Logger
 	SM() services.IServiceManager
+	DM() database.IDAOManager
 }
 
 type appContext struct {
 	lgr *zap.Logger
 	sm  services.IServiceManager
+	dm  database.IDAOManager
 }
 
-func NewAppContext(lgr *zap.Logger, sm services.IServiceManager) *appContext {
+func NewAppContext(lgr *zap.Logger, sm services.IServiceManager, dm database.IDAOManager) *appContext {
 	return &appContext{
 		lgr,
 		sm,
+		dm,
 	}
 }
 
@@ -33,6 +37,10 @@ func (ctx *appContext) Lgr() *zap.Logger {
 
 func (ctx *appContext) SM() services.IServiceManager {
 	return ctx.sm
+}
+
+func (ctx *appContext) DM() database.IDAOManager {
+	return ctx.dm
 }
 
 func (ctx *appContext) CleanUp() {
