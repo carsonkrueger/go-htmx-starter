@@ -18,21 +18,21 @@ import (
 )
 
 type AppRouter struct {
-	public  []builders.AppPublicRoute
-	private []builders.AppPrivateRoute
+	public  []builders.IAppPublicRoute
+	private []builders.IAppPrivateRoute
 	addr    string
 	router  chi.Router
 }
 
 func Setup() AppRouter {
 	return AppRouter{
-		public: []builders.AppPublicRoute{
+		public: []builders.IAppPublicRoute{
 			&public.Home{},
 			&public.Login{},
 			&public.SignUp{},
 			&public.WebPublic{},
 		},
-		private: []builders.AppPrivateRoute{
+		private: []builders.IAppPrivateRoute{
 			&private.UserManagement{},
 		},
 	}
