@@ -1,12 +1,20 @@
-package controllers
+package builders
 
 import (
 	"net/http"
 
-	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
+	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/middlewares"
 	"github.com/go-chi/chi/v5"
+)
+
+type RouteMethod string
+
+const (
+	GET    RouteMethod = "GET"
+	POST   RouteMethod = "POST"
+	PUT    RouteMethod = "PUT"
+	DELETE RouteMethod = "DELETE"
 )
 
 type RoutePath interface {
@@ -18,7 +26,7 @@ type PublicRoute interface {
 }
 
 type AppPublicRoute interface {
-	context.SetAppContext
+	interfaces.ISetAppContext
 	RoutePath
 	PublicRoute
 }
@@ -28,17 +36,27 @@ type PrivateRoute interface {
 }
 
 type AppPrivateRoute interface {
-	context.SetAppContext
+	interfaces.ISetAppContext
 	RoutePath
 	PrivateRoute
 }
 
 type PrivateRouteBuilder struct {
 	router chi.Router
-	appCtx context.IAppContext
+	appCtx interfaces.IAppContext
 }
 
-func NewPrivateRouteBuilder(appCtx context.IAppContext) PrivateRouteBuilder {
+type privateMethodBuilder struct {
+	appCtx         interfaces.IAppContext
+	router         chi.Router
+	mw             []func(next http.Handler) http.Handler
+	method         RouteMethod
+	pattern        string
+	handle         http.HandlerFunc
+	permissionName *string
+}
+
+func NewPrivateRouteBuilder(appCtx interfaces.IAppContext) PrivateRouteBuilder {
 	return PrivateRouteBuilder{
 		router: chi.NewRouter(),
 		appCtx: appCtx,
@@ -56,25 +74,15 @@ func (mb *PrivateRouteBuilder) Build() chi.Router {
 	return mb.router
 }
 
-type privateMethodBuilder struct {
-	appCtx     context.IAppContext
-	router     chi.Router
-	mw         []func(next http.Handler) http.Handler
-	method     string
-	pattern    string
-	handle     http.HandlerFunc
-	permission *model.Privileges
-}
-
-func (mb *privateMethodBuilder) RegisterRoute(method string, pattern string, handle http.HandlerFunc) *privateMethodBuilder {
+func (mb *privateMethodBuilder) RegisterRoute(method RouteMethod, pattern string, handle http.HandlerFunc) *privateMethodBuilder {
 	mb.method = method
 	mb.pattern = pattern
 	mb.handle = handle
 	return mb
 }
 
-func (mb *privateMethodBuilder) SetPermission(permission *model.Privileges) *privateMethodBuilder {
-	mb.permission = permission
+func (mb *privateMethodBuilder) SetPermissionName(name string) *privateMethodBuilder {
+	mb.permissionName = &name
 	return mb
 }
 
@@ -85,11 +93,11 @@ func (mb *privateMethodBuilder) SetMiddlewares(middlewares ...func(next http.Han
 
 func (mb *privateMethodBuilder) Build() {
 	var r chi.Router
-	if mb.permission != nil {
-		r = mb.router.With(middlewares.ApplyPermission(mb.permission, mb.appCtx))
+	if mb.permissionName != nil {
+		r = mb.router.With(middlewares.ApplyPermission(*mb.permissionName, mb.appCtx))
 	}
 	if len(mb.mw) > 0 {
 		r = r.With(mb.mw...)
 	}
-	r.MethodFunc(mb.method, mb.pattern, mb.handle)
+	r.MethodFunc(string(mb.method), mb.pattern, mb.handle)
 }

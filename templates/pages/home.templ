@@ -2,11 +2,20 @@ package pages
 
 
 import (
+	"github.com/carsonkrueger/main/templates/pageLayouts"
 	"github.com/carsonkrueger/main/templates/partialLayouts"
 )
 
 templ Home() {
 	@partialLayouts.CenteredLayout() {
 		home
+		<button
+			hx-get="/login"
+			hx-target={ "#"+pageLayouts.MainContentID }
+			hx-swap="innerHTML"
+			hx-push-url="/login"
+		>
+				Login
+		</button>
 	}
 }

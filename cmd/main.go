@@ -7,6 +7,7 @@ import (
 	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/logger"
+	"github.com/carsonkrueger/main/permissions"
 	"github.com/carsonkrueger/main/router"
 	"github.com/carsonkrueger/main/services"
 
@@ -25,14 +26,17 @@ func main() {
 	if db == nil {
 		panic("Database connection is nil")
 	}
+	pc := permissions.NewPermissionCache()
 	dm := database.NewDAOManager(db)
-	sm := services.NewServiceManager(dm, db)
 
-	ctx := context.NewAppContext(lgr, sm, dm)
-	defer ctx.CleanUp()
+	svcCtx := context.NewServiceContext(lgr, dm, pc)
+	sm := services.NewServiceManager(svcCtx)
+
+	appCtx := context.NewAppContext(lgr, sm, dm, pc)
+	defer appCtx.CleanUp()
 
 	appRouter := router.Setup()
-	appRouter.BuildRouter(ctx)
+	appRouter.BuildRouter(appCtx)
 	err = appRouter.Start(cfg)
 
 	if err != nil {

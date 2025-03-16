@@ -13,9 +13,11 @@ templ Login() {
 
 			<form
 		    	hx-post="/login"
+				hx-target={ "#"+pageLayouts.MainContentID }
 				hx-target-422="#response"
-				hx-swap="none"
+				hx-swap="innerHTML"
 			    class="space-y-4"
+				hx-push-url="/helloworld"
 			>
 				<div>
 			    	<label for="email" class="block text-sm font-medium text-gray-700">Email</label>

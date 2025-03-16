@@ -1,11 +1,11 @@
 package router
 
 import (
+	"github.com/carsonkrueger/main/builders"
 	"github.com/carsonkrueger/main/cfg"
-	"github.com/carsonkrueger/main/context"
-	routes "github.com/carsonkrueger/main/controllers"
 	"github.com/carsonkrueger/main/controllers/private"
 	"github.com/carsonkrueger/main/controllers/public"
+	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/middlewares"
 
 	"errors"
@@ -18,27 +18,27 @@ import (
 )
 
 type AppRouter struct {
-	public  []routes.AppPublicRoute
-	private []routes.AppPrivateRoute
+	public  []builders.AppPublicRoute
+	private []builders.AppPrivateRoute
 	addr    string
 	router  chi.Router
 }
 
 func Setup() AppRouter {
 	return AppRouter{
-		public: []routes.AppPublicRoute{
+		public: []builders.AppPublicRoute{
 			&public.Home{},
 			&public.Login{},
 			&public.SignUp{},
 			&public.WebPublic{},
 		},
-		private: []routes.AppPrivateRoute{
-			&private.HelloWorld{},
+		private: []builders.AppPrivateRoute{
+			&private.UserManagement{},
 		},
 	}
 }
 
-func (a *AppRouter) BuildRouter(ctx context.IAppContext) {
+func (a *AppRouter) BuildRouter(ctx interfaces.IAppContext) {
 	a.router = chi.NewRouter()
 
 	// fmt.Println("Creating public routes:")
@@ -56,7 +56,7 @@ func (a *AppRouter) BuildRouter(ctx context.IAppContext) {
 	// fmt.Println("\nCreating private routes:")
 	for _, r := range a.private {
 		r.SetAppCtx(ctx)
-		builder := routes.NewPrivateRouteBuilder(ctx)
+		builder := builders.NewPrivateRouteBuilder(ctx)
 		r.PrivateRoute(&builder)
 		a.router.Mount(r.Path(), builder.Build())
 		// fmt.Printf("\t%v\n", r.Path())

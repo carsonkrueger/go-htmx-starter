@@ -5,13 +5,17 @@ import (
 	"os"
 	"path"
 
-	"github.com/carsonkrueger/main/context"
+	"github.com/carsonkrueger/main/interfaces"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )
 
 type WebPublic struct {
-	context.WithAppContext
+	interfaces.IAppContext
+}
+
+func (w *WebPublic) SetAppCtx(ctx interfaces.IAppContext) {
+	w.IAppContext = ctx
 }
 
 func (wp *WebPublic) Path() string {
@@ -23,7 +27,7 @@ func (wp *WebPublic) PublicRoute(r chi.Router) {
 }
 
 func (wp *WebPublic) ServePublicDir() http.Handler {
-	lgr := wp.AppCtx.Lgr().With(zap.String("controller", "GET /public"))
+	lgr := wp.Lgr().With(zap.String("controller", "GET /public"))
 	lgr.Info("Initialized WebPublic")
 	wd, err := os.Getwd()
 	if err != nil {

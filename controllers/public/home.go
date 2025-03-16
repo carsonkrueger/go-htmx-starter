@@ -3,7 +3,7 @@ package public
 import (
 	"net/http"
 
-	"github.com/carsonkrueger/main/context"
+	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/templates/pageLayouts"
 	"github.com/carsonkrueger/main/templates/pages"
 	"github.com/carsonkrueger/main/tools"
@@ -11,7 +11,11 @@ import (
 )
 
 type Home struct {
-	context.WithAppContext
+	interfaces.IAppContext
+}
+
+func (h *Home) SetAppCtx(ctx interfaces.IAppContext) {
+	h.IAppContext = ctx
 }
 
 func (r *Home) Path() string {

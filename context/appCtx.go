@@ -4,30 +4,25 @@ import (
 	"context"
 	gctx "context"
 
-	"github.com/carsonkrueger/main/database"
-	"github.com/carsonkrueger/main/services"
+	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/tools"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
-type IAppContext interface {
-	Lgr() *zap.Logger
-	SM() services.IServiceManager
-	DM() database.IDAOManager
-}
-
 type appContext struct {
 	lgr *zap.Logger
-	sm  services.IServiceManager
-	dm  database.IDAOManager
+	sm  interfaces.IServiceManager
+	dm  interfaces.IDAOManager
+	pc  interfaces.IPermissionCache
 }
 
-func NewAppContext(lgr *zap.Logger, sm services.IServiceManager, dm database.IDAOManager) *appContext {
+func NewAppContext(lgr *zap.Logger, sm interfaces.IServiceManager, dm interfaces.IDAOManager, pc interfaces.IPermissionCache) *appContext {
 	return &appContext{
 		lgr,
 		sm,
 		dm,
+		pc,
 	}
 }
 
@@ -35,30 +30,22 @@ func (ctx *appContext) Lgr() *zap.Logger {
 	return ctx.lgr
 }
 
-func (ctx *appContext) SM() services.IServiceManager {
+func (ctx *appContext) SM() interfaces.IServiceManager {
 	return ctx.sm
 }
 
-func (ctx *appContext) DM() database.IDAOManager {
+func (ctx *appContext) DM() interfaces.IDAOManager {
 	return ctx.dm
+}
+
+func (ctx *appContext) PC() interfaces.IPermissionCache {
+	return ctx.pc
 }
 
 func (ctx *appContext) CleanUp() {
 	if err := ctx.lgr.Sync(); err != nil {
 		ctx.lgr.Error("failed to sync logger", zap.Error(err))
 	}
-}
-
-type SetAppContext interface {
-	SetAppCtx(ctx IAppContext)
-}
-
-type WithAppContext struct {
-	AppCtx IAppContext
-}
-
-func (b *WithAppContext) SetAppCtx(ctx IAppContext) {
-	b.AppCtx = ctx
 }
 
 func WithToken(ctx gctx.Context, token string) gctx.Context {

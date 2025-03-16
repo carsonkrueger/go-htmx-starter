@@ -3,8 +3,8 @@ package public
 import (
 	"net/http"
 
-	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
+	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/pageLayouts"
@@ -16,7 +16,11 @@ import (
 )
 
 type SignUp struct {
-	context.WithAppContext
+	interfaces.IAppContext
+}
+
+func (s *SignUp) SetAppCtx(ctx interfaces.IAppContext) {
+	s.IAppContext = ctx
 }
 
 func (s *SignUp) Path() string {
@@ -29,7 +33,7 @@ func (s *SignUp) PublicRoute(r chi.Router) {
 }
 
 func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
-	lgr := s.AppCtx.Lgr().With(zap.String("controller", "POST /signup"))
+	lgr := s.Lgr().With(zap.String("controller", "POST /signup"))
 	lgr.Info("Controller called")
 	ctx := req.Context()
 
@@ -63,7 +67,7 @@ func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
 		PrivilegeLevelID: 1000,
 	}
 
-	dao := s.AppCtx.DM().UsersDAO()
+	dao := s.DM().UsersDAO()
 	_, err := dao.Insert(&user)
 	if err != nil {
 		lgr.Warn("Could not insert user", zap.Error(err))
@@ -85,7 +89,7 @@ func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
 }
 
 func (s *SignUp) getSignup(res http.ResponseWriter, req *http.Request) {
-	lgr := s.AppCtx.Lgr().With(zap.String("controller", "GET /signup"))
+	lgr := s.Lgr().With(zap.String("controller", "GET /signup"))
 	lgr.Info("Controller called")
 	ctx := req.Context()
 	hxRequest := tools.IsHxRequest(req)

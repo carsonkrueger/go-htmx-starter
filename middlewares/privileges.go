@@ -5,34 +5,43 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
+	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/tools"
 )
 
-func ApplyPermission(p *model.Privileges, appCtx context.IAppContext) func(next http.Handler) http.Handler {
+func ApplyPermission(permissionName string, appCtx interfaces.IAppContext) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
+		cache := appCtx.PC()
+		uDAO := appCtx.DM().UsersDAO()
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			lgr := appCtx.Lgr()
 			ctx := req.Context()
-			lgr.Info(fmt.Sprintf("Permission Auth: %+v", p))
+			lgr.Info(fmt.Sprintf("Permission Auth: %+v", permissionName))
+
+			deniedErr := errors.New("Permission denied")
+
 			cookie, err := tools.GetAuthCookie(req)
 			if err != nil {
-				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("invalid cookie"))
+				tools.RequestHttpError(ctx, lgr, res, 403, deniedErr)
 				return
 			}
 
-			_, id, err := tools.GetAuthParts(cookie)
+			token, id, err := tools.GetAuthParts(cookie)
 			if err != nil {
-				tools.RequestHttpError(ctx, lgr, res, 403, err)
+				tools.RequestHttpError(ctx, lgr, res, 403, deniedErr)
 				return
 			}
 			lgr.Info(fmt.Sprintf("User id: %d", id))
 
-			us := appCtx.SM().UsersService()
-			permitted := us.IsPermitted(id, p.ID)
+			levelID, err := uDAO.GetPrivilegeLevelID(id, token)
+			if err != nil {
+				tools.RequestHttpError(ctx, lgr, res, 403, deniedErr)
+				return
+			}
+
+			permitted := cache.HasPermissionByName(levelID, permissionName)
 			if !permitted {
-				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("permission denied"))
+				tools.RequestHttpError(ctx, lgr, res, 403, deniedErr)
 				return
 			}
 

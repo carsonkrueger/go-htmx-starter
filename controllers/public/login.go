@@ -3,7 +3,7 @@ package public
 import (
 	"net/http"
 
-	"github.com/carsonkrueger/main/context"
+	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/pageLayouts"
@@ -15,7 +15,11 @@ import (
 )
 
 type Login struct {
-	context.WithAppContext
+	interfaces.IAppContext
+}
+
+func (l *Login) SetAppCtx(ctx interfaces.IAppContext) {
+	l.IAppContext = ctx
 }
 
 func (l *Login) Path() string {
@@ -28,7 +32,7 @@ func (l *Login) PublicRoute(r chi.Router) {
 }
 
 func (l *Login) postLogin(res http.ResponseWriter, req *http.Request) {
-	lgr := l.AppCtx.Lgr().With(zap.String("controller", "POST /login"))
+	lgr := l.Lgr().With(zap.String("controller", "POST /login"))
 	lgr.Info("Controller Called")
 	ctx := req.Context()
 
@@ -54,7 +58,7 @@ func (l *Login) postLogin(res http.ResponseWriter, req *http.Request) {
 	email := form.Get("email")
 	password := form.Get("password")
 
-	usersService := l.AppCtx.SM().UsersService()
+	usersService := l.SM().UsersService()
 	authToken, err := usersService.Login(email, password)
 	if err != nil {
 		lgr.Warn("Could not login", zap.Error(err))
@@ -68,7 +72,7 @@ func (l *Login) postLogin(res http.ResponseWriter, req *http.Request) {
 }
 
 func (l *Login) getLogin(res http.ResponseWriter, req *http.Request) {
-	lgr := l.AppCtx.Lgr().With(zap.String("controller", "GET /login"))
+	lgr := l.Lgr().With(zap.String("controller", "GET /login"))
 	lgr.Info("Controller Called")
 	ctx := req.Context()
 	hxRequest := tools.IsHxRequest(req)

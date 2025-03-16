@@ -5,10 +5,11 @@ import (
 	"net/http"
 
 	"github.com/carsonkrueger/main/context"
+	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/tools"
 )
 
-func EnforceAuth(appCtx context.IAppContext) func(next http.Handler) http.Handler {
+func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			lgr := appCtx.Lgr()
