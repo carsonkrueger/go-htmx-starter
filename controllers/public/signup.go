@@ -12,6 +12,7 @@ import (
 	"github.com/carsonkrueger/main/tools"
 	"github.com/carsonkrueger/main/tools/validate"
 	"github.com/go-chi/chi/v5"
+	"go.uber.org/zap"
 )
 
 type SignUp struct {
@@ -28,10 +29,13 @@ func (s *SignUp) PublicRoute(r chi.Router) {
 }
 
 func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
-	// lgr := s.AppCtx.Lgr().With(zap.String("controller", "/auth/signup"))
+	lgr := s.AppCtx.Lgr().With(zap.String("controller", "POST /signup"))
+	lgr.Info("Controller called")
 	ctx := req.Context()
 
 	if err := req.ParseForm(); err != nil {
+		lgr.Error("Could not parse form", zap.Error(err))
+		res.WriteHeader(422)
 		noti := datadisplay.AddTextToast(models.Error, "Error parsing form", 0)
 		noti.Render(ctx, res)
 		return
@@ -40,6 +44,8 @@ func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
 	form := req.Form
 	errs := validate.ValidateSignup(form)
 	if len(errs) > 0 {
+		lgr.Warn("Validation errors", zap.Errors("Signup Form", errs))
+		res.WriteHeader(422)
 		noti := datadisplay.AddToastErrors(0, errs...)
 		noti.Render(ctx, res)
 		return
@@ -60,8 +66,9 @@ func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
 	dao := s.AppCtx.DM().UsersDAO()
 	_, err := dao.Insert(&user)
 	if err != nil {
+		lgr.Warn("Could not insert user", zap.Error(err))
 		res.WriteHeader(422)
-		noti := datadisplay.AddToastErrors(0, err)
+		noti := datadisplay.AddTextToast(models.Warning, "Email taken", 0)
 		noti.Render(ctx, res)
 		return
 	}
@@ -78,6 +85,8 @@ func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
 }
 
 func (s *SignUp) getSignup(res http.ResponseWriter, req *http.Request) {
+	lgr := s.AppCtx.Lgr().With(zap.String("controller", "GET /signup"))
+	lgr.Info("Controller called")
 	ctx := req.Context()
 	hxRequest := tools.IsHxRequest(req)
 	page := pages.Signup()

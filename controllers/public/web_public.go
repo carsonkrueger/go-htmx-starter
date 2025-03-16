@@ -7,26 +7,29 @@ import (
 
 	"github.com/carsonkrueger/main/context"
 	"github.com/go-chi/chi/v5"
+	"go.uber.org/zap"
 )
 
 type WebPublic struct {
 	context.WithAppContext
 }
 
-func (w *WebPublic) Path() string {
+func (wp *WebPublic) Path() string {
 	return "/public"
 }
 
-func (w *WebPublic) PublicRoute(r chi.Router) {
-	r.Handle("/*", w.ServePublicDir())
-}
-
-func (w *WebPublic) ServePublicDir() http.Handler {
+func (wp *WebPublic) PublicRoute(r chi.Router) {
 	wd, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
-	dir_path := path.Join(wd, w.Path())
+	r.Handle("/*", wp.ServePublicDir(wd))
+}
+
+func (wp *WebPublic) ServePublicDir(wd string) http.Handler {
+	lgr := wp.AppCtx.Lgr().With(zap.String("controller", "GET /public"))
+	lgr.Info("Initialized WebPublic")
+	dir_path := path.Join(wd, wp.Path())
 	handler := http.FileServer(http.Dir(dir_path))
-	return http.StripPrefix(w.Path(), handler)
+	return http.StripPrefix(wp.Path(), handler)
 }

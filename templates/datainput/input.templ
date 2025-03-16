@@ -18,9 +18,11 @@ func PasswordAttrs(id string) templ.Attributes {
 func EmailAttrs(id string, required bool) templ.Attributes {
 	return templ.Attributes{
 		"id":id,
-    	"type": "email",
+    	"type": "text",
     	"name": "email",
     	"required": required,
+    	"hx-validate": true,
+    	"pattern": validate.EmailValidator.Regex.String(),
     }
 }
 

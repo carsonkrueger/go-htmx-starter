@@ -18,20 +18,23 @@ type Login struct {
 	context.WithAppContext
 }
 
-func (a *Login) Path() string {
+func (l *Login) Path() string {
 	return "/login"
 }
 
-func (a *Login) PublicRoute(r chi.Router) {
-	r.Get("/", a.getLogin)
-	r.Post("/", a.postLogin)
+func (l *Login) PublicRoute(r chi.Router) {
+	r.Get("/", l.getLogin)
+	r.Post("/", l.postLogin)
 }
 
-func (a *Login) postLogin(res http.ResponseWriter, req *http.Request) {
-	lgr := a.AppCtx.Lgr().With(zap.String("controller", "/auth/login"))
+func (l *Login) postLogin(res http.ResponseWriter, req *http.Request) {
+	lgr := l.AppCtx.Lgr().With(zap.String("controller", "POST /login"))
+	lgr.Info("Controller Called")
 	ctx := req.Context()
 
 	if err := req.ParseForm(); err != nil {
+		lgr.Error("Could not parse form", zap.Error(err))
+		res.WriteHeader(422)
 		noti := datadisplay.AddTextToast(models.Error, "Error parsing form", 0)
 		noti.Render(ctx, res)
 		return
@@ -41,6 +44,8 @@ func (a *Login) postLogin(res http.ResponseWriter, req *http.Request) {
 	errs := validate.ValidateLogin(form)
 
 	if len(errs) > 0 {
+		lgr.Warn("Validation errors", zap.Errors("Login Form", errs))
+		res.WriteHeader(422)
 		noti := datadisplay.AddToastErrors(0, errs...)
 		noti.Render(ctx, res)
 		return
@@ -49,10 +54,11 @@ func (a *Login) postLogin(res http.ResponseWriter, req *http.Request) {
 	email := form.Get("email")
 	password := form.Get("password")
 
-	usersService := a.AppCtx.SM().UsersService()
+	usersService := l.AppCtx.SM().UsersService()
 	authToken, err := usersService.Login(email, password)
 	if err != nil {
-		lgr.Info("Error logging in user", zap.Error(err))
+		lgr.Warn("Could not login", zap.Error(err))
+		res.WriteHeader(422)
 		noti := datadisplay.AddTextToast(models.Error, "Invalid username or password", 5)
 		noti.Render(ctx, res)
 		return
@@ -61,7 +67,9 @@ func (a *Login) postLogin(res http.ResponseWriter, req *http.Request) {
 	tools.SetAuthCookie(res, authToken)
 }
 
-func (hw *Login) getLogin(res http.ResponseWriter, req *http.Request) {
+func (l *Login) getLogin(res http.ResponseWriter, req *http.Request) {
+	lgr := l.AppCtx.Lgr().With(zap.String("controller", "GET /login"))
+	lgr.Info("Controller Called")
 	ctx := req.Context()
 	hxRequest := tools.IsHxRequest(req)
 	page := pageLayouts.MainPageLayout(pages.Login())

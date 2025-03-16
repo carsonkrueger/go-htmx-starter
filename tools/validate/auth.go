@@ -5,7 +5,7 @@ import (
 	"regexp"
 )
 
-var Name = regexp.MustCompile("^[a-zA-Z'-]{1,49}$")
+var Name = regexp.MustCompile(`^[a-zA-Z'\-]{1,49}$`)
 var FirstNameValidator = Validator{
 	Regex:   Name,
 	Message: "Invalid first name",
@@ -19,12 +19,12 @@ var NameValidator = Validator{
 	Message: "Invalid name",
 }
 var EmailValidator = Validator{
-	Regex:   regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`),
+	Regex:   regexp.MustCompile(`^[a-zA-Z0-9\._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`),
 	Message: "Invalid email",
 }
 var PasswordValidator = Validator{
-	Regex:   regexp.MustCompile("^[A-Za-z\\d@$!%*?&]+$"),
-	Message: "Passwords can be a letter, digit, or special character",
+	Regex:   regexp.MustCompile(`^[A-Za-z\d@$!%*?&]{8,}$`),
+	Message: "Passwords must be at least 8 characters long and can be a letter, digit, or special character",
 }
 
 var loginValidatorMap = map[string]*Validator{
