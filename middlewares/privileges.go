@@ -10,9 +10,10 @@ import (
 )
 
 func ApplyPermission(permissionName string, appCtx interfaces.IAppContext) func(next http.Handler) http.Handler {
+	cache := appCtx.PC()
+	uDAO := appCtx.DM().UsersDAO()
+
 	return func(next http.Handler) http.Handler {
-		cache := appCtx.PC()
-		uDAO := appCtx.DM().UsersDAO()
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			lgr := appCtx.Lgr()
 			ctx := req.Context()

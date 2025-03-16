@@ -20,7 +20,7 @@ func (r UserManagement) Path() string {
 }
 
 func (um *UserManagement) PrivateRoute(b *builders.PrivateRouteBuilder) {
-	b.NewHandle().Register(builders.GET, "/", um.hello).SetPermissionName("HelloWorldGet").Build()
+	b.NewHandle().Register(builders.GET, "/", um.hello).SetPermissionName("UserManagementGet").Build()
 	// b.NewHandle().RegisterRoute(controllers.GET, "/get2", um.hello2).SetPermission(&enums.HelloWorldGet2).Build()
 }
 
