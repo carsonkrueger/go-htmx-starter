@@ -19,16 +19,16 @@ func (wp *WebPublic) Path() string {
 }
 
 func (wp *WebPublic) PublicRoute(r chi.Router) {
+	r.Handle("/*", wp.ServePublicDir())
+}
+
+func (wp *WebPublic) ServePublicDir() http.Handler {
+	lgr := wp.AppCtx.Lgr().With(zap.String("controller", "GET /public"))
+	lgr.Info("Initialized WebPublic")
 	wd, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
-	r.Handle("/*", wp.ServePublicDir(wd))
-}
-
-func (wp *WebPublic) ServePublicDir(wd string) http.Handler {
-	lgr := wp.AppCtx.Lgr().With(zap.String("controller", "GET /public"))
-	lgr.Info("Initialized WebPublic")
 	dir_path := path.Join(wd, wp.Path())
 	handler := http.FileServer(http.Dir(dir_path))
 	return http.StripPrefix(wp.Path(), handler)
