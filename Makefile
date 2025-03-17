@@ -26,9 +26,11 @@ docker-postgres:
 
 migrate-external migrate:
 	migrate -database "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable" -path migrations up
+	make jet-all
 
 migrate-internal:
 	migrate -database "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable" -path migrations up
+	make jet-all-internal
 
 migrate-down-external migrate-down:
 	migrate -database "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable" -path migrations down 1
