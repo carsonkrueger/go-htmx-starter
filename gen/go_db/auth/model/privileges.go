@@ -12,7 +12,7 @@ import (
 )
 
 type Privileges struct {
-	ID        int64 `sql:"primary_key"`
+	ID        int64 	`sql:"primary_key"`
 	Name      string
 	CreatedAt *time.Time
 	UpdatedAt *time.Time

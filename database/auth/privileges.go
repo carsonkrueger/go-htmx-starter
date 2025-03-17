@@ -6,6 +6,7 @@ import (
 
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
+	"github.com/carsonkrueger/main/models/auth"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
@@ -90,4 +91,42 @@ func (dao *privilegesDAO) Delete(id int64) error {
 		return err
 	}
 	return nil
+}
+
+func (dao *privilegesDAO) GetAll() ([]*model.Privileges, error) {
+	var rows []*model.Privileges
+	err := table.Privileges.
+		SELECT(table.Privileges.AllColumns).
+		ORDER_BY(table.Privileges.ID.DESC()).
+		Query(dao.db, &rows)
+	if err != nil {
+		return nil, err
+	}
+	return rows, nil
+}
+
+func (dao *privilegesDAO) GetAllJoined() (map[int64][]model.Privileges, error) {
+	var res []auth.JoinedPrivilegesRaw
+
+	err := table.PrivilegeLevels.
+		SELECT(
+			table.PrivilegeLevels.ID.AS("JoinedPrivilegesRaw.LevelID"),
+			table.PrivilegeLevels.Name.AS("JoinedPrivilegesRaw.LevelName"),
+			table.Privileges.AllColumns,
+		).
+		FROM(table.PrivilegeLevels, table.Privileges).
+		Query(dao.db, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	mapping := make(map[int64][]model.Privileges)
+	for _, row := range res {
+		if _, exists := mapping[row.LevelID]; !exists {
+			mapping[row.LevelID] = []model.Privileges{}
+		}
+		mapping[row.LevelID] = append(mapping[row.LevelID], row.Privileges)
+	}
+
+	return mapping, nil
 }

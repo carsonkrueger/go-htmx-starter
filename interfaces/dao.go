@@ -11,6 +11,7 @@ type IDAO[M any] interface {
 	Upsert(row *M, cols_update ...postgres.ColumnAssigment) (int64, error)
 	Update(row *M) error
 	Delete(id int64) error
+	GetAll() ([]*M, error)
 }
 
 type IDAOManager interface {
@@ -27,4 +28,5 @@ type IUsersDAO interface {
 
 type IPrivilegeDAO interface {
 	IDAO[model.Privileges]
+	GetAllJoined() (map[int64][]model.Privileges, error)
 }

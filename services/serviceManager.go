@@ -5,8 +5,9 @@ import (
 )
 
 type serviceManager struct {
-	usersService interfaces.IUsersService
-	svcCtx       interfaces.IServiceContext
+	usersService      interfaces.IUsersService
+	privilegesService interfaces.IPrivilegesService
+	svcCtx            interfaces.IServiceContext
 }
 
 func NewServiceManager(svcCtx interfaces.IServiceContext) *serviceManager {
@@ -20,4 +21,11 @@ func (sm *serviceManager) UsersService() interfaces.IUsersService {
 		sm.usersService = NewUsersService(sm.svcCtx)
 	}
 	return sm.usersService
+}
+
+func (sm *serviceManager) PrivilegesService() interfaces.IPrivilegesService {
+	if sm.privilegesService == nil {
+		sm.privilegesService = NewPrivilegesService(sm.svcCtx)
+	}
+	return sm.privilegesService
 }

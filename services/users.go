@@ -42,14 +42,3 @@ func (us *usersService) Login(email string, password string) (*string, error) {
 
 	return &fullToken, nil
 }
-
-func (us *usersService) IsPermitted(userId int64, permissionName string) bool {
-	// us.
-
-	// if err != nil {
-	// 	return false
-	// }
-
-	// return res.PrivilegeID == privilegeId
-	return false
-}

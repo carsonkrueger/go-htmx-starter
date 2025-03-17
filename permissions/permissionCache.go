@@ -1,6 +1,7 @@
 package permissions
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
@@ -45,9 +46,16 @@ func (pc *permissionCache) HasPermissionByName(levelID int64, permissionName str
 	pc.RLock()
 	defer pc.RUnlock()
 	for _, p := range pc.cache[levelID] {
+		fmt.Printf("%s - %s", p.Name, permissionName)
 		if p.Name == permissionName {
 			return true
 		}
 	}
 	return false
+}
+
+func (pc *permissionCache) SetPermissions(mapping map[int64][]model.Privileges) {
+	pc.Lock()
+	defer pc.Unlock()
+	pc.cache = mapping
 }

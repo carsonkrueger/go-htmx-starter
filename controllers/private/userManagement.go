@@ -5,6 +5,9 @@ import (
 
 	"github.com/carsonkrueger/main/builders"
 	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/templates/pageLayouts"
+	"github.com/carsonkrueger/main/templates/pages"
+	"github.com/carsonkrueger/main/tools"
 )
 
 type UserManagement struct {
@@ -20,10 +23,17 @@ func (r UserManagement) Path() string {
 }
 
 func (um *UserManagement) PrivateRoute(b *builders.PrivateRouteBuilder) {
-	b.NewHandle().Register(builders.GET, "/", um.hello).SetPermissionName("UserManagementGet").Build()
+	b.NewHandle().Register(builders.GET, "/", um.userManagementGet).SetPermissionName("UserManagementGet").Build()
 	// b.NewHandle().RegisterRoute(controllers.GET, "/get2", um.hello2).SetPermission(&enums.HelloWorldGet2).Build()
 }
 
-func (um *UserManagement) hello(res http.ResponseWriter, req *http.Request) {
-	res.Write([]byte("Hello World!"))
+func (um *UserManagement) userManagementGet(res http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	hxRequest := tools.IsHxRequest(req)
+	page := pageLayouts.MainPageLayout(pages.Home())
+	// If not hx request then user just arrived. Give them the index.html
+	if !hxRequest {
+		page = pageLayouts.Index(page)
+	}
+	page.Render(ctx, res)
 }

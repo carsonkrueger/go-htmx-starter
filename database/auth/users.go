@@ -146,3 +146,8 @@ func (dao *usersDAO) UpdateAuthToken(id int64, authToken string) error {
 	}
 	return nil
 }
+
+func (dao *usersDAO) GetAll() ([]*model.Users, error) {
+	// not implemented
+	return []*model.Users{}, nil
+}

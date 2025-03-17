@@ -7,6 +7,7 @@ import (
 	"github.com/carsonkrueger/main/controllers/public"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/middlewares"
+	"go.uber.org/zap"
 
 	"errors"
 	"fmt"
@@ -60,6 +61,12 @@ func (a *AppRouter) BuildRouter(ctx interfaces.IAppContext) {
 		r.PrivateRoute(&builder)
 		a.router.Mount(r.Path(), builder.Build())
 		// fmt.Printf("\t%v\n", r.Path())
+	}
+
+	// fills cache with privileges
+	err := ctx.SM().PrivilegesService().BuildCache()
+	if err != nil {
+		ctx.Lgr().Fatal("Error building permission cache", zap.Error(err))
 	}
 }
 

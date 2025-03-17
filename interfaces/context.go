@@ -24,6 +24,7 @@ type IServiceContext interface {
 
 type IPermissionCache interface {
 	AddPermission(levelID int64, perm model.Privileges)
+	SetPermissions(map[int64][]model.Privileges)
 	GetPermissions(levelID int64) []model.Privileges
 	HasPermissionByID(levelID int64, permissionID int64) bool
 	HasPermissionByName(levelID int64, permissionName string) bool
