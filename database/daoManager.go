@@ -8,8 +8,9 @@ import (
 )
 
 type daoManager struct {
-	usersDAO interfaces.IUsersDAO
-	db       *sql.DB
+	usersDAO      interfaces.IUsersDAO
+	privilegesDAO interfaces.IPrivilegeDAO
+	db            *sql.DB
 }
 
 func NewDAOManager(db *sql.DB) interfaces.IDAOManager {
@@ -23,4 +24,11 @@ func (dm *daoManager) UsersDAO() interfaces.IUsersDAO {
 		dm.usersDAO = auth.NewUsersDAO(dm.db)
 	}
 	return dm.usersDAO
+}
+
+func (dm *daoManager) PrivilegeDAO() interfaces.IPrivilegeDAO {
+	if dm.privilegesDAO == nil {
+		dm.privilegesDAO = auth.NewPrivilegesDAO(dm.db)
+	}
+	return dm.privilegesDAO
 }

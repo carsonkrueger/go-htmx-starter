@@ -5,25 +5,26 @@ import (
 	"github.com/go-jet/jet/v2/postgres"
 )
 
-type IDAO interface {
-	GetById(id int64) (*model.Users, error)
-	Insert(row *model.Users) (int64, error)
-	Upsert(row *model.Users, cols_update ...postgres.ColumnAssigment) (int64, error)
-	Update(row *model.Users) error
+type IDAO[M any] interface {
+	GetById(id int64) (*M, error)
+	Insert(row *M) (int64, error)
+	Upsert(row *M, cols_update ...postgres.ColumnAssigment) (int64, error)
+	Update(row *M) error
 	Delete(id int64) error
 }
 
 type IDAOManager interface {
 	UsersDAO() IUsersDAO
+	PrivilegeDAO() IPrivilegeDAO
 }
 
 type IUsersDAO interface {
+	IDAO[model.Users]
 	GetByEmail(email string) (*model.Users, error)
-	GetById(id int64) (*model.Users, error)
-	Insert(row *model.Users) (int64, error)
-	Upsert(row *model.Users, colsUpdate ...postgres.ColumnAssigment) (int64, error)
-	Update(row *model.Users) error
-	Delete(id int64) error
 	GetPrivilegeLevelID(id int64, token string) (int64, error)
 	UpdateAuthToken(id int64, authToken string) error
+}
+
+type IPrivilegeDAO interface {
+	IDAO[model.Privileges]
 }

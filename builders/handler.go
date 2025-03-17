@@ -3,6 +3,7 @@ package builders
 import (
 	"net/http"
 
+	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/middlewares"
 	"github.com/go-chi/chi/v5"
@@ -45,8 +46,11 @@ func (mb *privateHandlerBuilder) SetMiddlewares(middlewares ...func(next http.Ha
 }
 
 func (mb *privateHandlerBuilder) Build() {
+	privDAO := mb.appCtx.DM().PrivilegeDAO()
+
 	var r chi.Router
 	if mb.permissionName != nil {
+		privDAO.Upsert(&model.Privileges{Name: *mb.permissionName})
 		r = mb.router.With(middlewares.ApplyPermission(*mb.permissionName, mb.appCtx))
 	}
 	if len(mb.mw) > 0 {
