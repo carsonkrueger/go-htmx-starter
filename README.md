@@ -70,11 +70,9 @@ To run the application locally, follow these steps:
 6. `npm install`
 7. `go install github.com/a-h/templ/cmd/templ@latest`
 8. `go install github.com/air-verse/air@latest`
-9. `go install -tages 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest`
+9. `go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest`
 10. `go install github.com/go-jet/jet/v2/cmd/jet@latest`
 11. Start the PostgreSQL container using the command: `make docker-postgres`
 12. Run migrations on the postgres container: `make migrate-external`
 13. `make live` to begin live development!
     - This will watch .go, .templ, and tailwind classes for changes.
-14. Navigate to `http://localhost:8080` to view your changes!
-    - If you changed the port in your `.env` file, update this URL accordingly.

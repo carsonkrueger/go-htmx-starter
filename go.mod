@@ -6,7 +6,6 @@ require github.com/go-chi/chi/v5 v5.2.1
 
 require (
 	github.com/a-h/templ v0.3.833
-	github.com/go-jet/jet v2.3.0+incompatible
 	github.com/go-jet/jet/v2 v2.12.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
