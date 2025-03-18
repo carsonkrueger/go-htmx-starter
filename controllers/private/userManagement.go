@@ -10,6 +10,10 @@ import (
 	"github.com/carsonkrueger/main/tools"
 )
 
+const (
+	UserManagementGet = "UserManagementGet"
+)
+
 type UserManagement struct {
 	interfaces.IAppContext
 }
@@ -23,11 +27,13 @@ func (r UserManagement) Path() string {
 }
 
 func (um *UserManagement) PrivateRoute(b *builders.PrivateRouteBuilder) {
-	b.NewHandle().Register(builders.GET, "/", um.userManagementGet).SetPermissionName("UserManagementGet").Build()
+	b.NewHandle().Register(builders.GET, "/", um.userManagementGet).SetPermissionName(UserManagementGet).Build()
 	// b.NewHandle().RegisterRoute(controllers.GET, "/get2", um.hello2).SetPermission(&enums.HelloWorldGet2).Build()
 }
 
 func (um *UserManagement) userManagementGet(res http.ResponseWriter, req *http.Request) {
+	lgr := um.Lgr()
+	lgr.Info("GET /user_managment")
 	ctx := req.Context()
 	hxRequest := tools.IsHxRequest(req)
 	page := pageLayouts.MainPageLayout(pages.Home())

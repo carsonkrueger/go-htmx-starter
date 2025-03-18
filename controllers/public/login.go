@@ -3,11 +3,13 @@ package public
 import (
 	"net/http"
 
+	"github.com/carsonkrueger/main/builders"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/pageLayouts"
 	"github.com/carsonkrueger/main/templates/pages"
+	"github.com/carsonkrueger/main/templates/partials"
 	"github.com/carsonkrueger/main/tools"
 	"github.com/carsonkrueger/main/tools/validate"
 	"github.com/go-chi/chi/v5"
@@ -69,6 +71,9 @@ func (l *Login) postLogin(res http.ResponseWriter, req *http.Request) {
 	}
 
 	tools.SetAuthCookie(res, authToken)
+
+	content := partials.Redirect("/user_management", builders.GET, true)
+	content.Render(ctx, res)
 }
 
 func (l *Login) getLogin(res http.ResponseWriter, req *http.Request) {

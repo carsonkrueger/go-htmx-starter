@@ -2,32 +2,30 @@ package pages
 
 import (
 	"github.com/carsonkrueger/main/templates/datainput"
-	"github.com/carsonkrueger/main/templates/partialLayouts"
 	"github.com/carsonkrueger/main/templates/pageLayouts"
+	"github.com/carsonkrueger/main/templates/partialLayouts"
 )
 
 templ Login() {
 	@partialLayouts.CenteredLayout() {
 		<div class="p-4 max-w-96 w-full">
 			<h2 class="text-2xl font-bold text-center text-secondary mb-10">Login</h2>
-
 			<form
-		    	hx-post="/login"
-				hx-target={ "#"+pageLayouts.MainContentID }
+				hx-post="/login"
+				hx-target={ "#" + pageLayouts.MainContentID }
 				hx-target-422="#response"
 				hx-swap="innerHTML"
-			    class="space-y-4"
+				class="space-y-4"
 				hx-push-url="/user_management"
 			>
 				<div>
-			    	<label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+					<label for="email" class="block text-sm font-medium text-gray-700">Email</label>
 					@datainput.Input(datainput.EmailAttrs("email", true))
 				</div>
 				<div>
-			    	<label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+					<label for="password" class="block text-sm font-medium text-gray-700">Password</label>
 					@datainput.Input(datainput.PasswordAttrs("password"))
 				</div>
-
 				<div class="flex justify-between items-center">
 					<button
 						type="submit"
@@ -39,7 +37,7 @@ templ Login() {
 						type="button"
 						class="px-3 py-2 border-[1px] border-primary text-primary font-bold py-2 rounded-sm transition cursor-pointer"
 						hx-get="/signup"
-						hx-target={ "#"+pageLayouts.MainContentID }
+						hx-target={ "#" + pageLayouts.MainContentID }
 						hx-swap="innerHTML"
 						hx-push-url="true"
 					>
@@ -47,7 +45,7 @@ templ Login() {
 					</button>
 				</div>
 			</form>
-			<div id="response" />
+			<div id="response"></div>
 		</div>
 	}
 }
