@@ -5,7 +5,7 @@ tmp_dir = "tmp"
 [build]
 args_bin = ["-local=true"]
 bin = "./tmp/main"
-cmd = "go build -o ./tmp/main ./cmd/main.go"
+cmd = "go build -o ./tmp/main ./main.go"
 delay = 500
 exclude_dir = ["tmp", "vendor", "testdata", "node_modules"]
 exclude_file = []
@@ -13,24 +13,7 @@ exclude_regex = ["_test.go", "_templ.go"]
 exclude_unchanged = false
 follow_symlink = false
 full_bin = ""
-include_dir = [
-    "cmd",
-    "internal",
-    "pkg",
-    "templates",
-    "public",
-    "gen",
-    "tools",
-    "services",
-    "logger",
-    "cfg",
-    "context",
-    "controllers",
-    "enums",
-    "gen",
-    "middlewares",
-    "router",
-]
+include_dir = []
 include_ext = ["go", "templ", "html", "css"]
 include_file = []
 kill_delay = "0s"

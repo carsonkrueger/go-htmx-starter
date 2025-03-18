@@ -49,7 +49,7 @@ func GetAuthParts(cookie *http.Cookie) (string, int64, error) {
 		return "", 0, errors.New("invalid cookie")
 	}
 	token := parts[0]
-	id, err := strconv.Atoi(parts[1])
+	id, err := strconv.ParseInt(parts[1], 10, 64)
 	if err != nil {
 		return "", 0, errors.New("Could not parse user ID")
 	}

@@ -1,0 +1,27 @@
+package partials
+
+import "github.com/carsonkrueger/main/builders"
+
+templ Redirect(to string, method builders.RouteMethod, pushUrl bool) {
+	<div
+		hx-trigger="load"
+		if pushUrl {
+			hx-push-url={ to }
+		}
+		if method == builders.GET {
+			hx-get={ to }
+		}
+		else
+		if method == builders.POST {
+			hx-put={ to }
+		}
+		else
+		if method == builders.PUT {
+			hx-put={ to }
+		}
+		else
+		if method == builders.DELETE {
+			hx-delete={ to }
+		}
+	></div>
+}
