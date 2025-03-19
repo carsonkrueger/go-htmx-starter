@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 
-	"github.com/carsonkrueger/main/database/auth"
+	"github.com/carsonkrueger/main/database/authDAO"
 	"github.com/carsonkrueger/main/interfaces"
 )
 
@@ -21,14 +21,14 @@ func NewDAOManager(db *sql.DB) interfaces.IDAOManager {
 
 func (dm *daoManager) UsersDAO() interfaces.IUsersDAO {
 	if dm.usersDAO == nil {
-		dm.usersDAO = auth.NewUsersDAO(dm.db)
+		dm.usersDAO = authDAO.NewUsersDAO(dm.db)
 	}
 	return dm.usersDAO
 }
 
 func (dm *daoManager) PrivilegeDAO() interfaces.IPrivilegeDAO {
 	if dm.privilegesDAO == nil {
-		dm.privilegesDAO = auth.NewPrivilegesDAO(dm.db)
+		dm.privilegesDAO = authDAO.NewPrivilegesDAO(dm.db)
 	}
 	return dm.privilegesDAO
 }

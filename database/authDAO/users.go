@@ -1,4 +1,4 @@
-package auth
+package authDAO
 
 import (
 	"database/sql"

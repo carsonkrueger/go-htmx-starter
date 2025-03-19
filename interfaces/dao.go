@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
+	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
@@ -28,5 +29,5 @@ type IUsersDAO interface {
 
 type IPrivilegeDAO interface {
 	IDAO[model.Privileges]
-	GetAllJoined() (map[int64][]model.Privileges, error)
+	GetAllJoined() ([]authModels.JoinedPrivilegesRaw, error)
 }

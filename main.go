@@ -7,7 +7,6 @@ import (
 	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/logger"
-	"github.com/carsonkrueger/main/permissions"
 	"github.com/carsonkrueger/main/router"
 	"github.com/carsonkrueger/main/services"
 
@@ -26,7 +25,7 @@ func main() {
 	if db == nil {
 		panic("Database connection is nil")
 	}
-	pc := permissions.NewPermissionCache()
+	pc := services.NewPermissionCache()
 	dm := database.NewDAOManager(db)
 
 	svcCtx := context.NewServiceContext(lgr, dm, pc)

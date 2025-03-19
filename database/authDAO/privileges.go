@@ -1,4 +1,4 @@
-package auth
+package authDAO
 
 import (
 	"database/sql"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
-	"github.com/carsonkrueger/main/models/auth"
+	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
@@ -105,8 +105,8 @@ func (dao *privilegesDAO) GetAll() ([]*model.Privileges, error) {
 	return rows, nil
 }
 
-func (dao *privilegesDAO) GetAllJoined() (map[int64][]model.Privileges, error) {
-	var res []auth.JoinedPrivilegesRaw
+func (dao *privilegesDAO) GetAllJoined() ([]authModels.JoinedPrivilegesRaw, error) {
+	var res []authModels.JoinedPrivilegesRaw
 
 	err := table.PrivilegeLevels.
 		SELECT(
@@ -114,19 +114,15 @@ func (dao *privilegesDAO) GetAllJoined() (map[int64][]model.Privileges, error) {
 			table.PrivilegeLevels.Name.AS("JoinedPrivilegesRaw.LevelName"),
 			table.Privileges.AllColumns,
 		).
-		FROM(table.PrivilegeLevels, table.Privileges).
+		FROM(
+			table.PrivilegeLevels.
+				LEFT_JOIN(table.PrivilegeLevelsPrivileges, table.PrivilegeLevelsPrivileges.PrivilegeLevelID.EQ(table.PrivilegeLevels.ID)).
+				LEFT_JOIN(table.Privileges, table.Privileges.ID.EQ(table.PrivilegeLevelsPrivileges.PrivilegeID)),
+		).
 		Query(dao.db, &res)
 	if err != nil {
 		return nil, err
 	}
 
-	mapping := make(map[int64][]model.Privileges)
-	for _, row := range res {
-		if _, exists := mapping[row.LevelID]; !exists {
-			mapping[row.LevelID] = []model.Privileges{}
-		}
-		mapping[row.LevelID] = append(mapping[row.LevelID], row.Privileges)
-	}
-
-	return mapping, nil
+	return res, nil
 }
