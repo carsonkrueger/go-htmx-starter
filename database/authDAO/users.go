@@ -123,7 +123,8 @@ func (dao *usersDAO) GetPrivilegeLevelID(userID int64, token string) (int64, err
 	var res PrivilegeLevelIDResponse
 
 	err := table.Users.
-		SELECT(table.PrivilegeLevelsPrivileges.PrivilegeID.AS("IsPermittedResponse.PrivilegeID")).
+		SELECT(table.Users.PrivilegeLevelID.AS("PrivilegeLevelIDResponse.PrivilegeID")).
+		FROM(table.Users).
 		WHERE(table.Users.ID.EQ(postgres.Int(userID)).
 			AND(table.Users.AuthToken.EQ(postgres.String(token)))).
 		LIMIT(1).

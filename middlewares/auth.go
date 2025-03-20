@@ -16,6 +16,7 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			lgr := appCtx.Lgr()
 			ctx := req.Context()
+
 			cookie, err := tools.GetAuthCookie(req)
 			if err != nil {
 				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("Not Authenticated"))
@@ -47,10 +48,11 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 				return
 			}
 
-			context.WithToken(ctx, token)
-			context.WithUserId(ctx, id)
+			ctx = context.WithToken(ctx, token)
+			ctx = context.WithUserId(ctx, id)
+			ctx = context.WithPrivilegeID(ctx, user.PrivilegeLevelID)
 
-			next.ServeHTTP(res, req)
+			next.ServeHTTP(res, req.WithContext(ctx))
 		})
 	}
 }

@@ -23,3 +23,13 @@ func WithUserId(ctx gctx.Context, id int64) gctx.Context {
 func GetUserId(ctx gctx.Context) int64 {
 	return ctx.Value(USER_ID_KEY).(int64)
 }
+
+var PRIVILEGE_ID_KEY = "PRIVILEGE_ID"
+
+func WithPrivilegeID(ctx gctx.Context, id int64) gctx.Context {
+	return gctx.WithValue(ctx, PRIVILEGE_ID_KEY, id)
+}
+
+func GetPrivilegeID(ctx gctx.Context) int64 {
+	return ctx.Value(PRIVILEGE_ID_KEY).(int64)
+}
