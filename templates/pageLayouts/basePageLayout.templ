@@ -1,0 +1,17 @@
+package pageLayouts
+
+const PageLayoutID = "page-layout"
+const MainContentID = "main-content"
+
+// All page layouts should extend this layout
+templ BasePageLayout() {
+	<div id={ PageLayoutID } hx-swap-oob="true" hx-target={ PageLayoutID } hx-swap="outerHTML">
+		{ children... }
+	</div>
+}
+
+templ MainContent() {
+	<div id={ MainContentID } hx-swap-oob="true" hx-target={ MainContentID } hx-swap="outerHTML">
+		{ children... }
+	</div>
+}

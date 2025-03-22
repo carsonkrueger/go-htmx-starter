@@ -1,6 +1,5 @@
 package pages
 
-
 import (
 	"github.com/carsonkrueger/main/templates/pageLayouts"
 	"github.com/carsonkrueger/main/templates/partialLayouts"
@@ -11,11 +10,11 @@ templ Home() {
 		home
 		<button
 			hx-get="/login"
-			hx-target={ "#"+pageLayouts.MainContentID }
+			hx-target={ "#" + pageLayouts.MainContentID }
 			hx-swap="innerHTML"
 			hx-push-url="/login"
 		>
-				Login
+			Login
 		</button>
 	}
 }

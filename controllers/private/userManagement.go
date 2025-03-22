@@ -4,9 +4,11 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/a-h/templ"
 	"github.com/carsonkrueger/main/builders"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/templates/pageLayouts"
+	"github.com/carsonkrueger/main/templates/pages"
 	"github.com/carsonkrueger/main/tools"
 )
 
@@ -17,8 +19,8 @@ const (
 )
 
 var tabs []pageLayouts.TabModel = []pageLayouts.TabModel{
-	{Title: "Users", PushUrl: "/user_management/users", HxGet: "/user_management/users"},
-	{Title: "Privilege Levels", PushUrl: "/user_management/levels", HxGet: "/user_management/levels"},
+	{Title: "Users", PushUrl: "/user_management/users", HxGet: "/user_management/users", Tab: pages.Signup()},
+	{Title: "Privilege Levels", PushUrl: "/user_management/levels", HxGet: "/user_management/levels", Tab: pages.Signup()},
 }
 
 type UserManagement struct {
@@ -44,30 +46,29 @@ func (um *UserManagement) userManagementGet(res http.ResponseWriter, req *http.R
 	lgr := um.Lgr()
 	lgr.Info("GET /user_managment")
 	ctx := req.Context()
-	RenderTab(res, req, ctx, 0)
+	GetTab(res, req, ctx, 0)
 }
 
 func (um *UserManagement) userManagementUsersGet(res http.ResponseWriter, req *http.Request) {
 	lgr := um.Lgr()
 	lgr.Info("GET /user_management/users")
 	ctx := req.Context()
-	RenderTab(res, req, ctx, 0)
+	GetTab(res, req, ctx, 0)
 }
 
 func (um *UserManagement) userManagementLevelsGet(res http.ResponseWriter, req *http.Request) {
 	lgr := um.Lgr()
 	lgr.Info("GET /user_management/levels")
 	ctx := req.Context()
-	RenderTab(res, req, ctx, 1)
+	GetTab(res, req, ctx, 1)
 }
 
-func RenderTab(res http.ResponseWriter, req *http.Request, ctx context.Context, index int) error {
+func GetTab(res http.ResponseWriter, req *http.Request, ctx context.Context, index int) templ.Component {
 	hxRequest := tools.IsHxRequest(req)
-	tabLayout := pageLayouts.Tabs(tabs, index)
-	page := pageLayouts.MainPageLayout(tabLayout)
+	page := pageLayouts.MainPageLayout(pageLayouts.Tabs(tabs, index))
 	// If not hx request then user just arrived. Give them the index.html
 	if !hxRequest {
 		page = pageLayouts.Index(page)
 	}
-	return page.Render(ctx, res)
+	return page
 }

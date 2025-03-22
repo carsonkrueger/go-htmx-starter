@@ -270,9 +270,6 @@
   .min-w-56 {
     min-width: calc(var(--spacing) * 56);
   }
-  .flex-grow {
-    flex-grow: 1;
-  }
   .cursor-default {
     cursor: default;
   }

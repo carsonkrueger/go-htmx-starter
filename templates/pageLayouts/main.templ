@@ -7,7 +7,9 @@ templ MainPageLayout(main templ.Component) {
 				<h1>Go + HTMX Starter Kit</h1>
 				<h2 class="text-xl text-white">By Carson Krueger</h2>
 			</header>
-			<main id={MainContentID} class="flex-grow">@main</main>
+			@MainContent() {
+				@main
+			}
 		</div>
 	}
 }

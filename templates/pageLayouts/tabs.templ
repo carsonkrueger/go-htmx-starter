@@ -4,6 +4,7 @@ type TabModel struct {
 	Title   string
 	PushUrl string
 	HxGet   string
+	Tab     templ.Component
 }
 
 templ Tabs(tabs []TabModel, curTabIdx int) {
@@ -36,5 +37,6 @@ templ Tabs(tabs []TabModel, curTabIdx int) {
 				hx-swap="innerHTML"
 			></div>
 		</div>
+		@tabs[curTabIdx].Tab
 	</div>
 }
