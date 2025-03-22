@@ -16,7 +16,7 @@ tw:
 build:
 	make tw
 	make templ
-	go build -o bin/main cmd/main.go
+	go build -o bin/main main.go
 
 docker:
 	docker-compose up -d go_backend go_db --remove-orphans
