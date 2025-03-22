@@ -1,0 +1,40 @@
+package pageLayouts
+
+type TabModel struct {
+	Title   string
+	PushUrl string
+	HxGet   string
+}
+
+templ Tabs(tabs []TabModel, curTabIdx int) {
+	<div class="">
+		<div class="flex text-lg shadow-md">
+			for i, tab := range tabs {
+				{{
+					class := "border-b-white"
+					if i == curTabIdx {
+						class = "border-b-secondary"
+					}
+				}}
+				<input
+					type="checkbox"
+					class={ "tab appearance-none p-3 min-w-56 flex justify-center items-center border-b-[2px] " + class }
+					hx-push-url={ tab.PushUrl }
+					hx-get={ tab.HxGet }
+					hx-target="#tab-content"
+					hx-swap="innerHTML"
+				/>
+				{ tab.Title }
+			}
+		</div>
+		<div id="tab-content">
+			<div
+				hx-trigger="load"
+				hx-push-url={ tabs[curTabIdx].PushUrl }
+				hx-get={ tabs[curTabIdx].HxGet }
+				hx-target="#tab-content"
+				hx-swap="innerHTML"
+			></div>
+		</div>
+	</div>
+}

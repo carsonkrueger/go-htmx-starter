@@ -7,6 +7,7 @@ import (
 
 	"github.com/carsonkrueger/main/cfg"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func NewLogger(cfg *cfg.Config) *zap.Logger {
@@ -39,6 +40,8 @@ func NewLogger(cfg *cfg.Config) *zap.Logger {
 	default:
 		panic(fmt.Sprintf("Invalid app environment: %s", cfg.AppEnv))
 	}
+
+	config.EncoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 
 	return zap.Must(config.Build())
 }
