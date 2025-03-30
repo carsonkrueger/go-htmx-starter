@@ -1,0 +1,5 @@
+volumes
+gen
+tmp
+bin
+node_modules

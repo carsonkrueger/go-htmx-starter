@@ -7,7 +7,7 @@ args_bin = ["-local=true"]
 bin = "./tmp/main"
 cmd = "go build -o ./tmp/main ./main.go"
 delay = 500
-exclude_dir = ["tmp", "vendor", "testdata", "node_modules"]
+exclude_dir = ["tmp", "vendor", "testdata", "node_modules", "volumes"]
 exclude_file = []
 exclude_regex = ["_test.go", "_templ.go"]
 exclude_unchanged = false

@@ -1,5 +1,5 @@
 services:
-    go_db:
+    db:
         container_name: go_db
         image: postgres
         environment:
@@ -10,11 +10,20 @@ services:
             - "${DB_EXTERNAL_PORT}:${DB_PORT}"
         volumes:
             - ./volumes/postgres_data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}"]
+            interval: 3s
+            retries: 5
 
     go_backend:
         container_name: go_backend
+        depends_on:
+            db:
+                condition: service_healthy
         build:
-            dockerfile: Dockerfile
+            dockerfile: ./Dockerfile
+            network: host
+            context: .
         ports:
             - "${EXTERNAL_PORT}:${PORT}"
         env_file:
