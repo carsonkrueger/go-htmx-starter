@@ -33,8 +33,8 @@ func (s *SignUp) PublicRoute(r chi.Router) {
 }
 
 func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
-	lgr := s.Lgr().With(zap.String("controller", "POST /signup"))
-	lgr.Info("Controller called")
+	lgr := s.Lgr()
+	lgr.Info("controller postSignup called")
 	ctx := req.Context()
 
 	if err := req.ParseForm(); err != nil {
@@ -89,8 +89,8 @@ func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
 }
 
 func (s *SignUp) getSignup(res http.ResponseWriter, req *http.Request) {
-	lgr := s.Lgr().With(zap.String("controller", "GET /signup"))
-	lgr.Info("Controller called")
+	lgr := s.Lgr()
+	lgr.Info("controller getSignup called")
 	ctx := req.Context()
 	hxRequest := tools.IsHxRequest(req)
 	page := pages.Signup()
