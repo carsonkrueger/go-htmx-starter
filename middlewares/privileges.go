@@ -11,8 +11,6 @@ import (
 )
 
 func ApplyPermission(permissionName string, appCtx interfaces.IAppContext) func(next http.Handler) http.Handler {
-	cache := appCtx.PC()
-
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			lgr := appCtx.Lgr()
@@ -22,6 +20,7 @@ func ApplyPermission(permissionName string, appCtx interfaces.IAppContext) func(
 			deniedErr := errors.New("Permission denied")
 
 			levelID := context.GetPrivilegeID(ctx)
+			cache := appCtx.PC()
 			permitted := cache.HasPermissionByName(levelID, permissionName)
 			if !permitted {
 				tools.RequestHttpError(ctx, lgr, res, 403, deniedErr)

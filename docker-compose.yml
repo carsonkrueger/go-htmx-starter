@@ -22,9 +22,10 @@ services:
                 condition: service_healthy
         build:
             dockerfile: ./Dockerfile
-            network: host
             context: .
         ports:
             - "${EXTERNAL_PORT}:${PORT}"
         env_file:
             - .env
+        dns:
+            - 8.8.8.8

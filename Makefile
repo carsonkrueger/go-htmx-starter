@@ -3,6 +3,9 @@
 
 include .env
 
+DB_URL_EXTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_EXTERNAL_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable"
+DB_URL_INTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
+
 live:
 	make docker-postgres
 	air
@@ -20,41 +23,51 @@ build:
 
 docker:
 	docker-compose down
-	docker-compose up -d db --remove-orphans
-	docker-compose up --build -d go_backend --remove-orphans
+	docker-compose up -d --build db go_backend --remove-orphans
 
 docker-postgres:
 	docker-compose down db
 	docker-compose up -d db --remove-orphans
 
 migrate:
-	migrate -database "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable" -path migrations up
+	migrate -database ${DB_URL_EXTERNAL} -path migrations up
+
+migrate-internal:
+	migrate -database ${DB_URL_INTERNAL} -path migrations up
 
 migrate-down:
-	migrate -database "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable" -path migrations down 1
+	migrate -database ${DB_URL_EXTERNAL} -path migrations down 1
 
 migrate-generate:
 	@read -p "Enter migration name: " name; \
 	migrate create -ext sql -dir migrations -seq $$name
 
 seed:
-	go run cmd/seeds/seed.go -local=true
+	go run cmd/seeds/seed.go
 
 seed-undo:
-	go run cmd/seeds/seed.go -local=true -undo=true
+	go run cmd/seeds/seed.go -undo=true
 
 
 jet-all:
 	@echo "Fetching schemas from database..."
-	@DB_URL="postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable"; \
-	SCHEMAS=$$(PGPASSWORD="${DB_PASSWORD}" psql -h ${HOST} -p ${DB_EXTERNAL_PORT} -U ${DB_USER} -d ${DB_NAME} -Atc "SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'pg_toast')"); \
+	SCHEMAS=$$(PGPASSWORD="${DB_PASSWORD}" psql -h ${DB_EXTERNAL_HOST} -p ${DB_EXTERNAL_PORT} -U ${DB_USER} -d ${DB_NAME} -Atc "SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'pg_toast')"); \
 	echo "Schemas found: $$SCHEMAS"; \
 	for SCHEMA in $$SCHEMAS; do \
 	    echo "------ Generating models for schema: $$SCHEMA ------"; \
-		jet -dsn="$$DB_URL" -schema=$$SCHEMA -path=./gen; \
+		jet -dsn=${DB_URL_EXTERNAL} -schema=$$SCHEMA -path=./gen; \
+		make jet schema=$$SCHEMA; \
+	done
+
+jet-all-internal:
+	@echo "Fetching schemas from database..."
+	SCHEMAS=$$(PGPASSWORD="${DB_PASSWORD}" psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -Atc "SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'pg_toast')"); \
+	echo "Schemas found: $$SCHEMAS"; \
+	for SCHEMA in $$SCHEMAS; do \
+	    echo "------ Generating models for schema: $$SCHEMA ------"; \
+		jet -dsn=${DB_URL_INTERNAL} -schema=$$SCHEMA -path=./gen; \
 		make jet schema=$$SCHEMA; \
 	done
 
 jet:
-	@DB_URL="postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable"; \
-	jet -dsn="$$DB_URL" -schema=$(schema) -path=./gen;
+	jet -dsn=${DB_URL_EXTERNAL} -schema=$(schema) -path=./gen;

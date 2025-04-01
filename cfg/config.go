@@ -19,18 +19,19 @@ type DbConfig struct {
 	user     string
 	password string
 	name     string
+	host     string
 	port     string
 }
 
 func LoadConfig() Config {
-	local := flag.Bool("local", false, "Specify if running locally (not docker)")
+	internal := flag.Bool("internal", false, "internal=true if running inside docker container")
 	flag.Parse()
-
-	port := os.Getenv("DB_PORT")
-	if *local {
-		port = os.Getenv("DB_EXTERNAL_PORT")
+	dbPort := os.Getenv("DB_EXTERNAL_PORT")
+	dbHost := os.Getenv("DB_EXTERNAL_HOST")
+	if *internal {
+		dbPort = os.Getenv("DB_PORT")
+		dbHost = os.Getenv("DB_HOST")
 	}
-
 	return Config{
 		AppEnv: os.Getenv("APP_ENV"),
 		Host:   os.Getenv("HOST"),
@@ -39,7 +40,8 @@ func LoadConfig() Config {
 			user:     os.Getenv("DB_USER"),
 			password: os.Getenv("DB_PASSWORD"),
 			name:     os.Getenv("DB_NAME"),
-			port:     port,
+			host:     dbHost,
+			port:     dbPort,
 		},
 	}
 }
@@ -48,7 +50,7 @@ func (cfg *Config) DbUrl() string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		cfg.DbConfig.user,
 		cfg.DbConfig.password,
-		cfg.Host,
+		cfg.DbConfig.host,
 		cfg.DbConfig.port,
 		cfg.DbConfig.name,
 	)
