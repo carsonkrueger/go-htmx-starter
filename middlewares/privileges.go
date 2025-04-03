@@ -20,8 +20,8 @@ func ApplyPermission(permissionName string, appCtx interfaces.IAppContext) func(
 
 			deniedErr := errors.New("Permission denied")
 
-			levelID := context.GetPrivilegeID(ctx)
-			cache := appCtx.PC()
+			levelID := context.GetPrivilegeLevelID(ctx)
+			cache := appCtx.SM().PrivilegesService()
 			permitted := cache.HasPermissionByName(levelID, permissionName)
 			if !permitted {
 				tools.RequestHttpError(ctx, lgr, res, 403, deniedErr)

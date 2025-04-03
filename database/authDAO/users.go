@@ -33,22 +33,26 @@ func (dao *usersDAO) GetById(id int64) (*model.Users, error) {
 	return &user, nil
 }
 
-func (dao *usersDAO) Insert(row *model.Users) (int64, error) {
-	err := table.Users.
+func (dao *usersDAO) Insert(row *model.Users) error {
+	return table.Users.
 		INSERT(table.Users.Email, table.Users.FirstName, table.Users.LastName, table.Users.Password, table.Users.AuthToken, table.Users.AuthTokenCreatedAt, table.Users.PrivilegeLevelID).
 		VALUES(row.Email, row.FirstName, row.LastName, row.Password, row.AuthToken, postgres.TimestampT(time.Now()), row.PrivilegeLevelID).
 		RETURNING(table.Users.ID).
 		Query(dao.db, row)
-
-	if err != nil {
-		return -1, err
-	}
-	return row.ID, nil
 }
 
-// Returns ID int64 if inserted.
-// Parameter cols_update are the columns to be updated on conflict - if not provided, a few columns are updated
-func (dao *usersDAO) Upsert(row *model.Users, colsUpdate ...postgres.ColumnAssigment) (int64, error) {
+func (dao *usersDAO) InsertMany(rows []*model.Users) error {
+	if len(rows) == 0 {
+		return nil
+	}
+	return table.Users.
+		INSERT(table.Users.Email, table.Users.FirstName, table.Users.LastName, table.Users.Password, table.Users.AuthToken, table.Users.AuthTokenCreatedAt, table.Users.PrivilegeLevelID).
+		MODELS(rows).
+		RETURNING(table.Users.ID).
+		Query(dao.db, &rows)
+}
+
+func (dao *usersDAO) Upsert(row *model.Users, colsUpdate ...postgres.ColumnAssigment) error {
 	if len(colsUpdate) == 0 {
 		colsUpdate = []postgres.ColumnAssigment{
 			table.Users.Email.SET(postgres.String(row.Email)),
@@ -58,24 +62,32 @@ func (dao *usersDAO) Upsert(row *model.Users, colsUpdate ...postgres.ColumnAssig
 		}
 	}
 
-	res, err := table.Users.
+	return table.Users.
 		INSERT(table.Users.AllColumns.Except(table.Users.ID, table.Users.CreatedAt)).
 		MODEL(row).
 		ON_CONFLICT(table.Users.ID, table.Users.Email).
 		DO_UPDATE(postgres.SET(colsUpdate...)).
 		RETURNING(table.Users.ID).
-		Exec(dao.db)
-	if err != nil {
-		return -1, err
+		Query(dao.db, row)
+}
+
+func (dao *usersDAO) UpsertMany(rows []*model.Users, colsUpdate ...postgres.ColumnAssigment) error {
+	if len(colsUpdate) == 0 {
+		colsUpdate = []postgres.ColumnAssigment{
+			table.Users.Email.SET(table.Users.Email),
+			table.Users.FirstName.SET(table.Users.FirstName),
+			table.Users.LastName.SET(table.Users.LastName),
+			table.Users.UpdatedAt.SET(table.Users.UpdatedAt),
+		}
 	}
 
-	id, err := res.LastInsertId()
-	// if err then row was not inserted
-	if err != nil {
-		id = -1
-	}
-
-	return id, nil
+	return table.Users.
+		INSERT(table.Users.AllColumns.Except(table.Users.ID, table.Users.CreatedAt)).
+		MODELS(rows).
+		ON_CONFLICT(table.Users.ID, table.Users.Email).
+		DO_UPDATE(postgres.SET(colsUpdate...)).
+		RETURNING(table.Privileges.ID).
+		Query(dao.db, &rows)
 }
 
 func (dao *usersDAO) Update(row *model.Users) error {
@@ -84,10 +96,7 @@ func (dao *usersDAO) Update(row *model.Users) error {
 		MODEL(row).
 		WHERE(table.Users.ID.EQ(postgres.Int(row.ID))).
 		Exec(dao.db)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (dao *usersDAO) Delete(id int64) error {
@@ -95,10 +104,7 @@ func (dao *usersDAO) Delete(id int64) error {
 		DELETE().
 		WHERE(table.Users.ID.EQ(postgres.Int(id))).
 		Exec(dao.db)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (dao *usersDAO) GetByEmail(email string) (*model.Users, error) {
@@ -119,7 +125,7 @@ type PrivilegeLevelIDResponse struct {
 	PrivilegeID int64
 }
 
-func (dao *usersDAO) GetPrivilegeLevelID(userID int64, token string) (int64, error) {
+func (dao *usersDAO) GetPrivilegeLevelID(userID int64, token string) (*int64, error) {
 	var res PrivilegeLevelIDResponse
 
 	err := table.Users.
@@ -131,9 +137,9 @@ func (dao *usersDAO) GetPrivilegeLevelID(userID int64, token string) (int64, err
 		Query(dao.db, &res)
 
 	if err != nil {
-		return -1, err
+		return nil, err
 	}
-	return res.PrivilegeID, nil
+	return &res.PrivilegeID, nil
 }
 
 func (dao *usersDAO) UpdateAuthToken(id int64, authToken string) error {
@@ -142,13 +148,10 @@ func (dao *usersDAO) UpdateAuthToken(id int64, authToken string) error {
 		SET(authToken).
 		WHERE(table.Users.ID.EQ(postgres.Int(id))).
 		Exec(dao.db)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
-func (dao *usersDAO) GetAll() ([]*model.Users, error) {
+func (dao *usersDAO) GetAll() (*[]model.Users, error) {
 	// not implemented
-	return []*model.Users{}, nil
+	return &[]model.Users{}, nil
 }

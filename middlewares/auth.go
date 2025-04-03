@@ -50,7 +50,7 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 
 			ctx = context.WithToken(ctx, token)
 			ctx = context.WithUserId(ctx, id)
-			ctx = context.WithPrivilegeID(ctx, user.PrivilegeLevelID)
+			ctx = context.WithPrivilegeLevelID(ctx, user.PrivilegeLevelID)
 
 			next.ServeHTTP(res, req.WithContext(ctx))
 		})

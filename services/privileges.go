@@ -1,22 +1,29 @@
 package services
 
 import (
-	"fmt"
+	"strconv"
 	"sync"
 
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/interfaces"
-	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/models/authModels"
+	"github.com/carsonkrueger/main/tools"
+	"go.uber.org/zap"
 )
 
 type privilegesService struct {
 	interfaces.IServiceContext
+	*permissionCache
 }
 
-func NewPrivilegesService(ctx interfaces.IServiceContext) *privilegesService {
+func NewPrivilegesService(ctx interfaces.IServiceContext, cache *permissionCache) *privilegesService {
+	lgr := ctx.Lgr("NewPrivilegesService")
+	if cache == nil {
+		lgr.Panic("Permission cache is nil")
+	}
 	return &privilegesService{
 		ctx,
+		cache,
 	}
 }
 
@@ -26,52 +33,68 @@ type permissionCache struct {
 }
 
 func NewPermissionCache() *permissionCache {
-	// pc.RWMutex = sync.RWMutex{}
 	return &permissionCache{
 		cache: authModels.PermissionCache{},
 	}
 }
 
-// This function does not lock cache and returns a pointer which is unsafe
-func (pc *permissionCache) unsafeGetPermissions(levelID int64) *[]model.Privileges {
-	for _, item := range pc.cache {
-		if item.A == levelID {
-			return &item.B
-		}
+func (s *privilegesService) BuildCache() error {
+	lgr := s.Lgr("BuildCache")
+	lgr.Info("Called")
+	dao := s.DM().PrivilegeDAO()
+
+	joinedPrivileges, err := dao.GetAllJoined()
+	if err != nil {
+		return err
 	}
+
+	for _, jp := range *joinedPrivileges {
+		if jp.Privileges.Name == "" {
+			continue
+		}
+		s.AddPermission(jp.LevelID, jp.Privileges)
+	}
+
 	return nil
 }
 
-func (pc *permissionCache) AddPermission(levelID int64, perms ...model.Privileges) {
-	pc.Lock()
-	defer pc.Unlock()
-	permissions := pc.unsafeGetPermissions(levelID)
-	if permissions != nil {
-		appended := append(*permissions, perms...)
-		permissions = &appended
-	} else {
-		pc.cache = append(pc.cache, models.Pair[int64, []model.Privileges]{
-			A: levelID,
-			B: perms,
-		})
+func (ps *privilegesService) AddPermission(levelID int64, perms ...model.Privileges) {
+	lgr := ps.Lgr("AddPermission")
+	if len(perms) == 0 {
+		return
 	}
+
+	refd := tools.PtrSlice(perms)
+	err := ps.DM().PrivilegeDAO().UpsertMany(refd)
+	if err != nil {
+		lgr.Error("Failed to insert privileges", zap.Error(err))
+		return
+	}
+
+	ps.Lock()
+	defer ps.Unlock()
+
+	permissions := ps.cache[levelID]
+	ps.cache[levelID] = append(permissions, perms...)
+
+	names := make([]string, len(perms))
+	for i, p := range perms {
+		names[i] = string(p.Name)
+	}
+	lgr.Info("Level:Privilege", zap.Strings(strconv.FormatInt(levelID, 10), names))
 }
 
-func (pc *permissionCache) GetPermissions(levelID int64) []model.Privileges {
-	pc.RLock()
-	defer pc.RUnlock()
-	permissions := pc.unsafeGetPermissions(levelID)
-	if permissions != nil {
-		return *permissions
-	}
-	return []model.Privileges{}
+func (ps *privilegesService) GetPermissions(levelID int64) []model.Privileges {
+	ps.RLock()
+	defer ps.RUnlock()
+	return ps.cache[levelID]
 }
 
-func (pc *permissionCache) HasPermissionByID(levelID int64, permissionID int64) bool {
-	pc.RLock()
-	defer pc.RUnlock()
-	permissions := pc.unsafeGetPermissions(levelID)
-	for _, p := range *permissions {
+func (ps *privilegesService) HasPermissionByID(levelID int64, permissionID int64) bool {
+	ps.RLock()
+	defer ps.RUnlock()
+	permissions := ps.cache[levelID]
+	for _, p := range permissions {
 		if p.ID == permissionID {
 			return true
 		}
@@ -79,43 +102,14 @@ func (pc *permissionCache) HasPermissionByID(levelID int64, permissionID int64) 
 	return false
 }
 
-func (pc *permissionCache) HasPermissionByName(levelID int64, permissionName string) bool {
-	pc.RLock()
-	defer pc.RUnlock()
-	permissions := pc.unsafeGetPermissions(levelID)
-	fmt.Printf("%+v", permissions)
-	for _, p := range *permissions {
+func (ps *privilegesService) HasPermissionByName(levelID int64, permissionName string) bool {
+	ps.RLock()
+	defer ps.RUnlock()
+	permissions := ps.cache[levelID]
+	for _, p := range permissions {
 		if p.Name == permissionName {
 			return true
 		}
 	}
 	return false
-}
-
-func (pc *permissionCache) SetPermissions(cache authModels.PermissionCache) {
-	pc.Lock()
-	defer pc.Unlock()
-	pc.cache = cache
-}
-
-func (s *privilegesService) BuildCache() error {
-	lgr := s.Lgr("BuildCache")
-	cache := s.PC()
-	dao := s.DM().PrivilegeDAO()
-
-	joinedPrivileges, err := dao.GetAllJoined()
-	lgr.Info(fmt.Sprintf("Cache: %+v", joinedPrivileges))
-	if err != nil {
-		return err
-	}
-
-	for _, jp := range joinedPrivileges {
-		if jp.Privileges.Name == "" {
-			continue
-		}
-		cache.AddPermission(jp.LevelID, jp.Privileges)
-	}
-	lgr.Info(fmt.Sprintf("Cache: %+v", cache))
-
-	return nil
 }

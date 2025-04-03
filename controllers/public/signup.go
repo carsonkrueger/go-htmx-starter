@@ -34,7 +34,7 @@ func (s *SignUp) PublicRoute(r chi.Router) {
 
 func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
 	lgr := s.Lgr("postSignup")
-	lgr.Info("controller postSignup called")
+	lgr.Info("Called")
 	ctx := req.Context()
 
 	if err := req.ParseForm(); err != nil {
@@ -68,7 +68,7 @@ func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
 	}
 
 	dao := s.DM().UsersDAO()
-	_, err := dao.Insert(&user)
+	err := dao.Insert(&user)
 	if err != nil {
 		lgr.Warn("Could not insert user", zap.Error(err))
 		res.WriteHeader(422)
@@ -90,7 +90,7 @@ func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
 
 func (s *SignUp) getSignup(res http.ResponseWriter, req *http.Request) {
 	lgr := s.Lgr("getSignup")
-	lgr.Info("controller getSignup called")
+	lgr.Info("Called")
 	ctx := req.Context()
 	hxRequest := tools.IsHxRequest(req)
 	page := pages.Signup()

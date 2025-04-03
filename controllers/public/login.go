@@ -35,7 +35,7 @@ func (l *Login) PublicRoute(r chi.Router) {
 
 func (l *Login) postLogin(res http.ResponseWriter, req *http.Request) {
 	lgr := l.Lgr("postLogin")
-	lgr.Info("Controller Called")
+	lgr.Info("Called")
 	ctx := req.Context()
 
 	if err := req.ParseForm(); err != nil {
@@ -78,7 +78,7 @@ func (l *Login) postLogin(res http.ResponseWriter, req *http.Request) {
 
 func (l *Login) getLogin(res http.ResponseWriter, req *http.Request) {
 	lgr := l.Lgr("getLogin")
-	lgr.Info("Controller Called")
+	lgr.Info("Called")
 	ctx := req.Context()
 	hxRequest := tools.IsHxRequest(req)
 	page := pageLayouts.MainPageLayout(pages.Login())

@@ -10,15 +10,13 @@ type appContext struct {
 	lgr *zap.Logger
 	sm  interfaces.IServiceManager
 	dm  interfaces.IDAOManager
-	pc  interfaces.IPermissionCache
 }
 
-func NewAppContext(lgr *zap.Logger, sm interfaces.IServiceManager, dm interfaces.IDAOManager, pc interfaces.IPermissionCache) *appContext {
+func NewAppContext(lgr *zap.Logger, sm interfaces.IServiceManager, dm interfaces.IDAOManager) *appContext {
 	return &appContext{
 		lgr,
 		sm,
 		dm,
-		pc,
 	}
 }
 
@@ -32,10 +30,6 @@ func (ctx *appContext) SM() interfaces.IServiceManager {
 
 func (ctx *appContext) DM() interfaces.IDAOManager {
 	return ctx.dm
-}
-
-func (ctx *appContext) PC() interfaces.IPermissionCache {
-	return ctx.pc
 }
 
 func (ctx *appContext) CleanUp() {

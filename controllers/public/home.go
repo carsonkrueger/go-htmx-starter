@@ -32,6 +32,8 @@ func (hw *Home) redirect_home(res http.ResponseWriter, req *http.Request) {
 }
 
 func (hw *Home) home(res http.ResponseWriter, req *http.Request) {
+	lgr := hw.Lgr("home")
+	lgr.Info("Called")
 	ctx := req.Context()
 	hxRequest := tools.IsHxRequest(req)
 	page := pageLayouts.MainPageLayout(pages.Home())

@@ -8,11 +8,13 @@ import (
 
 type IDAO[M any] interface {
 	GetById(id int64) (*M, error)
-	Insert(row *M) (int64, error)
-	Upsert(row *M, cols_update ...postgres.ColumnAssigment) (int64, error)
+	Insert(row *M) error
+	InsertMany(rows []*M) error
+	Upsert(row *M, cols_update ...postgres.ColumnAssigment) error
+	UpsertMany(row []*M, cols_update ...postgres.ColumnAssigment) error
 	Update(row *M) error
 	Delete(id int64) error
-	GetAll() ([]*M, error)
+	GetAll() (*[]M, error)
 }
 
 type IDAOManager interface {
@@ -23,11 +25,11 @@ type IDAOManager interface {
 type IUsersDAO interface {
 	IDAO[model.Users]
 	GetByEmail(email string) (*model.Users, error)
-	GetPrivilegeLevelID(id int64, token string) (int64, error)
+	GetPrivilegeLevelID(id int64, token string) (*int64, error)
 	UpdateAuthToken(id int64, authToken string) error
 }
 
 type IPrivilegeDAO interface {
 	IDAO[model.Privileges]
-	GetAllJoined() ([]authModels.JoinedPrivilegesRaw, error)
+	GetAllJoined() (*[]authModels.JoinedPrivilegesRaw, error)
 }

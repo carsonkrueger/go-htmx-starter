@@ -25,7 +25,8 @@ func (sm *serviceManager) UsersService() interfaces.IUsersService {
 
 func (sm *serviceManager) PrivilegesService() interfaces.IPrivilegesService {
 	if sm.privilegesService == nil {
-		sm.privilegesService = NewPrivilegesService(sm.svcCtx)
+		cache := NewPermissionCache()
+		sm.privilegesService = NewPrivilegesService(sm.svcCtx, cache)
 	}
 	return sm.privilegesService
 }

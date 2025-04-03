@@ -26,8 +26,6 @@ func (wp *WebPublic) PublicRoute(r chi.Router) {
 }
 
 func (wp *WebPublic) ServePublicDir() http.Handler {
-	lgr := wp.Lgr("ServePublicDir")
-	lgr.Info("Initialized WebPublic")
 	wd, err := os.Getwd()
 	if err != nil {
 		panic(err)

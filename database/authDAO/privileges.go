@@ -33,18 +33,29 @@ func (dao *privilegesDAO) GetById(id int64) (*model.Privileges, error) {
 	return &row, nil
 }
 
-func (dao *privilegesDAO) Insert(row *model.Privileges) (int64, error) {
+func (dao *privilegesDAO) Insert(row *model.Privileges) error {
 	var res model.Privileges
 	err := table.Privileges.INSERT(table.Privileges.Name).
 		VALUES(postgres.String(row.Name)).
 		RETURNING(table.Privileges.ID).
-		Query(dao.db, &res)
-	return res.ID, err
+		Query(dao.db, res)
+	return err
+}
+
+func (dao *privilegesDAO) InsertMany(rows []*model.Privileges) error {
+	if len(rows) == 0 {
+		return nil
+	}
+	return table.Privileges.
+		INSERT(table.Privileges.Name).
+		MODELS(rows).
+		RETURNING(table.Privileges.ID).
+		Query(dao.db, &rows)
 }
 
 // Returns ID int64 if inserted.
 // Parameter cols_update are the columns to be updated on conflict - if not provided, a few columns are updated
-func (dao *privilegesDAO) Upsert(row *model.Privileges, colsUpdate ...postgres.ColumnAssigment) (int64, error) {
+func (dao *privilegesDAO) Upsert(row *model.Privileges, colsUpdate ...postgres.ColumnAssigment) error {
 	if len(colsUpdate) == 0 {
 		colsUpdate = []postgres.ColumnAssigment{
 			table.Privileges.Name.SET(postgres.String(row.Name)),
@@ -52,24 +63,29 @@ func (dao *privilegesDAO) Upsert(row *model.Privileges, colsUpdate ...postgres.C
 		}
 	}
 
-	res, err := table.Privileges.
+	return table.Privileges.
 		INSERT(table.Privileges.Name).
 		VALUES(row.Name).
 		ON_CONFLICT(table.Privileges.Name).
 		DO_UPDATE(postgres.SET(colsUpdate...)).
 		RETURNING(table.Privileges.ID).
-		Exec(dao.db)
-	if err != nil {
-		return -1, err
+		Query(dao.db, row)
+}
+
+func (dao *privilegesDAO) UpsertMany(rows []*model.Privileges, colsUpdate ...postgres.ColumnAssigment) error {
+	if len(colsUpdate) == 0 {
+		colsUpdate = []postgres.ColumnAssigment{
+			table.Privileges.Name.SET(table.Privileges.Name),
+		}
 	}
 
-	id, err := res.LastInsertId()
-	// if err then row was not inserted
-	if err != nil {
-		id = -1
-	}
-
-	return id, nil
+	return table.Privileges.
+		INSERT(table.Privileges.Name).
+		MODELS(rows).
+		ON_CONFLICT(table.Privileges.Name).
+		DO_UPDATE(postgres.SET(colsUpdate...)).
+		RETURNING(table.Privileges.ID).
+		Query(dao.db, &rows)
 }
 
 func (dao *privilegesDAO) Update(row *model.Privileges) error {
@@ -79,10 +95,7 @@ func (dao *privilegesDAO) Update(row *model.Privileges) error {
 		WHERE(table.Privileges.ID.EQ(postgres.Int(row.ID))).
 		SET(table.Privileges.UpdatedAt.SET(postgres.TimestampT(time.Now()))).
 		Exec(dao.db)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (dao *privilegesDAO) Delete(id int64) error {
@@ -93,8 +106,8 @@ func (dao *privilegesDAO) Delete(id int64) error {
 	return nil
 }
 
-func (dao *privilegesDAO) GetAll() ([]*model.Privileges, error) {
-	var rows []*model.Privileges
+func (dao *privilegesDAO) GetAll() (*[]model.Privileges, error) {
+	var rows []model.Privileges
 	err := table.Privileges.
 		SELECT(table.Privileges.AllColumns).
 		ORDER_BY(table.Privileges.ID.DESC()).
@@ -102,10 +115,10 @@ func (dao *privilegesDAO) GetAll() ([]*model.Privileges, error) {
 	if err != nil {
 		return nil, err
 	}
-	return rows, nil
+	return &rows, nil
 }
 
-func (dao *privilegesDAO) GetAllJoined() ([]authModels.JoinedPrivilegesRaw, error) {
+func (dao *privilegesDAO) GetAllJoined() (*[]authModels.JoinedPrivilegesRaw, error) {
 	var res []authModels.JoinedPrivilegesRaw
 
 	err := table.PrivilegeLevels.
@@ -124,5 +137,5 @@ func (dao *privilegesDAO) GetAllJoined() ([]authModels.JoinedPrivilegesRaw, erro
 		return nil, err
 	}
 
-	return res, nil
+	return &res, nil
 }

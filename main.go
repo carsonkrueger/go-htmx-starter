@@ -25,13 +25,12 @@ func main() {
 	if db == nil {
 		panic("Database connection is nil")
 	}
-	pc := services.NewPermissionCache()
 	dm := database.NewDAOManager(db)
 
-	svcCtx := context.NewServiceContext(lgr, dm, pc)
+	svcCtx := context.NewServiceContext(lgr, dm)
 	sm := services.NewServiceManager(svcCtx)
 
-	appCtx := context.NewAppContext(lgr, sm, dm, pc)
+	appCtx := context.NewAppContext(lgr, sm, dm)
 	defer appCtx.CleanUp()
 
 	appRouter := router.Setup()
