@@ -6,6 +6,7 @@ import (
 
 	"github.com/carsonkrueger/main/cfg"
 	"github.com/carsonkrueger/main/seeders"
+	_ "github.com/lib/pq"
 )
 
 func main() {

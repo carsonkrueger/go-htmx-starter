@@ -3,76 +3,65 @@ package seeders
 import (
 	"database/sql"
 
-	"github.com/carsonkrueger/main/controllers/private"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
-type SeedPrivilegeLevel struct {
-	ID         int64
-	Name       string
-	Privileges []model.Privileges
-}
-
-var basicLevel SeedPrivilegeLevel = SeedPrivilegeLevel{
-	ID:         1000,
-	Name:       "basic",
-	Privileges: []model.Privileges{},
-}
-
-var adminLevel SeedPrivilegeLevel = SeedPrivilegeLevel{
-	ID:   1001,
-	Name: "admin",
-	Privileges: append(basicLevel.Privileges, []model.Privileges{
-		{ID: 1000, Name: private.UserManagementGet},
-	}...),
-}
-
 func SeedPermissions(db *sql.DB) error {
-	_, err := table.Privileges.INSERT(table.Privileges.ID, table.Privileges.Name).
-		MODELS(adminLevel.Privileges).
+	allPrivilegeLevelNames := []string{"admin", "basic"}
+	adminLevelName := allPrivilegeLevelNames[0] // gives all privileges to admin level
+
+	newPrivileges := make([]model.PrivilegeLevels, len(allPrivilegeLevelNames))
+	for i, name := range allPrivilegeLevelNames {
+		newPrivileges[i] = model.PrivilegeLevels{Name: name}
+	}
+
+	_, err := table.PrivilegeLevels.
+		INSERT(table.PrivilegeLevels.Name).
+		MODELS(newPrivileges).
 		ON_CONFLICT().
 		DO_NOTHING().
 		Exec(db)
-
 	if err != nil {
 		return err
 	}
 
-	levels := []SeedPrivilegeLevel{
-		basicLevel,
-		adminLevel,
+	var allLevels []model.PrivilegeLevels
+	if err = table.PrivilegeLevels.SELECT(table.PrivilegeLevels.AllColumns).Query(db, &allLevels); err != nil {
+		return err
 	}
 
-	for _, level := range levels {
-		_, err := table.PrivilegeLevels.INSERT(table.PrivilegeLevels.ID, table.PrivilegeLevels.Name).
-			MODEL(model.PrivilegeLevels{
-				ID:   level.ID,
-				Name: level.Name,
-			}).
-			ON_CONFLICT().
-			DO_NOTHING().
-			Exec(db)
+	var allPrivileges []model.Privileges
+	if err = table.Privileges.SELECT(table.Privileges.AllColumns).Query(db, &allPrivileges); err != nil {
+		return err
+	}
 
-		if err != nil {
-			return err
+	var adminLevel model.PrivilegeLevels
+	err = table.PrivilegeLevels.
+		SELECT(table.PrivilegeLevels.AllColumns).
+		WHERE(table.PrivilegeLevels.Name.EQ(postgres.String(adminLevelName))).
+		Query(db, &adminLevel)
+	if err != nil {
+		return err
+	}
+
+	privilegeLevelPrivileges := make([]model.PrivilegeLevelsPrivileges, len(allPrivileges))
+	for i, p := range allPrivileges {
+		privilegeLevelPrivileges[i] = model.PrivilegeLevelsPrivileges{
+			PrivilegeLevelID: adminLevel.ID,
+			PrivilegeID:      p.ID,
 		}
+	}
 
-		for _, privilege := range level.Privileges {
-			_, err := table.PrivilegeLevelsPrivileges.INSERT(table.PrivilegeLevelsPrivileges.PrivilegeLevelID, table.PrivilegeLevelsPrivileges.PrivilegeID).
-				MODEL(model.PrivilegeLevelsPrivileges{
-					PrivilegeLevelID: level.ID,
-					PrivilegeID:      privilege.ID,
-				}).
-				ON_CONFLICT().
-				DO_NOTHING().
-				Exec(db)
-
-			if err != nil {
-				return err
-			}
-		}
+	_, err = table.PrivilegeLevelsPrivileges.
+		INSERT(table.PrivilegeLevelsPrivileges.PrivilegeLevelID, table.PrivilegeLevelsPrivileges.PrivilegeID).
+		MODELS(privilegeLevelPrivileges).
+		ON_CONFLICT().
+		DO_NOTHING().
+		Exec(db)
+	if err != nil {
+		return err
 	}
 
 	return nil

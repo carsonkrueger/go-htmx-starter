@@ -49,10 +49,10 @@ migrate-generate:
 	migrate create -ext sql -dir migrations -seq $$name
 
 seed:
-	go run cmd/seeds/seed.go
+	go run cmd/seed.go
 
 seed-undo:
-	go run cmd/seeds/seed.go -undo=true
+	go run cmd/seed.go -undo=true
 
 
 jet-all:
