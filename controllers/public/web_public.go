@@ -7,7 +7,6 @@ import (
 
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/go-chi/chi/v5"
-	"go.uber.org/zap"
 )
 
 type WebPublic struct {
@@ -27,7 +26,7 @@ func (wp *WebPublic) PublicRoute(r chi.Router) {
 }
 
 func (wp *WebPublic) ServePublicDir() http.Handler {
-	lgr := wp.Lgr().With(zap.String("controller", "GET /public"))
+	lgr := wp.Lgr("ServePublicDir")
 	lgr.Info("Initialized WebPublic")
 	wd, err := os.Getwd()
 	if err != nil {

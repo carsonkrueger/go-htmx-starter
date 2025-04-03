@@ -99,7 +99,7 @@ func (pc *permissionCache) SetPermissions(cache authModels.PermissionCache) {
 }
 
 func (s *privilegesService) BuildCache() error {
-	lgr := s.Lgr()
+	lgr := s.Lgr("BuildCache")
 	cache := s.PC()
 	dao := s.DM().PrivilegeDAO()
 

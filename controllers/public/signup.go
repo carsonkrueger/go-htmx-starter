@@ -33,7 +33,7 @@ func (s *SignUp) PublicRoute(r chi.Router) {
 }
 
 func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
-	lgr := s.Lgr()
+	lgr := s.Lgr("postSignup")
 	lgr.Info("controller postSignup called")
 	ctx := req.Context()
 
@@ -89,7 +89,7 @@ func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
 }
 
 func (s *SignUp) getSignup(res http.ResponseWriter, req *http.Request) {
-	lgr := s.Lgr()
+	lgr := s.Lgr("getSignup")
 	lgr.Info("controller getSignup called")
 	ctx := req.Context()
 	hxRequest := tools.IsHxRequest(req)

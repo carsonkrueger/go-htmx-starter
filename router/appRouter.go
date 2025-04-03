@@ -41,32 +41,30 @@ func Setup() AppRouter {
 
 func (a *AppRouter) BuildRouter(ctx interfaces.IAppContext) {
 	a.router = chi.NewRouter()
+	lgr := ctx.Lgr("BuildRouter")
 
-	// fmt.Println("Creating public routes:")
 	for _, r := range a.public {
 		r.SetAppCtx(ctx)
 		router := chi.NewRouter()
 		r.PublicRoute(router)
 		a.router.Mount(r.Path(), router)
-		// fmt.Printf("\t%v\n", r.Path())
+		lgr.Info(r.Path())
 	}
 
 	// enforce authentication middleware
 	a.router = a.router.With(middlewares.EnforceAuth(ctx))
 
-	// fmt.Println("\nCreating private routes:")
 	for _, r := range a.private {
 		r.SetAppCtx(ctx)
 		builder := builders.NewPrivateRouteBuilder(ctx)
 		r.PrivateRoute(&builder)
 		a.router.Mount(r.Path(), builder.Build())
-		// fmt.Printf("\t%v\n", r.Path())
+		lgr.Info(r.Path())
 	}
 
-	// fills cache with privileges
 	err := ctx.SM().PrivilegesService().BuildCache()
 	if err != nil {
-		ctx.Lgr().Fatal("Error building permission cache", zap.Error(err))
+		lgr.Fatal("Error building permission cache", zap.Error(err))
 	}
 }
 

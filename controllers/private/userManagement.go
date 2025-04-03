@@ -43,21 +43,21 @@ func (um *UserManagement) PrivateRoute(b *builders.PrivateRouteBuilder) {
 }
 
 func (um *UserManagement) userManagementGet(res http.ResponseWriter, req *http.Request) {
-	lgr := um.Lgr()
+	lgr := um.Lgr("userManagementGet")
 	lgr.Info("GET /user_managment")
 	ctx := req.Context()
 	GetTab(res, req, ctx, 0)
 }
 
 func (um *UserManagement) userManagementUsersGet(res http.ResponseWriter, req *http.Request) {
-	lgr := um.Lgr()
+	lgr := um.Lgr("userManagementUsersGet")
 	lgr.Info("GET /user_management/users")
 	ctx := req.Context()
 	GetTab(res, req, ctx, 0)
 }
 
 func (um *UserManagement) userManagementLevelsGet(res http.ResponseWriter, req *http.Request) {
-	lgr := um.Lgr()
+	lgr := um.Lgr("userManagementLevelsGet")
 	lgr.Info("GET /user_management/levels")
 	ctx := req.Context()
 	GetTab(res, req, ctx, 1)

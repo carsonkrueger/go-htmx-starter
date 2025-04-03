@@ -6,8 +6,12 @@ import (
 	"go.uber.org/zap"
 )
 
+type INamedLogger interface {
+	Lgr(name string) *zap.Logger
+}
+
 type IAppContext interface {
-	Lgr() *zap.Logger
+	INamedLogger
 	SM() IServiceManager
 	DM() IDAOManager
 	PC() IPermissionCache
@@ -18,7 +22,7 @@ type ISetAppContext interface {
 }
 
 type IServiceContext interface {
-	Lgr() *zap.Logger
+	INamedLogger
 	DM() IDAOManager
 	PC() IPermissionCache
 }

@@ -19,8 +19,8 @@ func NewServiceContext(lgr *zap.Logger, dm interfaces.IDAOManager, pc interfaces
 	}
 }
 
-func (sc *serviceContext) Lgr() *zap.Logger {
-	return sc.lgr
+func (sc *serviceContext) Lgr(name string) *zap.Logger {
+	return sc.lgr.Named(name)
 }
 
 func (sc *serviceContext) DM() interfaces.IDAOManager {

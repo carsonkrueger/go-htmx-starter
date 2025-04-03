@@ -22,8 +22,8 @@ func NewAppContext(lgr *zap.Logger, sm interfaces.IServiceManager, dm interfaces
 	}
 }
 
-func (ctx *appContext) Lgr() *zap.Logger {
-	return ctx.lgr
+func (ctx *appContext) Lgr(name string) *zap.Logger {
+	return ctx.lgr.Named(name)
 }
 
 func (ctx *appContext) SM() interfaces.IServiceManager {

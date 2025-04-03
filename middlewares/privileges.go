@@ -11,9 +11,10 @@ import (
 )
 
 func ApplyPermission(permissionName string, appCtx interfaces.IAppContext) func(next http.Handler) http.Handler {
+	lgr := appCtx.Lgr("MW ApplyPermission")
+
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-			lgr := appCtx.Lgr()
 			ctx := req.Context()
 			lgr.Info(fmt.Sprintf("Permission Auth: %+v", permissionName))
 

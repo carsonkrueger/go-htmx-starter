@@ -11,10 +11,10 @@ import (
 
 func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Handler {
 	dao := appCtx.DM().UsersDAO()
+	lgr := appCtx.Lgr("MW EnforceAuth")
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-			lgr := appCtx.Lgr()
 			ctx := req.Context()
 
 			cookie, err := tools.GetAuthCookie(req)
