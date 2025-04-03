@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/carsonkrueger/main/cfg"
 	"go.uber.org/zap"
@@ -18,12 +19,14 @@ func NewLogger(cfg *cfg.Config) *zap.Logger {
 		config = zap.Config{
 			Level:         zap.NewAtomicLevelAt(zap.DebugLevel),
 			Development:   true,
-			Encoding:      "json",
+			Encoding:      "console",
 			EncoderConfig: zap.NewDevelopmentEncoderConfig(),
 			OutputPaths: []string{
 				"stdout",
 			},
 		}
+		config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+		config.EncoderConfig.EncodeTime = devTimeEncoder
 	case "production":
 		config = zap.Config{
 			Level:         zap.NewAtomicLevelAt(zap.ErrorLevel),
@@ -41,7 +44,9 @@ func NewLogger(cfg *cfg.Config) *zap.Logger {
 		panic(fmt.Sprintf("Invalid app environment: %s", cfg.AppEnv))
 	}
 
-	config.EncoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
-
 	return zap.Must(config.Build())
+}
+
+func devTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
+	enc.AppendString(t.Format("2006-01-02 15:04:05"))
 }
