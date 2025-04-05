@@ -19,7 +19,7 @@ tw:
 build:
 	make tw
 	make templ
-	go build -o ./bin/main main.go
+	go build -o ./bin/main .
 
 docker:
 	make docker-down
@@ -49,10 +49,10 @@ migrate-generate:
 	migrate create -ext sql -dir migrations -seq $$name
 
 seed:
-	go run cmd/seed.go
+	go run . seed
 
 seed-undo:
-	go run cmd/seed.go -undo=true
+	go run . -undo=true seed
 
 
 jet-all:

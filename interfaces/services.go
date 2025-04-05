@@ -5,6 +5,7 @@ import (
 )
 
 type IServiceManager interface {
+	SetAppContext(appCtx IAppContext)
 	UsersService() IUsersService
 	PrivilegesService() IPrivilegesService
 }

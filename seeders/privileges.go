@@ -3,14 +3,18 @@ package seeders
 import (
 	"database/sql"
 
+	"github.com/carsonkrueger/main/constant"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
 func SeedPermissions(db *sql.DB) error {
-	allPrivilegeLevelNames := []string{"admin", "basic"}
-	adminLevelName := allPrivilegeLevelNames[0] // gives all privileges to admin level
+	allPrivilegeLevelNames := []string{
+		constant.ADMIN_LEVEL_NAME,
+		constant.BASIC_LEVEL_NAME,
+	}
+	adminLevelName := constant.ADMIN_LEVEL_NAME
 
 	newPrivileges := make([]model.PrivilegeLevels, len(allPrivilegeLevelNames))
 	for i, name := range allPrivilegeLevelNames {
@@ -68,7 +72,14 @@ func SeedPermissions(db *sql.DB) error {
 }
 
 func UndoPermissions(db *sql.DB) error {
-	_, err := table.Users.DELETE().
+	_, err := table.Sessions.DELETE().
+		WHERE(postgres.Bool(true)).
+		Exec(db)
+	if err != nil {
+		return err
+	}
+
+	_, err = table.Users.DELETE().
 		WHERE(postgres.Bool(true)).
 		Exec(db)
 	if err != nil {

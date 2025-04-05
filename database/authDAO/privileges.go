@@ -7,6 +7,7 @@ import (
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
 	"github.com/carsonkrueger/main/models/authModels"
+	"github.com/carsonkrueger/main/tools"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
@@ -35,7 +36,8 @@ func (dao *privilegesDAO) GetById(id int64) (*model.Privileges, error) {
 
 func (dao *privilegesDAO) Insert(row *model.Privileges) error {
 	var res model.Privileges
-	err := table.Privileges.INSERT(table.Privileges.Name).
+	err := table.Privileges.
+		INSERT(table.Privileges.AllColumns.Except(table.Privileges.ID, table.Privileges.CreatedAt, table.Privileges.UpdatedAt)).
 		VALUES(postgres.String(row.Name)).
 		RETURNING(table.Privileges.ID).
 		Query(dao.db, res)
@@ -47,7 +49,7 @@ func (dao *privilegesDAO) InsertMany(rows []*model.Privileges) error {
 		return nil
 	}
 	return table.Privileges.
-		INSERT(table.Privileges.Name).
+		INSERT(table.Privileges.AllColumns.Except(table.Privileges.ID, table.Privileges.CreatedAt, table.Privileges.UpdatedAt)).
 		MODELS(rows).
 		RETURNING(table.Privileges.ID).
 		Query(dao.db, &rows)
@@ -59,12 +61,13 @@ func (dao *privilegesDAO) Upsert(row *model.Privileges, colsUpdate ...postgres.C
 	if len(colsUpdate) == 0 {
 		colsUpdate = []postgres.ColumnAssigment{
 			table.Privileges.Name.SET(postgres.String(row.Name)),
-			table.Privileges.UpdatedAt.SET(postgres.TimestampT(time.Now())),
 		}
 	}
 
+	row.UpdatedAt = tools.Ptr(time.Now())
+
 	return table.Privileges.
-		INSERT(table.Privileges.Name).
+		INSERT(table.Privileges.AllColumns.Except(table.Privileges.ID, table.Privileges.CreatedAt, table.Privileges.UpdatedAt)).
 		VALUES(row.Name).
 		ON_CONFLICT(table.Privileges.Name).
 		DO_UPDATE(postgres.SET(colsUpdate...)).
@@ -79,8 +82,13 @@ func (dao *privilegesDAO) UpsertMany(rows []*model.Privileges, colsUpdate ...pos
 		}
 	}
 
+	now := time.Now()
+	for _, r := range rows {
+		r.UpdatedAt = &now
+	}
+
 	return table.Privileges.
-		INSERT(table.Privileges.Name).
+		INSERT(table.Privileges.AllColumns.Except(table.Privileges.ID, table.Privileges.CreatedAt, table.Privileges.UpdatedAt)).
 		MODELS(rows).
 		ON_CONFLICT(table.Privileges.Name).
 		DO_UPDATE(postgres.SET(colsUpdate...)).
@@ -89,6 +97,7 @@ func (dao *privilegesDAO) UpsertMany(rows []*model.Privileges, colsUpdate ...pos
 }
 
 func (dao *privilegesDAO) Update(row *model.Privileges) error {
+	row.UpdatedAt = tools.Ptr(time.Now())
 	_, err := table.Privileges.
 		UPDATE(table.Privileges.EXCLUDED.ID).
 		MODEL(row).

@@ -20,7 +20,9 @@ type IDAO[M any, ID any] interface {
 type IDAOManager interface {
 	UsersDAO() IUsersDAO
 	PrivilegeDAO() IPrivilegeDAO
+	PrivilegeLevelsDAO() IPrivilegeLevelsDAO
 	SessionsDAO() ISessionsDAO
+	PrivilegeLevelsPrivilegesDAO() IPrivilegeLevelsPrivilegesDAO
 }
 
 type IUsersDAO interface {
@@ -36,4 +38,12 @@ type IPrivilegeDAO interface {
 
 type ISessionsDAO interface {
 	IDAO[model.Sessions, authModels.SessionsPrimaryKey]
+}
+
+type IPrivilegeLevelsDAO interface {
+	IDAO[model.PrivilegeLevels, int64]
+}
+
+type IPrivilegeLevelsPrivilegesDAO interface {
+	IDAO[model.PrivilegeLevelsPrivileges, authModels.PrivilegeLevelsPrivilegesPrimaryKey]
 }

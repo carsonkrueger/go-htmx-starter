@@ -6,4 +6,4 @@ make migrate-internal
 make jet-all-internal
 make build
 
-./bin/main -internal=true
+./bin/main -internal=true web

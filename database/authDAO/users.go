@@ -7,6 +7,7 @@ import (
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
 	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/tools"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
@@ -35,8 +36,8 @@ func (dao *usersDAO) GetById(id int64) (*model.Users, error) {
 
 func (dao *usersDAO) Insert(row *model.Users) error {
 	return table.Users.
-		INSERT(table.Users.Email, table.Users.FirstName, table.Users.LastName, table.Users.Password, table.Users.PrivilegeLevelID).
-		VALUES(row.Email, row.FirstName, row.LastName, row.Password, row.PrivilegeLevelID).
+		INSERT(table.Users.AllColumns.Except(table.Users.ID, table.Users.CreatedAt, table.Users.UpdatedAt)).
+		MODEL(row).
 		RETURNING(table.Users.ID).
 		Query(dao.db, row)
 }
@@ -46,7 +47,7 @@ func (dao *usersDAO) InsertMany(rows []*model.Users) error {
 		return nil
 	}
 	return table.Users.
-		INSERT(table.Users.Email, table.Users.FirstName, table.Users.LastName, table.Users.Password, table.Users.PrivilegeLevelID).
+		INSERT(table.Users.AllColumns.Except(table.Users.ID, table.Users.CreatedAt, table.Users.UpdatedAt)).
 		MODELS(rows).
 		RETURNING(table.Users.ID).
 		Query(dao.db, &rows)
@@ -58,9 +59,9 @@ func (dao *usersDAO) Upsert(row *model.Users, colsUpdate ...postgres.ColumnAssig
 			table.Users.Email.SET(postgres.String(row.Email)),
 			table.Users.FirstName.SET(postgres.String(row.FirstName)),
 			table.Users.LastName.SET(postgres.String(row.LastName)),
-			table.Users.UpdatedAt.SET(postgres.TimestampT(time.Now())),
 		}
 	}
+	row.UpdatedAt = tools.Ptr(time.Now())
 
 	return table.Users.
 		INSERT(table.Users.AllColumns.Except(table.Users.ID, table.Users.CreatedAt)).
@@ -81,18 +82,24 @@ func (dao *usersDAO) UpsertMany(rows []*model.Users, colsUpdate ...postgres.Colu
 		}
 	}
 
+	now := time.Now()
+	for _, r := range rows {
+		r.UpdatedAt = &now
+	}
+
 	return table.Users.
 		INSERT(table.Users.AllColumns.Except(table.Users.ID, table.Users.CreatedAt)).
 		MODELS(rows).
-		ON_CONFLICT(table.Users.ID, table.Users.Email).
+		ON_CONFLICT(table.Users.Email).
 		DO_UPDATE(postgres.SET(colsUpdate...)).
 		RETURNING(table.Privileges.ID).
 		Query(dao.db, &rows)
 }
 
 func (dao *usersDAO) Update(row *model.Users) error {
+	row.UpdatedAt = tools.Ptr(time.Now())
 	_, err := table.Users.
-		UPDATE(table.Users.AllColumns).
+		UPDATE(table.Users.AllColumns.Except(table.Users.ID, table.Users.CreatedAt)).
 		MODEL(row).
 		WHERE(table.Users.ID.EQ(postgres.Int(row.ID))).
 		Exec(dao.db)
@@ -142,6 +149,12 @@ func (dao *usersDAO) GetPrivilegeLevelID(userID int64) (*int64, error) {
 }
 
 func (dao *usersDAO) GetAll() (*[]model.Users, error) {
-	// not implemented
-	return &[]model.Users{}, nil
+	var rows []model.Users
+	err := table.Users.
+		SELECT(table.Users.AllColumns).
+		Query(dao.db, &rows)
+	if err != nil {
+		return nil, err
+	}
+	return &rows, nil
 }

@@ -29,7 +29,8 @@ func NewPrivilegesService(ctx interfaces.IServiceContext, cache *permissionCache
 
 type permissionCache struct {
 	sync.RWMutex
-	cache authModels.PermissionCache
+	cache          authModels.PermissionCache
+	levelNameCache authModels.LevelNameCache
 }
 
 func NewPermissionCache() *permissionCache {
@@ -71,6 +72,15 @@ func (ps *privilegesService) AddPermission(levelID int64, perms ...model.Privile
 		return
 	}
 
+	var joinRows []model.PrivilegeLevelsPrivileges
+	for _, p := range perms {
+		joinRows = append(joinRows, model.PrivilegeLevelsPrivileges{
+			PrivilegeLevelID: levelID,
+			PrivilegeID:      p.ID,
+		})
+	}
+	ps.DM().PrivilegeLevelsPrivilegesDAO().UpsertMany(tools.PtrSlice(joinRows))
+
 	ps.Lock()
 	defer ps.Unlock()
 
@@ -82,6 +92,19 @@ func (ps *privilegesService) AddPermission(levelID int64, perms ...model.Privile
 		names[i] = string(p.Name)
 	}
 	lgr.Info("Level:Privilege", zap.Strings(strconv.FormatInt(levelID, 10), names))
+}
+
+func (ps *privilegesService) CreateLevel(name string) {
+	lgr := ps.Lgr("CreateLevel")
+	lgr.Info("Called")
+
+	row := model.PrivilegeLevels{
+		Name: name,
+	}
+	if err := ps.DM().PrivilegeLevelsDAO().Insert(&row); err != nil {
+		lgr.Error("Failed to create level", zap.Error(err))
+		return
+	}
 }
 
 func (ps *privilegesService) GetPermissions(levelID int64) []model.Privileges {

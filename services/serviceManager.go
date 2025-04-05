@@ -7,18 +7,22 @@ import (
 type serviceManager struct {
 	usersService      interfaces.IUsersService
 	privilegesService interfaces.IPrivilegesService
-	svcCtx            interfaces.IServiceContext
+	appCtx            interfaces.IAppContext
 }
 
-func NewServiceManager(svcCtx interfaces.IServiceContext) *serviceManager {
+func NewServiceManager(appCtx interfaces.IAppContext) *serviceManager {
 	return &serviceManager{
-		svcCtx: svcCtx,
+		appCtx: appCtx,
 	}
+}
+
+func (sm *serviceManager) SetAppContext(appCtx interfaces.IAppContext) {
+	sm.appCtx = appCtx
 }
 
 func (sm *serviceManager) UsersService() interfaces.IUsersService {
 	if sm.usersService == nil {
-		sm.usersService = NewUsersService(sm.svcCtx)
+		sm.usersService = NewUsersService(sm.appCtx)
 	}
 	return sm.usersService
 }
@@ -26,7 +30,7 @@ func (sm *serviceManager) UsersService() interfaces.IUsersService {
 func (sm *serviceManager) PrivilegesService() interfaces.IPrivilegesService {
 	if sm.privilegesService == nil {
 		cache := NewPermissionCache()
-		sm.privilegesService = NewPrivilegesService(sm.svcCtx, cache)
+		sm.privilegesService = NewPrivilegesService(sm.appCtx, cache)
 	}
 	return sm.privilegesService
 }

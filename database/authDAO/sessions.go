@@ -36,7 +36,7 @@ func (dao *sessionsDAO) GetById(id authModels.SessionsPrimaryKey) (*model.Sessio
 
 func (dao *sessionsDAO) Insert(row *model.Sessions) error {
 	return table.Sessions.
-		INSERT(table.Sessions.UserID, table.Sessions.Token, table.Sessions.ExpiresAt).
+		INSERT(table.Sessions.AllColumns.Except(table.Sessions.CreatedAt)).
 		VALUES(row.UserID, row.Token, row.ExpiresAt).
 		RETURNING(table.Sessions.UserID, table.Sessions.Token).
 		Query(dao.db, row)
@@ -47,7 +47,7 @@ func (dao *sessionsDAO) InsertMany(rows []*model.Sessions) error {
 		return nil
 	}
 	return table.Sessions.
-		INSERT(table.Sessions.Token, table.Sessions.ExpiresAt).
+		INSERT(table.Sessions.AllColumns.Except(table.Sessions.CreatedAt)).
 		MODELS(rows).
 		RETURNING(table.Sessions.UserID, table.Sessions.Token).
 		Query(dao.db, &rows)
@@ -64,7 +64,7 @@ func (dao *sessionsDAO) Upsert(row *model.Sessions, colsUpdate ...postgres.Colum
 	}
 
 	return table.Sessions.
-		INSERT(table.Sessions.UserID, table.Sessions.Token, table.Sessions.ExpiresAt).
+		INSERT(table.Sessions.AllColumns.Except(table.Sessions.CreatedAt)).
 		VALUES(row.UserID, row.Token, row.ExpiresAt).
 		ON_CONFLICT(table.Sessions.Token).
 		DO_UPDATE(postgres.SET(colsUpdate...)).
@@ -81,7 +81,7 @@ func (dao *sessionsDAO) UpsertMany(rows []*model.Sessions, colsUpdate ...postgre
 	}
 
 	return table.Sessions.
-		INSERT(table.Sessions.UserID, table.Sessions.Token, table.Sessions.ExpiresAt).
+		INSERT(table.Sessions.AllColumns.Except(table.Sessions.CreatedAt)).
 		MODELS(rows).
 		ON_CONFLICT(table.Sessions.Token).
 		DO_UPDATE(postgres.SET(colsUpdate...)).
@@ -91,7 +91,7 @@ func (dao *sessionsDAO) UpsertMany(rows []*model.Sessions, colsUpdate ...postgre
 
 func (dao *sessionsDAO) Update(row *model.Sessions) error {
 	_, err := table.Sessions.
-		UPDATE(table.Sessions.Token, table.Sessions.ExpiresAt).
+		UPDATE(table.Sessions.AllColumns.Except(table.Sessions.CreatedAt)).
 		MODEL(row).
 		WHERE(table.Sessions.UserID.EQ(postgres.Int(row.UserID)).
 			AND(table.Sessions.Token.EQ(postgres.String(row.Token)))).
