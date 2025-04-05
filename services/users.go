@@ -35,7 +35,7 @@ func (us *usersService) Login(email string, password string) (*string, error) {
 
 	token, _ := tools.GenerateSalt()
 	fullToken := fmt.Sprintf("%s$%d", token, user.ID)
-	err = dao.UpdateAuthToken(user.ID, fullToken)
+	err = dao.UpdateAuthToken(user.ID, token)
 	if err != nil {
 		return nil, err
 	}

@@ -41,7 +41,7 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 				return
 			}
 
-			if *user.AuthToken != cookie.Value {
+			if *user.AuthToken != token {
 				req.Header.Del(tools.AUTH_TOKEN_KEY)
 				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("Malformed auth token"))
 				res.Header().Set("Hx-Redirect", "/login")
