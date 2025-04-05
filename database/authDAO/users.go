@@ -35,8 +35,8 @@ func (dao *usersDAO) GetById(id int64) (*model.Users, error) {
 
 func (dao *usersDAO) Insert(row *model.Users) error {
 	return table.Users.
-		INSERT(table.Users.Email, table.Users.FirstName, table.Users.LastName, table.Users.Password, table.Users.AuthToken, table.Users.AuthTokenCreatedAt, table.Users.PrivilegeLevelID).
-		VALUES(row.Email, row.FirstName, row.LastName, row.Password, row.AuthToken, postgres.TimestampT(time.Now()), row.PrivilegeLevelID).
+		INSERT(table.Users.Email, table.Users.FirstName, table.Users.LastName, table.Users.Password, table.Users.PrivilegeLevelID).
+		VALUES(row.Email, row.FirstName, row.LastName, row.Password, row.PrivilegeLevelID).
 		RETURNING(table.Users.ID).
 		Query(dao.db, row)
 }
@@ -46,7 +46,7 @@ func (dao *usersDAO) InsertMany(rows []*model.Users) error {
 		return nil
 	}
 	return table.Users.
-		INSERT(table.Users.Email, table.Users.FirstName, table.Users.LastName, table.Users.Password, table.Users.AuthToken, table.Users.AuthTokenCreatedAt, table.Users.PrivilegeLevelID).
+		INSERT(table.Users.Email, table.Users.FirstName, table.Users.LastName, table.Users.Password, table.Users.PrivilegeLevelID).
 		MODELS(rows).
 		RETURNING(table.Users.ID).
 		Query(dao.db, &rows)
@@ -125,14 +125,13 @@ type PrivilegeLevelIDResponse struct {
 	PrivilegeID int64
 }
 
-func (dao *usersDAO) GetPrivilegeLevelID(userID int64, token string) (*int64, error) {
+func (dao *usersDAO) GetPrivilegeLevelID(userID int64) (*int64, error) {
 	var res PrivilegeLevelIDResponse
 
 	err := table.Users.
 		SELECT(table.Users.PrivilegeLevelID.AS("PrivilegeLevelIDResponse.PrivilegeID")).
 		FROM(table.Users).
-		WHERE(table.Users.ID.EQ(postgres.Int(userID)).
-			AND(table.Users.AuthToken.EQ(postgres.String(token)))).
+		WHERE(table.Users.ID.EQ(postgres.Int(userID))).
 		LIMIT(1).
 		Query(dao.db, &res)
 
@@ -140,15 +139,6 @@ func (dao *usersDAO) GetPrivilegeLevelID(userID int64, token string) (*int64, er
 		return nil, err
 	}
 	return &res.PrivilegeID, nil
-}
-
-func (dao *usersDAO) UpdateAuthToken(id int64, authToken string) error {
-	_, err := table.Users.
-		UPDATE(table.Users.AuthToken).
-		SET(authToken).
-		WHERE(table.Users.ID.EQ(postgres.Int(id))).
-		Exec(dao.db)
-	return err
 }
 
 func (dao *usersDAO) GetAll() (*[]model.Users, error) {

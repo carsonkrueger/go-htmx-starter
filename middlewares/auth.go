@@ -6,11 +6,13 @@ import (
 
 	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/tools"
 )
 
 func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Handler {
-	dao := appCtx.DM().UsersDAO()
+	usersDAO := appCtx.DM().UsersDAO()
+	sessionsDAO := appCtx.DM().SessionsDAO()
 	lgr := appCtx.Lgr("MW EnforceAuth")
 
 	return func(next http.Handler) http.Handler {
@@ -32,7 +34,7 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 				return
 			}
 
-			user, err := dao.GetById(id)
+			user, err := usersDAO.GetById(id)
 
 			if err != nil {
 				req.Header.Del(tools.AUTH_TOKEN_KEY)
@@ -41,7 +43,20 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 				return
 			}
 
-			if *user.AuthToken != token {
+			key := authModels.SessionsPrimaryKey{
+				UserID:    id,
+				AuthToken: token,
+			}
+			session, err := sessionsDAO.GetById(key)
+
+			if session == nil || err != nil {
+				req.Header.Del(tools.AUTH_TOKEN_KEY)
+				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("Malformed auth token"))
+				res.Header().Set("Hx-Redirect", "/login")
+				return
+			}
+
+			if session.Token != token {
 				req.Header.Del(tools.AUTH_TOKEN_KEY)
 				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("Malformed auth token"))
 				res.Header().Set("Hx-Redirect", "/login")

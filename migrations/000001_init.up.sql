@@ -42,11 +42,17 @@ CREATE TABLE IF NOT EXISTS auth.users (
     ) PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    auth_token VARCHAR(64),
-    auth_token_created_at TIMESTAMP,
     first_name VARCHAR(64) NOT NULL,
     last_name VARCHAR(64) NOT NULL,
     privilege_level_id BIGINT NOT NULL REFERENCES auth.privilege_levels (id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS auth.sessions (
+    user_id BIGINT NOT NULL REFERENCES auth.users (id),
+    token VARCHAR(64) NOT NULL,
+    expires_at TIMESTAMP DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, token)
 );

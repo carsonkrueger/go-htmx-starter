@@ -63,16 +63,25 @@ func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
 		LastName:         form.Get("last_name"),
 		Email:            form.Get("email"),
 		Password:         hash,
-		AuthToken:        &authToken,
 		PrivilegeLevelID: 1000,
 	}
 
-	dao := s.DM().UsersDAO()
-	err := dao.Insert(&user)
-	if err != nil {
+	if err := s.DM().UsersDAO().Insert(&user); err != nil {
 		lgr.Warn("Could not insert user", zap.Error(err))
 		res.WriteHeader(422)
 		noti := datadisplay.AddTextToast(models.Warning, "Email taken", 0)
+		noti.Render(ctx, res)
+		return
+	}
+
+	session := &model.Sessions{
+		UserID: user.ID,
+		Token:  authToken,
+	}
+	if err := s.DM().SessionsDAO().Insert(session); err != nil {
+		lgr.Error("Could not insert session", zap.Error(err))
+		res.WriteHeader(500)
+		noti := datadisplay.AddTextToast(models.Error, "Error creating session", 0)
 		noti.Render(ctx, res)
 		return
 	}

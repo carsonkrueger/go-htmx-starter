@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/tools"
 )
 
@@ -35,10 +37,22 @@ func (us *usersService) Login(email string, password string) (*string, error) {
 
 	token, _ := tools.GenerateSalt()
 	fullToken := fmt.Sprintf("%s$%d", token, user.ID)
-	err = dao.UpdateAuthToken(user.ID, token)
-	if err != nil {
+
+	row := &model.Sessions{
+		UserID: user.ID,
+		Token:  token,
+	}
+	if err = us.DM().SessionsDAO().Insert(row); err != nil {
 		return nil, err
 	}
 
 	return &fullToken, nil
+}
+
+func (us *usersService) Logout(id int64, token string) error {
+	key := authModels.SessionsPrimaryKey{
+		UserID:    id,
+		AuthToken: token,
+	}
+	return us.DM().SessionsDAO().Delete(key)
 }

@@ -11,6 +11,7 @@ type IServiceManager interface {
 
 type IUsersService interface {
 	Login(email string, password string) (*string, error)
+	Logout(id int64, token string) error
 }
 
 type IPrivilegesService interface {

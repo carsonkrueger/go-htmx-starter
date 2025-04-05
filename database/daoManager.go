@@ -10,6 +10,7 @@ import (
 type daoManager struct {
 	usersDAO      interfaces.IUsersDAO
 	privilegesDAO interfaces.IPrivilegeDAO
+	sessionsDAO   interfaces.ISessionsDAO
 	db            *sql.DB
 }
 
@@ -31,4 +32,11 @@ func (dm *daoManager) PrivilegeDAO() interfaces.IPrivilegeDAO {
 		dm.privilegesDAO = authDAO.NewPrivilegesDAO(dm.db)
 	}
 	return dm.privilegesDAO
+}
+
+func (dm *daoManager) SessionsDAO() interfaces.ISessionsDAO {
+	if dm.sessionsDAO == nil {
+		dm.sessionsDAO = authDAO.NewSessionsDAO(dm.db)
+	}
+	return dm.sessionsDAO
 }
