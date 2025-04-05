@@ -10,6 +10,8 @@ func Execute(cmd string) {
 		seed()
 	case "web":
 		web()
+	case "genDAO":
+		generateDAO()
 	default:
 		panic(fmt.Sprintf("Invalid cmd: %s", cmd))
 	}

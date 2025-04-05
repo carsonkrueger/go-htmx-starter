@@ -18,9 +18,9 @@ type Config struct {
 type DbConfig struct {
 	user     string
 	password string
-	name     string
-	host     string
-	port     string
+	Name     string
+	Host     string
+	Port     string
 }
 
 func LoadConfig() Config {
@@ -39,9 +39,9 @@ func LoadConfig() Config {
 		DbConfig: DbConfig{
 			user:     os.Getenv("DB_USER"),
 			password: os.Getenv("DB_PASSWORD"),
-			name:     os.Getenv("DB_NAME"),
-			host:     dbHost,
-			port:     dbPort,
+			Name:     os.Getenv("DB_NAME"),
+			Host:     dbHost,
+			Port:     dbPort,
 		},
 	}
 }
@@ -50,8 +50,8 @@ func (cfg *Config) DbUrl() string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		cfg.DbConfig.user,
 		cfg.DbConfig.password,
-		cfg.DbConfig.host,
-		cfg.DbConfig.port,
-		cfg.DbConfig.name,
+		cfg.DbConfig.Host,
+		cfg.DbConfig.Port,
+		cfg.DbConfig.Name,
 	)
 }
