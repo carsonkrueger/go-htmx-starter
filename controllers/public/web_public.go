@@ -9,23 +9,25 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type WebPublic struct {
+type webPublic struct {
 	interfaces.IAppContext
 }
 
-func (w *WebPublic) SetAppCtx(ctx interfaces.IAppContext) {
-	w.IAppContext = ctx
+func NewWebPublic(ctx interfaces.IAppContext) *webPublic {
+	return &webPublic{
+		IAppContext: ctx,
+	}
 }
 
-func (wp *WebPublic) Path() string {
+func (wp *webPublic) Path() string {
 	return "/public"
 }
 
-func (wp *WebPublic) PublicRoute(r chi.Router) {
+func (wp *webPublic) PublicRoute(r chi.Router) {
 	r.Handle("/*", wp.ServePublicDir())
 }
 
-func (wp *WebPublic) ServePublicDir() http.Handler {
+func (wp *webPublic) ServePublicDir() http.Handler {
 	wd, err := os.Getwd()
 	if err != nil {
 		panic(err)

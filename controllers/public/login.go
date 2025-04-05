@@ -16,24 +16,26 @@ import (
 	"go.uber.org/zap"
 )
 
-type Login struct {
+type login struct {
 	interfaces.IAppContext
 }
 
-func (l *Login) SetAppCtx(ctx interfaces.IAppContext) {
-	l.IAppContext = ctx
+func NewLogin(ctx interfaces.IAppContext) *login {
+	return &login{
+		IAppContext: ctx,
+	}
 }
 
-func (l *Login) Path() string {
+func (l *login) Path() string {
 	return "/login"
 }
 
-func (l *Login) PublicRoute(r chi.Router) {
+func (l *login) PublicRoute(r chi.Router) {
 	r.Get("/", l.getLogin)
 	r.Post("/", l.postLogin)
 }
 
-func (l *Login) postLogin(res http.ResponseWriter, req *http.Request) {
+func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	lgr := l.Lgr("postLogin")
 	lgr.Info("Called")
 	ctx := req.Context()
@@ -76,7 +78,7 @@ func (l *Login) postLogin(res http.ResponseWriter, req *http.Request) {
 	content.Render(ctx, res)
 }
 
-func (l *Login) getLogin(res http.ResponseWriter, req *http.Request) {
+func (l *login) getLogin(res http.ResponseWriter, req *http.Request) {
 	lgr := l.Lgr("getLogin")
 	lgr.Info("Called")
 	ctx := req.Context()

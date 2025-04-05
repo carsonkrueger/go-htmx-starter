@@ -15,24 +15,24 @@ import (
 	"go.uber.org/zap"
 )
 
-type SignUp struct {
+type signUp struct {
 	interfaces.IAppContext
 }
 
-func (s *SignUp) SetAppCtx(ctx interfaces.IAppContext) {
-	s.IAppContext = ctx
+func NewSignUp(ctx interfaces.IAppContext) *signUp {
+	return &signUp{IAppContext: ctx}
 }
 
-func (s *SignUp) Path() string {
+func (s *signUp) Path() string {
 	return "/signup"
 }
 
-func (s *SignUp) PublicRoute(r chi.Router) {
+func (s *signUp) PublicRoute(r chi.Router) {
 	r.Get("/", s.getSignup)
 	r.Post("/", s.postSignup)
 }
 
-func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
+func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
 	lgr := s.Lgr("postSignup")
 	lgr.Info("Called")
 	ctx := req.Context()
@@ -88,7 +88,7 @@ func (s *SignUp) postSignup(res http.ResponseWriter, req *http.Request) {
 	page.Render(ctx, res)
 }
 
-func (s *SignUp) getSignup(res http.ResponseWriter, req *http.Request) {
+func (s *signUp) getSignup(res http.ResponseWriter, req *http.Request) {
 	lgr := s.Lgr("getSignup")
 	lgr.Info("Called")
 	ctx := req.Context()

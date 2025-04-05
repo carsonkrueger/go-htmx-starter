@@ -23,40 +23,42 @@ var tabs []pageLayouts.TabModel = []pageLayouts.TabModel{
 	{Title: "Privilege Levels", PushUrl: "/user_management/levels", HxGet: "/user_management/levels", Tab: pages.Signup()},
 }
 
-type UserManagement struct {
+type userManagement struct {
 	interfaces.IAppContext
 }
 
-func (um *UserManagement) SetAppCtx(ctx interfaces.IAppContext) {
-	um.IAppContext = ctx
+func NewUserManagement(ctx interfaces.IAppContext) *userManagement {
+	return &userManagement{
+		IAppContext: ctx,
+	}
 }
 
-func (r UserManagement) Path() string {
+func (r userManagement) Path() string {
 	return "/user_management"
 }
 
-func (um *UserManagement) PrivateRoute(b *builders.PrivateRouteBuilder) {
+func (um *userManagement) PrivateRoute(b *builders.PrivateRouteBuilder) {
 	b.NewHandle().Register(builders.GET, "/", um.userManagementGet).SetPermissionName(UserManagementGet).Build()
 	b.NewHandle().Register(builders.GET, "/users", um.userManagementUsersGet).SetPermissionName(UserManagementUsersGet).Build()
 	b.NewHandle().Register(builders.GET, "/levels", um.userManagementLevelsGet).SetPermissionName(UserManagementLevelsGet).Build()
 	// b.NewHandle().RegisterRoute(controllers.GET, "/get2", um.hello2).SetPermission(&enums.HelloWorldGet2).Build()
 }
 
-func (um *UserManagement) userManagementGet(res http.ResponseWriter, req *http.Request) {
+func (um *userManagement) userManagementGet(res http.ResponseWriter, req *http.Request) {
 	lgr := um.Lgr("userManagementGet")
 	lgr.Info("GET /user_managment")
 	ctx := req.Context()
 	GetTab(res, req, ctx, 0)
 }
 
-func (um *UserManagement) userManagementUsersGet(res http.ResponseWriter, req *http.Request) {
+func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *http.Request) {
 	lgr := um.Lgr("userManagementUsersGet")
 	lgr.Info("GET /user_management/users")
 	ctx := req.Context()
 	GetTab(res, req, ctx, 0)
 }
 
-func (um *UserManagement) userManagementLevelsGet(res http.ResponseWriter, req *http.Request) {
+func (um *userManagement) userManagementLevelsGet(res http.ResponseWriter, req *http.Request) {
 	lgr := um.Lgr("userManagementLevelsGet")
 	lgr.Info("GET /user_management/levels")
 	ctx := req.Context()

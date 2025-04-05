@@ -26,7 +26,6 @@ type IPublicRoute interface {
 }
 
 type IAppPublicRoute interface {
-	interfaces.ISetAppContext
 	IRoutePath
 	IPublicRoute
 }
@@ -36,7 +35,6 @@ type IPrivateRoute interface {
 }
 
 type IAppPrivateRoute interface {
-	interfaces.ISetAppContext
 	IRoutePath
 	IPrivateRoute
 }

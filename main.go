@@ -33,7 +33,7 @@ func main() {
 	appCtx := context.NewAppContext(lgr, sm, dm)
 	defer appCtx.CleanUp()
 
-	appRouter := router.Setup()
+	appRouter := router.Setup(appCtx)
 	appRouter.BuildRouter(appCtx)
 	err = appRouter.Start(cfg)
 

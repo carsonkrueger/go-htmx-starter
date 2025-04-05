@@ -25,16 +25,16 @@ type AppRouter struct {
 	router  chi.Router
 }
 
-func Setup() AppRouter {
+func Setup(ctx interfaces.IAppContext) AppRouter {
 	return AppRouter{
 		public: []builders.IAppPublicRoute{
-			&public.Home{},
-			&public.Login{},
-			&public.SignUp{},
-			&public.WebPublic{},
+			public.NewWebPublic(ctx),
+			public.NewLogin(ctx),
+			public.NewSignUp(ctx),
+			public.NewHome(ctx),
 		},
 		private: []builders.IAppPrivateRoute{
-			&private.UserManagement{},
+			private.NewUserManagement(ctx),
 		},
 	}
 }
@@ -44,7 +44,6 @@ func (a *AppRouter) BuildRouter(ctx interfaces.IAppContext) {
 	lgr := ctx.Lgr("BuildRouter")
 
 	for _, r := range a.public {
-		r.SetAppCtx(ctx)
 		router := chi.NewRouter()
 		r.PublicRoute(router)
 		a.router.Mount(r.Path(), router)
@@ -55,7 +54,6 @@ func (a *AppRouter) BuildRouter(ctx interfaces.IAppContext) {
 	a.router = a.router.With(middlewares.EnforceAuth(ctx))
 
 	for _, r := range a.private {
-		r.SetAppCtx(ctx)
 		builder := builders.NewPrivateRouteBuilder(ctx)
 		r.PrivateRoute(&builder)
 		a.router.Mount(r.Path(), builder.Build())

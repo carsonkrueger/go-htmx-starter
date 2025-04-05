@@ -10,28 +10,30 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type Home struct {
+type home struct {
 	interfaces.IAppContext
 }
 
-func (h *Home) SetAppCtx(ctx interfaces.IAppContext) {
-	h.IAppContext = ctx
+func NewHome(ctx interfaces.IAppContext) *home {
+	return &home{
+		IAppContext: ctx,
+	}
 }
 
-func (r *Home) Path() string {
+func (r *home) Path() string {
 	return "/"
 }
 
-func (hw *Home) PublicRoute(r chi.Router) {
+func (hw *home) PublicRoute(r chi.Router) {
 	r.Get("/", hw.redirect_home)
 	r.Get("/home", hw.home)
 }
 
-func (hw *Home) redirect_home(res http.ResponseWriter, req *http.Request) {
+func (hw *home) redirect_home(res http.ResponseWriter, req *http.Request) {
 	http.Redirect(res, req, "/home", http.StatusMovedPermanently)
 }
 
-func (hw *Home) home(res http.ResponseWriter, req *http.Request) {
+func (hw *home) home(res http.ResponseWriter, req *http.Request) {
 	lgr := hw.Lgr("home")
 	lgr.Info("Called")
 	ctx := req.Context()
