@@ -11,16 +11,16 @@ Go is a statically typed, compiled language designed at Google. It is a fast, ef
 - Hyperscript is a scripting language for doing front end web development. It is designed to make it very easy to respond to events and do simple DOM manipulation in code that is directly embedded on elements on a web page.
 - TailwindCSS is a utility-first CSS framework that provides a set of pre-built classes that you can use to style your web pages. It is a popular choice for building modern web applications.
 
-### Auth with Auth Tokens and Private Route Permissions
-- This project uses auth tokens in the request headers and verifies them by checking the token against the database stored in the `users` table.
-- Each router endpoint with permissions attached is protected by a permission check. Users without proper permissions will be unauthorized. Attaching a permission to the
-endpoint can be done using the `PrivateRouteBuilder`. See [HelloWorld](https://github.com/carsonkrueger/go-test/blob/main/internal/private_routes/hello_world2.go) private route for an example.
+### Auth with Sessions and Private Route Privileges
+- This project uses auth tokens in the request headers and verifies them by checking the token against the database stored in the `sessions` table.
+- Each router endpoint with privileges attached is protected by a privilege check. Users without proper privileges will be unauthorized. Attaching a privilege to the
+endpoint can be done using the `PrivateRouteBuilder`. See [HelloWorld](https://github.com/carsonkrueger/go-test/blob/main/internal/private_routes/hello_world2.go) private route for an example. Attatching a privilege to an endpoint using the `PrivateRouteBuilder` will automatically insert the privilege into the database. Each user has a privilege level. Privileges are associated with the privilege levels to know which privileges a user has. Using the `make seed` command will give all associations to the admin level.
 
 ### Postgres
 PostgreSQL is a beloved, open-source object-relational database system. It is a popular choice for building scalable and reliable web applications.
 
-### [Jet](https://github.com/go-jet/jet)
-Jet is a powerful Query Builder for Go. It provides a simple and highly customizable way to build queries and automatically generate Go code from your database.
+### [Jet](https://github.com/go-jet/jet) Query Builder
+Jet is a powerful Query Builder for Go. It provides a simple and highly customizable way to build type safe queries and automatically generate Go code from your database.
 
 ### [Zap](https://github.com/uber-go/zap) Logging
 Zap is a powerful, lightweight logging library for Go. Configured with level logging using the `APP_ENV` in your `.env` file.
@@ -64,6 +64,8 @@ To run the application locally, follow these steps:
     - If you changed the `DB_EXTERNAL_PORT` in your `.env` file, update this URL accordingly (`http://localhost:<DB_EXTERNAL_PORT>`)
     - If you changed the `PORT` in your `.env` file, you will also need to update the Dockerfile.
 
+# OR
+
 ## Running the Application Locally without Docker (Postgres still containerized)
 4. Install PostgreSQL, Make, and NPM on your machine. Start your PostgreSQL service.
 5. `go mod download`
@@ -73,6 +75,8 @@ To run the application locally, follow these steps:
 9. `go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest`
 10. `go install github.com/go-jet/jet/v2/cmd/jet@latest`
 11. Start the PostgreSQL container using the command: `make docker-postgres`
-12. Run migrations on the postgres container: `make migrate-external`
-13. `make live` to begin live development!
-    - This will watch .go, .templ, and tailwind classes for changes.
+12. Run migrations on the postgres container: `make migrate`
+13. `make jet-all` to generate all database objects and query building functionality.
+14. `make live` to start the server - this will create privileges associated with each controller.
+15. Stop the server and run `make seed` to create 'basic' and 'admin' privilege levels and give all privileges to the admin privilege level.
+16. `make live` again to being live development!
