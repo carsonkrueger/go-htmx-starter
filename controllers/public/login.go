@@ -63,9 +63,9 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	password := form.Get("password")
 
 	usersService := l.SM().UsersService()
-	authToken, err := usersService.Login(email, password)
+	authToken, err := usersService.Login(email, password, req)
 	if err != nil {
-		lgr.Warn("Could not login", zap.Error(err))
+		lgr.Warn("Could not login")
 		res.WriteHeader(422)
 		noti := datadisplay.AddTextToast(models.Error, "Invalid username or password", 5)
 		noti.Render(ctx, res)

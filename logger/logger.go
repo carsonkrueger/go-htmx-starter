@@ -17,10 +17,11 @@ func NewLogger(cfg *cfg.Config) *zap.Logger {
 	switch strings.ToLower(cfg.AppEnv) {
 	case "development":
 		config = zap.Config{
-			Level:         zap.NewAtomicLevelAt(zap.DebugLevel),
-			Development:   true,
-			Encoding:      "console",
-			EncoderConfig: zap.NewDevelopmentEncoderConfig(),
+			Level:             zap.NewAtomicLevelAt(zap.DebugLevel),
+			Development:       true,
+			Encoding:          "console",
+			EncoderConfig:     zap.NewDevelopmentEncoderConfig(),
+			DisableStacktrace: true,
 			OutputPaths: []string{
 				"stdout",
 			},

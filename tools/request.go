@@ -7,10 +7,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/carsonkrueger/main/constant"
 	"go.uber.org/zap"
 )
-
-var AUTH_TOKEN_KEY string = "ghx_auth_token"
 
 func RequestHttpError(ctx context.Context, logger *zap.Logger, res http.ResponseWriter, code int, errs ...error) {
 	res.WriteHeader(code)
@@ -26,7 +25,7 @@ func RequestHttpError(ctx context.Context, logger *zap.Logger, res http.Response
 
 func SetAuthCookie(res http.ResponseWriter, authToken *string) {
 	cookie := http.Cookie{
-		Name:     AUTH_TOKEN_KEY,
+		Name:     constant.AUTH_TOKEN_KEY,
 		Value:    *authToken,
 		HttpOnly: true,
 		Path:     "/",
@@ -36,7 +35,7 @@ func SetAuthCookie(res http.ResponseWriter, authToken *string) {
 }
 
 func GetAuthCookie(req *http.Request) (*http.Cookie, error) {
-	cookie, err := req.Cookie(AUTH_TOKEN_KEY)
+	cookie, err := req.Cookie(constant.AUTH_TOKEN_KEY)
 	if err != nil {
 		return nil, err
 	}
@@ -44,6 +43,9 @@ func GetAuthCookie(req *http.Request) (*http.Cookie, error) {
 }
 
 func GetAuthParts(cookie *http.Cookie) (string, int64, error) {
+	if cookie == nil {
+		return "", 0, errors.New("cookie is nil")
+	}
 	parts := strings.Split(cookie.Value, "$")
 	if parts == nil || len(parts) != 2 {
 		return "", 0, errors.New("invalid cookie")

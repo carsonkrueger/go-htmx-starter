@@ -1,6 +1,8 @@
 package interfaces
 
 import (
+	"net/http"
+
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 )
 
@@ -11,8 +13,10 @@ type IServiceManager interface {
 }
 
 type IUsersService interface {
-	Login(email string, password string) (*string, error)
+	Login(email string, password string, req *http.Request) (*string, error)
 	Logout(id int64, token string) error
+	LogoutRequest(req *http.Request) error
+	GetAuthParts(req *http.Request) (string, int64, error)
 }
 
 type IPrivilegesService interface {

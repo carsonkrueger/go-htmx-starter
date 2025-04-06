@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/carsonkrueger/main/constant"
 	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models/authModels"
@@ -11,6 +12,7 @@ import (
 )
 
 func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Handler {
+	usersService := appCtx.SM().UsersService()
 	usersDAO := appCtx.DM().UsersDAO()
 	sessionsDAO := appCtx.DM().SessionsDAO()
 	lgr := appCtx.Lgr("MW EnforceAuth")
@@ -19,25 +21,16 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			ctx := req.Context()
 
-			cookie, err := tools.GetAuthCookie(req)
+			token, id, err := usersService.GetAuthParts(req)
 			if err != nil {
-				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("Not Authenticated"))
-				res.Header().Set("Hx-Redirect", "/login")
-				return
-			}
-
-			token, id, err := tools.GetAuthParts(cookie)
-			if err != nil {
-				req.Header.Del(tools.AUTH_TOKEN_KEY)
 				tools.RequestHttpError(ctx, lgr, res, 403, err)
 				res.Header().Set("Hx-Redirect", "/login")
 				return
 			}
 
 			user, err := usersDAO.GetById(id)
-
 			if err != nil {
-				req.Header.Del(tools.AUTH_TOKEN_KEY)
+				req.Header.Del(constant.AUTH_TOKEN_KEY)
 				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("Malformed auth token"))
 				res.Header().Set("Hx-Redirect", "/login")
 				return
@@ -50,14 +43,14 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 			session, err := sessionsDAO.GetById(key)
 
 			if session == nil || err != nil {
-				req.Header.Del(tools.AUTH_TOKEN_KEY)
+				req.Header.Del(constant.AUTH_TOKEN_KEY)
 				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("Malformed auth token"))
 				res.Header().Set("Hx-Redirect", "/login")
 				return
 			}
 
 			if session.Token != token {
-				req.Header.Del(tools.AUTH_TOKEN_KEY)
+				req.Header.Del(constant.AUTH_TOKEN_KEY)
 				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("Malformed auth token"))
 				res.Header().Set("Hx-Redirect", "/login")
 				return

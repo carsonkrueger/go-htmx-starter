@@ -3,15 +3,15 @@ package context
 import (
 	gctx "context"
 
-	"github.com/carsonkrueger/main/tools"
+	"github.com/carsonkrueger/main/constant"
 )
 
 func WithToken(ctx gctx.Context, token string) gctx.Context {
-	return gctx.WithValue(ctx, tools.AUTH_TOKEN_KEY, token)
+	return gctx.WithValue(ctx, constant.AUTH_TOKEN_KEY, token)
 }
 
 func GetToken(ctx gctx.Context) string {
-	return ctx.Value(tools.AUTH_TOKEN_KEY).(string)
+	return ctx.Value(constant.AUTH_TOKEN_KEY).(string)
 }
 
 var USER_ID_KEY = "USER_ID"
