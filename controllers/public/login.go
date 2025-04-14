@@ -74,8 +74,11 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 
 	tools.SetAuthCookie(res, authToken)
 
-	content := partials.Redirect("/user_management", builders.GET, true)
-	content.Render(ctx, res)
+	hxRequest := tools.IsHxRequest(req)
+	if hxRequest {
+		content := partials.Redirect("/user_management/users", "#"+pageLayouts.MainContentID, builders.GET, "true")
+		content.Render(ctx, res)
+	}
 }
 
 func (l *login) getLogin(res http.ResponseWriter, req *http.Request) {

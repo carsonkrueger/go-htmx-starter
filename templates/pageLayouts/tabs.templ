@@ -1,42 +1,50 @@
 package pageLayouts
 
+import (
+	"fmt"
+)
+
 type TabModel struct {
 	Title   string
 	PushUrl string
 	HxGet   string
-	Tab     templ.Component
 }
 
-templ Tabs(tabs []TabModel, curTabIdx int) {
-	<div class="">
+templ Tabs(tabs []TabModel, tabPageHxGet string, curTabIdx int) {
+	<div>
 		<div class="flex text-lg shadow-md">
 			for i, tab := range tabs {
 				{{
-					class := "border-b-white"
+					class := "border-b-transparent"
 					if i == curTabIdx {
 						class = "border-b-secondary"
 					}
 				}}
-				<input
-					type="checkbox"
-					class={ "tab appearance-none p-3 min-w-56 flex justify-center items-center border-b-[2px] " + class }
-					hx-push-url={ tab.PushUrl }
-					hx-get={ tab.HxGet }
-					hx-target="#tab-content"
-					hx-swap="innerHTML"
-				/>
-				{ tab.Title }
+				<div>
+					<label
+						for={ fmt.Sprintf("tab-%d", i) }
+						class={"tab cursor-pointer p-3 min-w-56 flex justify-center items-center border-b-[2px] " + class}
+					>
+						{ tab.Title }
+					</label>
+					<input
+						id={ fmt.Sprintf("tab-%d", i) }
+						type="checkbox"
+						class="hidden"
+						hx-push-url={ tab.PushUrl }
+						hx-get={ fmt.Sprintf("%s?tab=%d", tabPageHxGet, i) }
+						hx-target="#tab-content"
+						hx-swap="innerHTML"
+					/>
+				</div>
 			}
 		</div>
-		<div id="tab-content">
-			<div
-				hx-trigger="load"
-				hx-push-url={ tabs[curTabIdx].PushUrl }
-				hx-get={ tabs[curTabIdx].HxGet }
-				hx-target="#tab-content"
-				hx-swap="innerHTML"
-			></div>
-		</div>
-		@tabs[curTabIdx].Tab
+		<div
+			id="tab-content"
+			tx-trigger="load"
+			hx-target="this"
+			hx-swap="innerHTML"
+			hx-get={ tabs[curTabIdx].HxGet }
+		/>
 	</div>
 }

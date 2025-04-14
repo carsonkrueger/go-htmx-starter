@@ -2,10 +2,11 @@ package partials
 
 import "github.com/carsonkrueger/main/builders"
 
-templ Redirect(to string, method builders.RouteMethod, pushUrl bool) {
+templ Redirect(to string, target string, method builders.RouteMethod, pushUrl string) {
 	<div
 		hx-trigger="load"
-		if pushUrl {
+		hx-target={ target }
+		if pushUrl != "" {
 			hx-push-url={ to }
 		}
 		if method == builders.GET {
