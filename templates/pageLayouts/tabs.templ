@@ -41,7 +41,7 @@ templ Tabs(tabs []TabModel, tabPageHxGet string, curTabIdx int) {
 		</div>
 		<div
 			id="tab-content"
-			tx-trigger="load"
+			hx-trigger="load"
 			hx-target="this"
 			hx-swap="innerHTML"
 			hx-get={ tabs[curTabIdx].HxGet }

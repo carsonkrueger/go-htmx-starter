@@ -7,6 +7,7 @@ import (
 	"github.com/a-h/templ"
 	"github.com/carsonkrueger/main/builders"
 	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/pageLayouts"
 	tabs "github.com/carsonkrueger/main/templates/tabs/userManagement"
 	"github.com/carsonkrueger/main/tools"
@@ -19,8 +20,8 @@ const (
 )
 
 var tabModels = []pageLayouts.TabModel{
-	{Title: "Users", PushUrl: "/user_management/users", HxGet: "/user_management/users/content"},
-	{Title: "Privilege Levels", PushUrl: "/user_management/levels", HxGet: "/user_management/levels/content"},
+	{Title: "Users", PushUrl: "/user_management/users", HxGet: "/user_management/users"},
+	{Title: "Privilege Levels", PushUrl: "/user_management/levels", HxGet: "/user_management/levels"},
 }
 
 type userManagement struct {
@@ -57,20 +58,27 @@ func (um *userManagement) userManagementTabsGet(res http.ResponseWriter, req *ht
 }
 
 func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *http.Request) {
-	lgr := um.Lgr("userManagementUsersContentGet")
-	lgr.Info("userManagementUsersContentGet Called")
+	lgr := um.Lgr("userManagementUsersGet")
+	lgr.Info("userManagementUsersGet Called")
 	ctx := req.Context()
 	hxRequest := tools.IsHxRequest(req)
 	if !hxRequest {
 		um.GetTab(hxRequest, 0).Render(ctx, res)
 		return
 	}
-	tabs.Users().Render(ctx, res)
+	dao := um.DM().UsersDAO()
+	users, err := dao.GetAll()
+	if err != nil {
+		lgr.Error(err.Error())
+		datadisplay.AddToastErrors(0, err)
+		return
+	}
+	tabs.Users(*users).Render(ctx, res)
 }
 
 func (um *userManagement) userManagementLevelsGet(res http.ResponseWriter, req *http.Request) {
-	lgr := um.Lgr("userManagementLevelsContentGet")
-	lgr.Info("userManagementLevelsContentGet Called")
+	lgr := um.Lgr("userManagementLevelsGet")
+	lgr.Info("userManagementLevelsGet Called")
 	ctx := req.Context()
 	hxRequest := tools.IsHxRequest(req)
 	if !hxRequest {

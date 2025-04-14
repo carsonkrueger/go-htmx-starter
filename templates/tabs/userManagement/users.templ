@@ -1,7 +1,13 @@
 package userManagement
 
-templ Users() {
+import (
+	"github.com/carsonkrueger/main/gen/go_db/auth/model"
+)
+
+templ Users(users []model.Users) {
 	<div>
-		Users
+		for _, user := range users {
+			<div>{ user.FirstName }</div>
+		}
 	</div>
 }
