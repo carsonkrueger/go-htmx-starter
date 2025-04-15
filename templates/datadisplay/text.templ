@@ -1,0 +1,26 @@
+package datadisplay
+
+import (
+	"github.com/carsonkrueger/main/models"
+)
+
+templ Text(text string, size models.Size) {
+	{{
+		class := ""
+		switch size {
+		case models.XS:
+			class += "text-xs"
+		case models.SM:
+			class += "text-sm"
+		case models.LG:
+			class += "text-lg"
+		case models.XL:
+			class += "text-xl"
+		case models.XL2:
+			class += "text-2xl"
+		default:
+			class += "text-base"
+		}
+	}}
+	<div class={"truncate " + class}>{text}</div>
+}

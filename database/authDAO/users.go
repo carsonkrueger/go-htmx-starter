@@ -7,6 +7,7 @@ import (
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
 	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/tools"
 	"github.com/go-jet/jet/v2/postgres"
 )
@@ -152,6 +153,18 @@ func (dao *usersDAO) GetAll() (*[]model.Users, error) {
 	var rows []model.Users
 	err := table.Users.
 		SELECT(table.Users.AllColumns).
+		Query(dao.db, &rows)
+	if err != nil {
+		return nil, err
+	}
+	return &rows, nil
+}
+
+func (dao *usersDAO) GetUserPrivilegeJoinAll() (*[]authModels.UserPrivilegeLevelJoin, error) {
+	var rows []authModels.UserPrivilegeLevelJoin
+	err := table.Users.
+		LEFT_JOIN(table.PrivilegeLevels, table.Users.PrivilegeLevelID.EQ(table.PrivilegeLevels.ID)).
+		SELECT(table.Users.AllColumns, table.PrivilegeLevels.Name).
 		Query(dao.db, &rows)
 	if err != nil {
 		return nil, err

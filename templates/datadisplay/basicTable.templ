@@ -1,0 +1,32 @@
+package datadisplay
+
+type CellData struct {
+	ID string
+    Width int
+	Body templ.Component
+}
+
+type IAsCellData interface {
+	AsCellData() []CellData
+}
+
+templ BasicTable(head []CellData, data []IAsCellData) {
+	<table>
+		<thead>
+			<tr>
+				for _, h := range head {
+					<th id={h.ID}>@h.Body</th>
+				}
+			</tr>
+		</thead>
+		<tbody>
+			for _, tr := range data {
+				<tr>
+					for _, td := range tr.AsCellData() {
+						<td id={td.ID}>@td.Body</td>
+					}
+				</tr>
+			}
+		</tbody>
+	</table>
+}

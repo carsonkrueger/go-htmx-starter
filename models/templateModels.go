@@ -17,6 +17,7 @@ const (
 	MD
 	LG
 	XL
+	XL2
 )
 
 type IconType int

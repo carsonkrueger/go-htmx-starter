@@ -5,7 +5,6 @@ tmp
 bin
 volumes
 jet
-gen
 .vscode
 .zed
 public/output.css

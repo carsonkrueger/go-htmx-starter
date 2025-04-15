@@ -7,6 +7,7 @@ import (
 	"github.com/a-h/templ"
 	"github.com/carsonkrueger/main/builders"
 	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/pageLayouts"
 	tabs "github.com/carsonkrueger/main/templates/tabs/userManagement"
@@ -62,18 +63,26 @@ func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *h
 	lgr.Info("userManagementUsersGet Called")
 	ctx := req.Context()
 	hxRequest := tools.IsHxRequest(req)
+
 	if !hxRequest {
 		um.GetTab(hxRequest, 0).Render(ctx, res)
 		return
 	}
+
 	dao := um.DM().UsersDAO()
-	users, err := dao.GetAll()
+	users, err := dao.GetUserPrivilegeJoinAll()
 	if err != nil {
 		lgr.Error(err.Error())
 		datadisplay.AddToastErrors(0, err)
 		return
 	}
-	tabs.Users(*users).Render(ctx, res)
+
+	if users != nil {
+		if len(*users) == 0 {
+			datadisplay.AddTextToast(models.Warning, "No Users Found", 5).Render(ctx, res)
+		}
+		tabs.Users(*users).Render(ctx, res)
+	}
 }
 
 func (um *userManagement) userManagementLevelsGet(res http.ResponseWriter, req *http.Request) {
@@ -81,10 +90,12 @@ func (um *userManagement) userManagementLevelsGet(res http.ResponseWriter, req *
 	lgr.Info("userManagementLevelsGet Called")
 	ctx := req.Context()
 	hxRequest := tools.IsHxRequest(req)
+
 	if !hxRequest {
 		um.GetTab(hxRequest, 1).Render(ctx, res)
 		return
 	}
+
 	tabs.Levels().Render(ctx, res)
 }
 

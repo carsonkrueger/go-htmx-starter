@@ -29,6 +29,7 @@ type IUsersDAO interface {
 	IDAO[model.Users, int64]
 	GetByEmail(email string) (*model.Users, error)
 	GetPrivilegeLevelID(id int64) (*int64, error)
+	GetUserPrivilegeJoinAll() (*[]authModels.UserPrivilegeLevelJoin, error)
 }
 
 type IPrivilegeDAO interface {
