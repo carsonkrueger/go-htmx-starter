@@ -10,12 +10,11 @@ import (
 	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/pageLayouts"
-	tabs "github.com/carsonkrueger/main/templates/tabs/userManagement"
 	"github.com/carsonkrueger/main/tools"
 )
 
 const (
-	UserManagementGet       = "UserManagementGet"
+	UserManagementTabsGet   = "UserManagementTabsGet"
 	UserManagementUsersGet  = "UserManagementUsersGet"
 	UserManagementLevelsGet = "UserManagementLevelsGet"
 )
@@ -40,7 +39,7 @@ func (um userManagement) Path() string {
 }
 
 func (um *userManagement) PrivateRoute(b *builders.PrivateRouteBuilder) {
-	b.NewHandle().Register(builders.GET, "/tabs", um.userManagementTabsGet).SetPermissionName(UserManagementUsersGet).Build()
+	b.NewHandle().Register(builders.GET, "/tabs", um.userManagementTabsGet).SetPermissionName(UserManagementTabsGet).Build()
 	b.NewHandle().Register(builders.GET, "/users", um.userManagementUsersGet).SetPermissionName(UserManagementUsersGet).Build()
 	b.NewHandle().Register(builders.GET, "/levels", um.userManagementLevelsGet).SetPermissionName(UserManagementLevelsGet).Build()
 }
@@ -81,7 +80,46 @@ func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *h
 		if len(*users) == 0 {
 			datadisplay.AddTextToast(models.Warning, "No Users Found", 5).Render(ctx, res)
 		}
-		tabs.Users(*users).Render(ctx, res)
+
+		headers := []datadisplay.CellData{
+			{
+				ID:    "h-name",
+				Width: 1,
+				Body:  datadisplay.Text("Name", models.LG),
+			},
+			{
+				ID:    "h-pr",
+				Width: 1,
+				Body:  datadisplay.Text("Privilege Level", models.LG),
+			},
+			{
+				ID:    "h-ca",
+				Width: 1,
+				Body:  datadisplay.Text("Created At", models.LG),
+			},
+		}
+
+		cells := make([][]datadisplay.CellData, len(*users))
+		for i, user := range *users {
+			cells[i] = []datadisplay.CellData{
+				{
+					ID:    "n-" + strconv.Itoa(i),
+					Width: 1,
+					Body:  datadisplay.Text(user.FirstName, models.MD),
+				},
+				{
+					ID:    "pr-" + strconv.Itoa(i),
+					Width: 1,
+					Body:  datadisplay.Text(strconv.FormatInt(user.PrivilegeLevelID, 10), models.MD),
+				},
+				{
+					ID:    "ca-" + strconv.Itoa(i),
+					Width: 1,
+					Body:  datadisplay.Text(user.CreatedAt.Format("2006-01-02"), models.MD),
+				},
+			}
+		}
+		datadisplay.BasicTable(headers, cells).Render(ctx, res)
 	}
 }
 
@@ -96,7 +134,30 @@ func (um *userManagement) userManagementLevelsGet(res http.ResponseWriter, req *
 		return
 	}
 
-	tabs.Levels().Render(ctx, res)
+	// cells := make([][]datadisplay.CellData, len(*users))
+	// 		for i, user := range *users {
+	// 			cells[i] = []datadisplay.CellData{
+	// 				{
+	// 					ID:    "n-" + strconv.Itoa(i),
+	// 					Width: 1,
+	// 					Body:  datadisplay.Text(user.FirstName, models.MD),
+	// 				},
+	// 				{
+	// 					ID:    "pr-" + strconv.Itoa(i),
+	// 					Width: 1,
+	// 					Body:  datadisplay.Text(strconv.FormatInt(user.PrivilegeLevelID, 10), models.MD),
+	// 				},
+	// 				{
+	// 					ID:    "ca-" + strconv.Itoa(i),
+	// 					Width: 1,
+	// 					Body:  datadisplay.Text(user.CreatedAt.Format("2006-01-02"), models.MD),
+	// 				},
+	// 			}
+	// 		}
+
+	headers := []datadisplay.CellData{}
+	cells := [][]datadisplay.CellData{}
+	datadisplay.BasicTable(headers, cells).Render(ctx, res)
 }
 
 func (um *userManagement) GetTab(hxRequest bool, index int) templ.Component {

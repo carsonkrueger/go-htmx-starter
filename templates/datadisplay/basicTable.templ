@@ -6,11 +6,7 @@ type CellData struct {
 	Body templ.Component
 }
 
-type IAsCellData interface {
-	AsCellData() []CellData
-}
-
-templ BasicTable(head []CellData, data []IAsCellData) {
+templ BasicTable(head []CellData, data [][]CellData) {
 	<table>
 		<thead>
 			<tr>
@@ -22,8 +18,16 @@ templ BasicTable(head []CellData, data []IAsCellData) {
 		<tbody>
 			for _, tr := range data {
 				<tr>
-					for _, td := range tr.AsCellData() {
-						<td id={td.ID}>@td.Body</td>
+					for _, td := range tr {
+						<td
+							id={td.ID}
+						>
+							<div
+								class="px-2 py-1"
+							>
+								@td.Body
+							</div>
+						</td>
 					}
 				</tr>
 			}
