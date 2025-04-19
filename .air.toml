@@ -6,7 +6,7 @@ tmp_dir = "tmp"
 args_bin = ["web"]
 bin = "./tmp/main"
 cmd = "go build -o ./tmp/main"
-delay = 500
+delay = 0
 exclude_dir = ["tmp", "vendor", "testdata", "node_modules", "volumes"]
 exclude_file = []
 exclude_regex = ["_test.go", "_templ.go"]
@@ -21,7 +21,13 @@ log = "build-errors.log"
 poll = false
 poll_interval = 0
 post_cmd = []
-pre_cmd = ["clear", "make templ", "make tw"]
+pre_cmd = [
+    "rm -f ./tmp/main",
+    "find ./templates -name '*_templ.go' -delete",
+    "clear",
+    "make templ",
+    "make tw",
+]
 rerun = false
 rerun_delay = 500
 send_interrupt = false
