@@ -11,22 +11,21 @@ type IPostgresTable interface {
 	postgres.ReadableTable
 }
 
+type PK any
+
 type IGetBaseCols interface {
 	InsertCols() postgres.ColumnList
 	AllCols() postgres.ColumnList
 	ConflictCols() postgres.ColumnList
 	UpdateOnConflictCols() []postgres.ColumnAssigment
+	PKMatch(pk PK) postgres.BoolExpression
 }
 
-type IGetPK[T any] interface {
-	PK() T
+type IGetTable[T IPostgresTable] interface {
+	Table() T
 }
 
-type IGetTable[T postgres.WritableTable] interface {
-	Table() IPostgresTable
-}
-
-type IDatabaseObject[T postgres.WritableTable, R any] interface {
+type IDatabaseObject[T IPostgresTable, R any] interface {
 	IGetTable[T]
 	IGetBaseCols
 }
