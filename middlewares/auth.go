@@ -1,12 +1,12 @@
 package middlewares
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/carsonkrueger/main/constant"
 	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/database"
+	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/tools"
@@ -24,15 +24,16 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 
 			token, id, err := usersService.GetAuthParts(req)
 			if err != nil {
-				tools.RequestHttpError(ctx, lgr, res, 403, err)
+				tools.RequestHttpError(ctx, lgr, res, 403, err, "Malformed auth token")
 				res.Header().Set("Hx-Redirect", "/login")
 				return
 			}
 
-			user, err := database.GetOne(usersDAO, id, appCtx.DB())
+			var user model.Users
+			err = database.GetOne(usersDAO, id, &user, appCtx.DB())
 			if err != nil {
 				req.Header.Del(constant.AUTH_TOKEN_KEY)
-				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("Malformed auth token"))
+				tools.RequestHttpError(ctx, lgr, res, 403, err, "Malformed auth token")
 				res.Header().Set("Hx-Redirect", "/login")
 				return
 			}
@@ -41,18 +42,19 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 				UserID:    id,
 				AuthToken: token,
 			}
-			session, err := database.GetOne(sessionsDAO, key, appCtx.DB())
+			var session model.Sessions
+			err = database.GetOne(sessionsDAO, key, &session, appCtx.DB())
 
-			if session == nil || err != nil {
+			if err != nil {
 				req.Header.Del(constant.AUTH_TOKEN_KEY)
-				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("Malformed auth token"))
+				tools.RequestHttpError(ctx, lgr, res, 403, err, "Malformed auth token")
 				res.Header().Set("Hx-Redirect", "/login")
 				return
 			}
 
 			if session.Token != token {
 				req.Header.Del(constant.AUTH_TOKEN_KEY)
-				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("Malformed auth token"))
+				tools.RequestHttpError(ctx, lgr, res, 403, err, "Malformed auth token")
 				res.Header().Set("Hx-Redirect", "/login")
 				return
 			}

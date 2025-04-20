@@ -3,6 +3,7 @@ package public
 import (
 	"net/http"
 
+	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models"
@@ -66,7 +67,8 @@ func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
 		PrivilegeLevelID: 1000,
 	}
 
-	if err := s.DM().UsersDAO().Insert(&user); err != nil {
+	usersDAO := s.DM().UsersDAO()
+	if err := database.Insert(usersDAO, &user, s.DB()); err != nil {
 		lgr.Warn("Could not insert user", zap.Error(err))
 		res.WriteHeader(422)
 		noti := datadisplay.AddTextToast(models.Warning, "Email taken", 0)
@@ -78,7 +80,8 @@ func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
 		UserID: user.ID,
 		Token:  authToken,
 	}
-	if err := s.DM().SessionsDAO().Insert(session); err != nil {
+	sessionDAO := s.DM().SessionsDAO()
+	if err := database.Insert(sessionDAO, session, s.DB()); err != nil {
 		lgr.Error("Could not insert session", zap.Error(err))
 		res.WriteHeader(500)
 		noti := datadisplay.AddTextToast(models.Error, "Error creating session", 0)

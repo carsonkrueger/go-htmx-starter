@@ -11,15 +11,14 @@ import (
 	"go.uber.org/zap"
 )
 
-func RequestHttpError(ctx context.Context, logger *zap.Logger, res http.ResponseWriter, code int, errs ...error) {
+func RequestHttpError(ctx context.Context, logger *zap.Logger, res http.ResponseWriter, code int, err error, msg string) {
 	res.WriteHeader(code)
-	for _, e := range errs {
-		if code >= 500 {
-			logger.Error("Internal error: ", zap.Int("status code", code), zap.Error(e))
-			res.Write([]byte("An error occurred - Please try again later"))
-		} else {
-			logger.Info("Request error: ", zap.Int("status code", code), zap.Error(e))
-		}
+	if code >= 500 {
+		logger.Error("Internal error: ", zap.Int("status code", code), zap.Error(err))
+		res.Write([]byte("An error occurred - Please try again later"))
+	} else {
+		logger.Warn("Request error: ", zap.Int("status code", code), zap.Error(err))
+		res.Write([]byte(msg))
 	}
 }
 

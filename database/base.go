@@ -30,79 +30,78 @@ func Index[PK interfaces.PK, R any](DAO interfaces.IDAO[PK, R], params models.Se
 	return rows, nil
 }
 
-func GetOne[PK interfaces.PK, R any](DAO interfaces.IDAO[PK, R], pk PK, db qrm.Queryable) (*R, error) {
-	var row *R
-	err := DAO.Table().
+func GetOne[PK interfaces.PK, R any](DAO interfaces.IDAO[PK, R], pk PK, model *R, db qrm.Queryable) error {
+	return DAO.Table().
 		SELECT(DAO.AllCols()).
 		WHERE(DAO.PKMatch(pk)).
 		LIMIT(1).
-		Query(db, row)
-	if row == nil {
-		return nil, err
-	}
-	return row, nil
+		Query(db, model)
 }
 
-func GetMany[PK interfaces.PK, R any](DAO interfaces.IDAO[PK, R], pk PK, db qrm.Queryable) ([]*R, error) {
-	var rows []*R
-	err := DAO.Table().
+func GetMany[PK interfaces.PK, R any](DAO interfaces.IDAO[PK, R], pk PK, models *[]*R, db qrm.Queryable) error {
+	return DAO.Table().
 		SELECT(DAO.AllCols()).
 		WHERE(DAO.PKMatch(pk)).
-		Query(db, &rows)
-	if len(rows) == 0 {
-		return nil, err
-	}
-	return rows, nil
+		Query(db, &models)
 }
 
-func Insert[PK any, R any](DAO interfaces.IDAO[PK, R], values *R, db qrm.Queryable) error {
+func Insert[PK any, R any](DAO interfaces.IDAO[PK, R], model *R, db qrm.Queryable) error {
 	return DAO.Table().
 		INSERT(DAO.InsertCols()).
-		VALUES(values).
+		MODEL(model).
 		RETURNING(DAO.AllCols()).
-		Query(db, values)
+		Query(db, model)
 }
 
-func InsertMany[T interfaces.IPostgresTable, PK any, R any](DAO interfaces.IDAO[PK, R], values []*R, db qrm.Queryable) error {
+func InsertMany[T interfaces.IPostgresTable, PK any, R any](DAO interfaces.IDAO[PK, R], models []*R, db qrm.Queryable) error {
 	return DAO.Table().
 		INSERT(DAO.InsertCols()).
-		MODELS(values).
+		MODELS(models).
 		RETURNING(DAO.AllCols()).
-		Query(db, values)
+		Query(db, &models)
 }
 
-func Upsert[PK any, R any](DAO interfaces.IDAO[PK, R], values *R, db qrm.Queryable) error {
-	*DAO.GetUpdatedAt(values) = time.Now()
-	return DAO.Table().
-		INSERT(DAO.UpdateCols()).
-		VALUES(values).
-		ON_CONFLICT(DAO.OnConflictCols()...).
-		DO_UPDATE(postgres.SET(DAO.UpdateOnConflictCols()...)).
-		RETURNING(DAO.AllCols()).
-		Query(db, values)
-}
-
-func UpsertMany[PK any, R any](DAO interfaces.IDAO[PK, R], values []*R, db qrm.Queryable) error {
-	for _, v := range values {
-		*DAO.GetUpdatedAt(v) = time.Now()
+func Upsert[PK any, R any](DAO interfaces.IDAO[PK, R], model *R, db qrm.Queryable) error {
+	up := DAO.GetUpdatedAt(model)
+	if up != nil {
+		*up = time.Now()
 	}
 	return DAO.Table().
 		INSERT(DAO.UpdateCols()).
-		MODELS(values).
+		MODEL(model).
 		ON_CONFLICT(DAO.OnConflictCols()...).
 		DO_UPDATE(postgres.SET(DAO.UpdateOnConflictCols()...)).
 		RETURNING(DAO.AllCols()).
-		Query(db, values)
+		Query(db, model)
 }
 
-func Update[PK any, R any](DAO interfaces.IDAO[PK, R], values *R, pk PK, db qrm.Queryable) error {
-	*DAO.GetUpdatedAt(values) = time.Now()
+func UpsertMany[PK any, R any](DAO interfaces.IDAO[PK, R], models []*R, db qrm.Queryable) error {
+	for _, v := range models {
+		up := DAO.GetUpdatedAt(v)
+		if up != nil {
+			*up = time.Now()
+		}
+	}
+	return DAO.Table().
+		INSERT(DAO.UpdateCols()).
+		MODELS(models).
+		ON_CONFLICT(DAO.OnConflictCols()...).
+		DO_UPDATE(postgres.SET(DAO.UpdateOnConflictCols()...)).
+		RETURNING(DAO.AllCols()).
+		Query(db, &models)
+}
+
+func Update[PK any, R any](DAO interfaces.IDAO[PK, R], model *R, pk PK, db qrm.Queryable) error {
+	up := DAO.GetUpdatedAt(model)
+	if up != nil {
+		*up = time.Now()
+	}
 	return DAO.Table().
 		UPDATE(DAO.UpdateCols()).
-		MODEL(values).
+		MODEL(model).
 		WHERE(DAO.PKMatch(pk)).
 		RETURNING(DAO.AllCols()).
-		Query(db, values)
+		Query(db, model)
 }
 
 func Delete[PK any, R any](DAO interfaces.IDAO[PK, R], pk PK, db qrm.Executable) error {
