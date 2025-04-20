@@ -6,6 +6,31 @@ import (
 	"github.com/go-jet/jet/v2/postgres"
 )
 
+type IPostgresTable interface {
+	postgres.WritableTable
+	postgres.ReadableTable
+}
+
+type IGetBaseCols interface {
+	InsertCols() postgres.ColumnList
+	AllCols() postgres.ColumnList
+	ConflictCols() postgres.ColumnList
+	UpdateOnConflictCols() []postgres.ColumnAssigment
+}
+
+type IGetPK[T any] interface {
+	PK() T
+}
+
+type IGetTable[T postgres.WritableTable] interface {
+	Table() IPostgresTable
+}
+
+type IDatabaseObject[T postgres.WritableTable, R any] interface {
+	IGetTable[T]
+	IGetBaseCols
+}
+
 type IDAO[M any, ID any] interface {
 	GetById(id ID) (*M, error)
 	Insert(row *M) error

@@ -6,9 +6,26 @@ import (
 
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
+	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/tools"
 	"github.com/go-jet/jet/v2/postgres"
 )
+
+func (dao *privilegeLevelsDAO) Table() interfaces.IPostgresTable {
+	return table.PrivilegeLevels
+}
+
+func (dao *privilegeLevelsDAO) InsertCols() postgres.ColumnList {
+	return table.PrivilegeLevels.AllColumns.Except(
+		table.PrivilegeLevels.ID,
+		table.PrivilegeLevels.CreatedAt,
+		table.PrivilegeLevels.UpdatedAt,
+	)
+}
+
+func (dao *privilegeLevelsDAO) AllCols() postgres.ColumnList {
+	return table.PrivilegeLevels.AllColumns
+}
 
 type privilegeLevelsDAO struct {
 	db *sql.DB
