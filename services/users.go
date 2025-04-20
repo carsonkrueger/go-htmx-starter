@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/carsonkrueger/main/constant"
+	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models/authModels"
@@ -50,7 +51,8 @@ func (us *usersService) Login(email string, password string, req *http.Request) 
 		UserID: user.ID,
 		Token:  token,
 	}
-	if err = us.DM().SessionsDAO().Insert(row); err != nil {
+	sesDAO := us.DM().SessionsDAO()
+	if err = database.Insert(sesDAO, row, us.DB()); err != nil {
 		return nil, err
 	}
 
@@ -65,7 +67,8 @@ func (us *usersService) Logout(id int64, token string) error {
 		UserID:    id,
 		AuthToken: token,
 	}
-	return us.DM().SessionsDAO().Delete(key)
+	sesDAO := us.DM().SessionsDAO()
+	return database.Delete(sesDAO, key, us.DB())
 }
 
 func (us *usersService) LogoutRequest(req *http.Request) error {

@@ -28,7 +28,7 @@ func web() {
 
 	dm := database.NewDAOManager(db)
 	sm := services.NewServiceManager(nil)
-	appCtx := context.NewAppContext(lgr, sm, dm)
+	appCtx := context.NewAppContext(lgr, sm, dm, db)
 	sm.SetAppContext(appCtx)
 	defer appCtx.CleanUp()
 

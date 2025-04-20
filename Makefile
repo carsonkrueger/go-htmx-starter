@@ -23,17 +23,17 @@ build:
 
 docker:
 	make docker-down
-	docker-compose up -d --build db go_backend --remove-orphans
+	docker compose up -d --build db go_backend --remove-orphans
 
 docker-down:
-	docker-compose down
+	docker compose down
 
 docker-postgres:
 	make docker-postgres-down
-	docker-compose up -d db --remove-orphans
+	docker compose up -d db --remove-orphans
 
 docker-postgres-down:
-	docker-compose down db
+	docker compose down db
 
 migrate:
 	migrate -database ${DB_URL_EXTERNAL} -path migrations up

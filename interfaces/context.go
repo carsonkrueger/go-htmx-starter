@@ -1,6 +1,8 @@
 package interfaces
 
 import (
+	"database/sql"
+
 	"go.uber.org/zap"
 )
 
@@ -12,6 +14,7 @@ type IAppContext interface {
 	INamedLogger
 	SM() IServiceManager
 	DM() IDAOManager
+	DB() *sql.DB
 }
 
 type ISetAppContext interface {
@@ -19,6 +22,5 @@ type ISetAppContext interface {
 }
 
 type IServiceContext interface {
-	INamedLogger
-	DM() IDAOManager
+	IAppContext
 }

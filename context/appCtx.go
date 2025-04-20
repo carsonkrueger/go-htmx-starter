@@ -1,6 +1,8 @@
 package context
 
 import (
+	"database/sql"
+
 	"github.com/carsonkrueger/main/interfaces"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
@@ -10,13 +12,15 @@ type appContext struct {
 	lgr *zap.Logger
 	sm  interfaces.IServiceManager
 	dm  interfaces.IDAOManager
+	db  *sql.DB
 }
 
-func NewAppContext(lgr *zap.Logger, sm interfaces.IServiceManager, dm interfaces.IDAOManager) *appContext {
+func NewAppContext(lgr *zap.Logger, sm interfaces.IServiceManager, dm interfaces.IDAOManager, db *sql.DB) *appContext {
 	return &appContext{
 		lgr,
 		sm,
 		dm,
+		db,
 	}
 }
 
@@ -30,6 +34,10 @@ func (ctx *appContext) SM() interfaces.IServiceManager {
 
 func (ctx *appContext) DM() interfaces.IDAOManager {
 	return ctx.dm
+}
+
+func (ctx *appContext) DB() *sql.DB {
+	return ctx.db
 }
 
 func (ctx *appContext) CleanUp() {

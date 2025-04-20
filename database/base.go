@@ -1,13 +1,15 @@
 package database
 
 import (
+	"time"
+
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models"
 	"github.com/go-jet/jet/v2/postgres"
 	"github.com/go-jet/jet/v2/qrm"
 )
 
-func Index[T interfaces.IPostgresTable, R any](DAO interfaces.IDatabaseObject[T, R], params models.SearchParams, db qrm.Queryable) ([]*R, error) {
+func Index[PK interfaces.PK, R any](DAO interfaces.IDAO[PK, R], params models.SearchParams, db qrm.Queryable) ([]*R, error) {
 	var rows []*R
 	query := DAO.Table().SELECT(DAO.AllCols())
 	if params.Where != nil {
@@ -22,14 +24,13 @@ func Index[T interfaces.IPostgresTable, R any](DAO interfaces.IDatabaseObject[T,
 	if params.Limit != nil {
 		query = query.LIMIT(*params.Limit)
 	}
-	err := query.Query(db, &rows)
-	if len(rows) == 0 {
+	if err := query.Query(db, &rows); err != nil {
 		return nil, err
 	}
 	return rows, nil
 }
 
-func GetOne[T interfaces.IPostgresTable, PK interfaces.PK, R any](DAO interfaces.IDatabaseObject[T, R], pk PK, db qrm.Queryable) (*R, error) {
+func GetOne[PK interfaces.PK, R any](DAO interfaces.IDAO[PK, R], pk PK, db qrm.Queryable) (*R, error) {
 	var row *R
 	err := DAO.Table().
 		SELECT(DAO.AllCols()).
@@ -42,7 +43,7 @@ func GetOne[T interfaces.IPostgresTable, PK interfaces.PK, R any](DAO interfaces
 	return row, nil
 }
 
-func GetMany[T interfaces.IPostgresTable, PK interfaces.PK, R any](DAO interfaces.IDatabaseObject[T, R], pk PK, db qrm.Queryable) ([]*R, error) {
+func GetMany[PK interfaces.PK, R any](DAO interfaces.IDAO[PK, R], pk PK, db qrm.Queryable) ([]*R, error) {
 	var rows []*R
 	err := DAO.Table().
 		SELECT(DAO.AllCols()).
@@ -54,7 +55,7 @@ func GetMany[T interfaces.IPostgresTable, PK interfaces.PK, R any](DAO interface
 	return rows, nil
 }
 
-func Insert[T interfaces.IPostgresTable, R any](DAO interfaces.IDatabaseObject[T, R], values *R, db qrm.Queryable) error {
+func Insert[PK any, R any](DAO interfaces.IDAO[PK, R], values *R, db qrm.Queryable) error {
 	return DAO.Table().
 		INSERT(DAO.InsertCols()).
 		VALUES(values).
@@ -62,7 +63,7 @@ func Insert[T interfaces.IPostgresTable, R any](DAO interfaces.IDatabaseObject[T
 		Query(db, values)
 }
 
-func InsertMany[T interfaces.IPostgresTable, PK any, R any](DAO interfaces.IDatabaseObject[T, R], values []*R, db qrm.Queryable) error {
+func InsertMany[T interfaces.IPostgresTable, PK any, R any](DAO interfaces.IDAO[PK, R], values []*R, db qrm.Queryable) error {
 	return DAO.Table().
 		INSERT(DAO.InsertCols()).
 		MODELS(values).
@@ -70,35 +71,41 @@ func InsertMany[T interfaces.IPostgresTable, PK any, R any](DAO interfaces.IData
 		Query(db, values)
 }
 
-func Upsert[T interfaces.IPostgresTable, R any](DAO interfaces.IDatabaseObject[T, R], values *R, db qrm.Queryable) error {
+func Upsert[PK any, R any](DAO interfaces.IDAO[PK, R], values *R, db qrm.Queryable) error {
+	*DAO.GetUpdatedAt(values) = time.Now()
 	return DAO.Table().
-		INSERT(DAO.InsertCols()).
+		INSERT(DAO.UpdateCols()).
 		VALUES(values).
-		ON_CONFLICT(DAO.ConflictCols()...).
+		ON_CONFLICT(DAO.OnConflictCols()...).
 		DO_UPDATE(postgres.SET(DAO.UpdateOnConflictCols()...)).
 		RETURNING(DAO.AllCols()).
 		Query(db, values)
 }
 
-func UpsertMany[T interfaces.IPostgresTable, R any](DAO interfaces.IDatabaseObject[T, R], values []*R, db qrm.Queryable) error {
+func UpsertMany[PK any, R any](DAO interfaces.IDAO[PK, R], values []*R, db qrm.Queryable) error {
+	for _, v := range values {
+		*DAO.GetUpdatedAt(v) = time.Now()
+	}
 	return DAO.Table().
-		INSERT(DAO.InsertCols()).
+		INSERT(DAO.UpdateCols()).
 		MODELS(values).
-		ON_CONFLICT(DAO.ConflictCols()...).
+		ON_CONFLICT(DAO.OnConflictCols()...).
 		DO_UPDATE(postgres.SET(DAO.UpdateOnConflictCols()...)).
 		RETURNING(DAO.AllCols()).
 		Query(db, values)
 }
 
-func Update[T interfaces.IPostgresTable, R any](DAO interfaces.IDatabaseObject[T, R], values *R, db qrm.Queryable) error {
+func Update[PK any, R any](DAO interfaces.IDAO[PK, R], values *R, pk PK, db qrm.Queryable) error {
+	*DAO.GetUpdatedAt(values) = time.Now()
 	return DAO.Table().
-		UPDATE(DAO.InsertCols()).
+		UPDATE(DAO.UpdateCols()).
 		MODEL(values).
+		WHERE(DAO.PKMatch(pk)).
 		RETURNING(DAO.AllCols()).
 		Query(db, values)
 }
 
-func Delete[T interfaces.IPostgresTable, PK interfaces.PK](DAO interfaces.IDatabaseObject[T, PK], pk PK, db qrm.Executable) error {
+func Delete[PK any, R any](DAO interfaces.IDAO[PK, R], pk PK, db qrm.Executable) error {
 	_, err := DAO.Table().
 		DELETE().
 		WHERE(DAO.PKMatch(pk)).

@@ -6,6 +6,7 @@ import (
 
 	"github.com/carsonkrueger/main/constant"
 	"github.com/carsonkrueger/main/context"
+	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/tools"
@@ -28,7 +29,7 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 				return
 			}
 
-			user, err := usersDAO.GetById(id)
+			user, err := database.GetOne(usersDAO, id, appCtx.DB())
 			if err != nil {
 				req.Header.Del(constant.AUTH_TOKEN_KEY)
 				tools.RequestHttpError(ctx, lgr, res, 403, errors.New("Malformed auth token"))
@@ -40,7 +41,7 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 				UserID:    id,
 				AuthToken: token,
 			}
-			session, err := sessionsDAO.GetById(key)
+			session, err := database.GetOne(sessionsDAO, key, appCtx.DB())
 
 			if session == nil || err != nil {
 				req.Header.Del(constant.AUTH_TOKEN_KEY)
