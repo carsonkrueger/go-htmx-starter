@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path"
 
 	"github.com/carsonkrueger/main/cfg"
 	"github.com/carsonkrueger/main/logger"
@@ -16,6 +17,9 @@ func generateDAO() {
 	table := flag.String("table", "", "camelCase Name of the DAO")
 	schema := flag.String("schema", "", "camelCase Schema Name of the DAO")
 	flag.Parse()
+
+	// lower first letter of table name
+	table = tools.Ptr(tools.ToLowerFirst(*table))
 
 	cfg := cfg.LoadConfig()
 	lgr := logger.NewLogger(&cfg).Named("generateDAO")
@@ -35,7 +39,12 @@ func generateDAO() {
 		os.Exit(1)
 	}
 
-	daoFilePath := fmt.Sprintf("%s/database/%s/%sDAO.go", wd, *schema, *table)
+	daoFilePath := fmt.Sprintf("%s/database/DAO/%s.go", wd, *table)
+	if err := os.MkdirAll(path.Dir(daoFilePath), 0755); err != nil {
+		lgr.Error("failed to create directory", zap.Error(err))
+		os.Exit(1)
+	}
+
 	contents := daoFileContents(cfg.DbConfig.Name, *schema, *table)
 	file, err := os.OpenFile(daoFilePath, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0644)
 	if err != nil {
@@ -54,130 +63,73 @@ func daoFileContents(dbName, schema, table string) string {
 	// upperSchema := tools.ToUpperFirst(schema)
 	upperTable := tools.ToUpperFirst(table)
 
-	return fmt.Sprintf(`package authDAO
+	return fmt.Sprintf(`package DAO
 
 import (
-    "database/sql"
-    "time"
+	"database/sql"
+	"time"
 
-    "github.com/carsonkrueger/main/gen/%[1]s/%[3]s/model"
-    "github.com/carsonkrueger/main/gen/%[1]s/%[3]s/table"
-    "github.com/carsonkrueger/main/tools"
-    "github.com/go-jet/jet/v2/postgres"
+	"github.com/carsonkrueger/main/database"
+	"github.com/carsonkrueger/main/gen/%[1]s/%[2]s/model"
+	"github.com/carsonkrueger/main/gen/%[1]s/%[2]s/table"
+	"github.com/carsonkrueger/main/interfaces"
+	"github.com/go-jet/jet/v2/postgres"
 )
 
-type %[3]sDAO struct {
-    db *sql.DB
+type %[3]sPrimaryKey int64;
+
+type %[4]sDAO struct {
+	db *sql.DB
+	interfaces.IDAOBaseQueries[%[3]sPrimaryKey, model.%[3]s]
 }
 
-func New%[3]sDAO(db *sql.DB) *%[3]sDAO {
-    return &%[3]sDAO{
-        db,
-    }
+func new%[3]sDAO(db *sql.DB) interfaces.I%[3]sDAO {
+	dao := &%[4]sDAO{
+		db:              db,
+		IDAOBaseQueries: nil,
+	}
+	queries := database.NewDAOQueryable(dao)
+	dao.IDAOBaseQueries = &queries
+	return dao
 }
 
-func (dao *%[3]sDAO) GetById(id int64) (*model.%[3]s, error) {
-    var row model.%[3]s
-    err := table.%[3]s.SELECT(table.%[3]s.AllColumns).
-        FROM(table.%[3]s).
-        WHERE(table.%[3]s.ID.EQ(postgres.Int(id))).
-        LIMIT(1).
-        Query(dao.db, &row)
-    if err != nil {
-        return nil, err
-    }
-    return &row, nil
+func (dao *%[4]sDAO) Table() interfaces.IPostgresTable {
+	return table.%[3]s
 }
 
-func (dao *%[3]sDAO) Insert(row *model.%[3]s) error {
-    var res model.%[3]s
-    err := table.%[3]s.
-        INSERT(table.%[3]s.AllColumns.Except(table.%[3]s.ID, table.%[3]s.CreatedAt, table.%[3]s.UpdatedAt)).
-        VALUES(postgres.String(row.Name)).
-        RETURNING(table.%[3]s.ID).
-        Query(dao.db, res)
-    return err
+func (dao *%[4]sDAO) InsertCols() postgres.ColumnList {
+	return table.%[3]s.AllColumns.Except(
+		table.%[3]s.ID,
+		table.%[3]s.CreatedAt,
+		table.%[3]s.UpdatedAt,
+	)
 }
 
-func (dao *%[3]sDAO) InsertMany(rows []*model.%[3]s) error {
-    if len(rows) == 0 {
-        return nil
-    }
-    return table.%[3]s.
-        INSERT(table.%[3]s.AllColumns.Except(table.%[3]s.ID, table.%[3]s.CreatedAt, table.%[3]s.UpdatedAt)).
-        MODELS(rows).
-        RETURNING(table.%[3]s.ID).
-        Query(dao.db, &rows)
+func (dao *%[4]sDAO) UpdateCols() postgres.ColumnList {
+	return table.%[3]s.AllColumns.Except(
+		table.%[3]s.ID,
+		table.%[3]s.CreatedAt,
+	)
 }
 
-func (dao *%[3]sDAO) Upsert(row *model.%[3]s, colsUpdate ...postgres.ColumnAssigment) error {
-    if len(colsUpdate) == 0 {
-        colsUpdate = []postgres.ColumnAssigment{
-            table.%[3]s.Name.SET(postgres.String(row.Name)),
-        }
-    }
-
-    row.UpdatedAt = tools.Ptr(time.Now())
-
-    return table.%[3]s.
-        INSERT(table.%[3]s.AllColumns.Except(table.%[3]s.ID, table.%[3]s.CreatedAt, table.%[3]s.UpdatedAt)).
-        VALUES(row.Name).
-        ON_CONFLICT(table.%[3]s.Name).
-        DO_UPDATE(postgres.SET(colsUpdate...)).
-        RETURNING(table.%[3]s.ID).
-        Query(dao.db, row)
+func (dao *%[4]sDAO) AllCols() postgres.ColumnList {
+	return table.%[3]s.AllColumns
 }
 
-func (dao *%[3]sDAO) UpsertMany(rows []*model.%[3]s, colsUpdate ...postgres.ColumnAssigment) error {
-    if len(colsUpdate) == 0 {
-        colsUpdate = []postgres.ColumnAssigment{
-            table.%[3]s.Name.SET(table.%[3]s.Name),
-        }
-    }
-
-    now := time.Now()
-    for _, r := range rows {
-        r.UpdatedAt = &now
-    }
-
-    return table.%[3]s.
-        INSERT(table.%[3]s.AllColumns.Except(table.%[3]s.ID, table.%[3]s.CreatedAt, table.%[3]s.UpdatedAt)).
-        MODELS(rows).
-        ON_CONFLICT(table.%[3]s.Name).
-        DO_UPDATE(postgres.SET(colsUpdate...)).
-        RETURNING(table.%[3]s.ID).
-        Query(dao.db, &rows)
+func (dao *%[4]sDAO) OnConflictCols() postgres.ColumnList {
+	return []postgres.Column{}
 }
 
-func (dao *%[3]sDAO) Update(row *model.%[3]s) error {
-    row.UpdatedAt = tools.Ptr(time.Now())
-    _, err := table.%[3]s.
-        UPDATE(table.%[3]s.EXCLUDED.ID).
-        MODEL(row).
-        WHERE(table.%[3]s.ID.EQ(postgres.Int(row.ID))).
-        SET(table.%[3]s.UpdatedAt.SET(postgres.TimestampT(time.Now()))).
-        Exec(dao.db)
-    return err
+func (dao *%[4]sDAO) UpdateOnConflictCols() []postgres.ColumnAssigment {
+	return []postgres.ColumnAssigment{}
 }
 
-func (dao *%[3]sDAO) Delete(id int64) error {
-    _, err := table.%[3]s.DELETE().WHERE(table.%[3]s.ID.EQ(postgres.Int(id))).Exec(dao.db)
-    if err != nil {
-        return err
-    }
-    return nil
+func (dao *%[4]sDAO) PKMatch(pk %[3]sPrimaryKey) postgres.BoolExpression {
+	return table.%[3]s.ID.EQ(postgres.Int64(int64(pk)))
 }
 
-func (dao *%[3]sDAO) GetAll() (*[]model.%[3]s, error) {
-    var rows []model.%[3]s
-    err := table.%[3]s.
-        SELECT(table.%[3]s.AllColumns).
-        ORDER_BY(table.%[3]s.ID.DESC()).
-        Query(dao.db, &rows)
-    if err != nil {
-        return nil, err
-    }
-    return &rows, nil
+func (dao *%[4]sDAO) GetUpdatedAt(row *model.%[3]s) *time.Time {
+	return row.UpdatedAt
 }
-`, dbName, schema, upperTable)
+`, dbName, schema, upperTable, table)
 }

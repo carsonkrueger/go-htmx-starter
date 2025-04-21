@@ -48,6 +48,13 @@ migrate-generate:
 	@read -p "Enter migration name: " name; \
 	migrate create -ext sql -dir migrations -seq $$name
 
+generate-dao:
+	@echo "Enter camelCase table name: "; \
+	read table; \
+	echo "Enter schema name: "; \
+	read schema; \
+	go run . -schema="$$schema" -table="$$table" genDAO
+
 seed:
 	go run . seed
 
