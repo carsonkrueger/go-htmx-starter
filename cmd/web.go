@@ -32,8 +32,8 @@ func web() {
 	sm.SetAppContext(appCtx)
 	defer appCtx.CleanUp()
 
-	appRouter := router.Setup(appCtx)
-	appRouter.BuildRouter(appCtx)
+	appRouter := router.NewAppRouter(appCtx)
+	appRouter.BuildRouter()
 	err = appRouter.Start(cfg)
 
 	if err != nil {

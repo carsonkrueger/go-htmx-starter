@@ -23,10 +23,12 @@ type AppRouter struct {
 	private []builders.IAppPrivateRoute
 	addr    string
 	router  chi.Router
+	appCtx  interfaces.IAppContext
 }
 
-func Setup(ctx interfaces.IAppContext) AppRouter {
+func NewAppRouter(ctx interfaces.IAppContext) AppRouter {
 	return AppRouter{
+		appCtx: ctx,
 		public: []builders.IAppPublicRoute{
 			public.NewWebPublic(ctx),
 			public.NewLogin(ctx),
@@ -39,9 +41,9 @@ func Setup(ctx interfaces.IAppContext) AppRouter {
 	}
 }
 
-func (a *AppRouter) BuildRouter(ctx interfaces.IAppContext) {
+func (a *AppRouter) BuildRouter() {
 	a.router = chi.NewRouter()
-	lgr := ctx.Lgr("BuildRouter")
+	lgr := a.appCtx.Lgr("BuildRouter")
 
 	for _, r := range a.public {
 		router := chi.NewRouter()
@@ -51,16 +53,16 @@ func (a *AppRouter) BuildRouter(ctx interfaces.IAppContext) {
 	}
 
 	// enforce authentication middleware
-	a.router = a.router.With(middlewares.EnforceAuth(ctx))
+	a.router = a.router.With(middlewares.EnforceAuth(a.appCtx))
 
 	for _, r := range a.private {
-		builder := builders.NewPrivateRouteBuilder(ctx)
+		builder := builders.NewPrivateRouteBuilder(a.appCtx)
 		r.PrivateRoute(&builder)
 		a.router.Mount(r.Path(), builder.Build())
 		lgr.Info(r.Path())
 	}
 
-	err := ctx.SM().PrivilegesService().BuildCache()
+	err := a.appCtx.SM().PrivilegesService().BuildCache()
 	if err != nil {
 		lgr.Fatal("Error building permission cache", zap.Error(err))
 	}
