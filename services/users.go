@@ -71,10 +71,14 @@ func (us *usersService) Logout(id int64, token string) error {
 }
 
 func (us *usersService) LogoutRequest(req *http.Request) error {
+	lgr := us.Lgr("LogoutRequest")
+	lgr.Info("Called")
+
 	if req == nil {
 		return errors.New("missing request")
 	}
 	token, id, err := us.GetAuthParts(req)
+
 	if err != nil {
 		return err
 	}
@@ -82,8 +86,8 @@ func (us *usersService) LogoutRequest(req *http.Request) error {
 }
 
 func (us *usersService) GetAuthParts(req *http.Request) (string, int64, error) {
-	lgr := us.Lgr("GetAuthParts")
-	lgr.Info("Called")
+	// lgr := us.Lgr("GetAuthParts")
+	// lgr.Info("Called")
 
 	cookie, err := tools.GetAuthCookie(req)
 	if err != nil {

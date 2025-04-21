@@ -76,7 +76,7 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 
 	hxRequest := tools.IsHxRequest(req)
 	if hxRequest {
-		content := partials.Redirect("/user_management/users", "#"+pageLayouts.MainContentID, builders.GET, "true")
+		content := partials.Redirect("/user_management/tabs", "#"+pageLayouts.MainContentID, builders.GET, "true")
 		content.Render(ctx, res)
 	}
 }
