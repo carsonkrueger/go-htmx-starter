@@ -3,7 +3,6 @@ package builders
 import (
 	"net/http"
 
-	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/middlewares"
@@ -52,7 +51,7 @@ func (mb *privateHandlerBuilder) Build() {
 	var r chi.Router
 	if mb.permissionName != nil {
 		pk := model.Privileges{Name: *mb.permissionName}
-		database.Upsert(privDAO, &pk, mb.appCtx.DB())
+		privDAO.Upsert(&pk, mb.appCtx.DB())
 		r = mb.router.With(middlewares.ApplyPermission(*mb.permissionName, mb.appCtx))
 	}
 	if len(mb.mw) > 0 {

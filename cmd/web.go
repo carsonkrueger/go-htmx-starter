@@ -5,7 +5,7 @@ import (
 
 	"github.com/carsonkrueger/main/cfg"
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/database"
+	"github.com/carsonkrueger/main/database/DAO"
 	"github.com/carsonkrueger/main/logger"
 	"github.com/carsonkrueger/main/router"
 	"github.com/carsonkrueger/main/services"
@@ -26,7 +26,7 @@ func web() {
 		panic("Database connection is nil")
 	}
 
-	dm := database.NewDAOManager(db)
+	dm := DAO.NewDAOManager(db)
 	sm := services.NewServiceManager(nil)
 	appCtx := context.NewAppContext(lgr, sm, dm, db)
 	sm.SetAppContext(appCtx)

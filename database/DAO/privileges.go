@@ -1,9 +1,10 @@
-package authDAO
+package DAO
 
 import (
 	"database/sql"
 	"time"
 
+	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
 	"github.com/carsonkrueger/main/interfaces"
@@ -13,12 +14,17 @@ import (
 
 type privilegesDAO struct {
 	db *sql.DB
+	interfaces.IDAOBaseQueries[int64, model.Privileges]
 }
 
-func NewPrivilegesDAO(db *sql.DB) *privilegesDAO {
-	return &privilegesDAO{
-		db,
+func newPrivilegesDAO(db *sql.DB) *privilegesDAO {
+	dao := &privilegesDAO{
+		db:              db,
+		IDAOBaseQueries: nil,
 	}
+	queries := database.NewDAOQueryable(dao)
+	dao.IDAOBaseQueries = &queries
+	return dao
 }
 
 func (dao *privilegesDAO) Table() interfaces.IPostgresTable {
@@ -62,7 +68,7 @@ func (dao *privilegesDAO) GetUpdatedAt(row *model.Privileges) *time.Time {
 	return row.UpdatedAt
 }
 
-func (dao *privilegesDAO) GetAllJoined() (*[]authModels.JoinedPrivilegesRaw, error) {
+func (dao *privilegesDAO) GetAllJoined() ([]authModels.JoinedPrivilegesRaw, error) {
 	var res []authModels.JoinedPrivilegesRaw
 
 	err := table.PrivilegeLevels.
@@ -81,5 +87,5 @@ func (dao *privilegesDAO) GetAllJoined() (*[]authModels.JoinedPrivilegesRaw, err
 		return nil, err
 	}
 
-	return &res, nil
+	return res, nil
 }

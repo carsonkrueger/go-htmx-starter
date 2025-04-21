@@ -1,9 +1,10 @@
-package authDAO
+package DAO
 
 import (
 	"database/sql"
 	"time"
 
+	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
 	"github.com/carsonkrueger/main/interfaces"
@@ -13,12 +14,17 @@ import (
 
 type sessionsDAO struct {
 	db *sql.DB
+	interfaces.IDAOBaseQueries[authModels.SessionsPrimaryKey, model.Sessions]
 }
 
-func NewSessionsDAO(db *sql.DB) *sessionsDAO {
-	return &sessionsDAO{
-		db,
+func newSessionsDAO(db *sql.DB) *sessionsDAO {
+	dao := &sessionsDAO{
+		db:              db,
+		IDAOBaseQueries: nil,
 	}
+	queries := database.NewDAOQueryable(dao)
+	dao.IDAOBaseQueries = &queries
+	return dao
 }
 
 func (dao *sessionsDAO) Table() interfaces.IPostgresTable {

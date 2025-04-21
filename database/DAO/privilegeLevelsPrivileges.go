@@ -1,9 +1,10 @@
-package authDAO
+package DAO
 
 import (
 	"database/sql"
 	"time"
 
+	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
 	"github.com/carsonkrueger/main/interfaces"
@@ -13,12 +14,17 @@ import (
 
 type privilegeLevelsPrivilegesDAO struct {
 	db *sql.DB
+	interfaces.IDAOBaseQueries[authModels.PrivilegeLevelsPrivilegesPrimaryKey, model.PrivilegeLevelsPrivileges]
 }
 
-func NewPrivilegeLevelsPrivilegesDAO(db *sql.DB) *privilegeLevelsPrivilegesDAO {
-	return &privilegeLevelsPrivilegesDAO{
-		db,
+func newPrivilegeLevelsPrivilegesDAO(db *sql.DB) *privilegeLevelsPrivilegesDAO {
+	dao := &privilegeLevelsPrivilegesDAO{
+		db:              db,
+		IDAOBaseQueries: nil,
 	}
+	queries := database.NewDAOQueryable(dao)
+	dao.IDAOBaseQueries = &queries
+	return dao
 }
 
 func (dao *privilegeLevelsPrivilegesDAO) Table() interfaces.IPostgresTable {

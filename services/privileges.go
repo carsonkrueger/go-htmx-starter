@@ -4,7 +4,6 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models/authModels"
@@ -47,10 +46,11 @@ func (s *privilegesService) BuildCache() error {
 
 	joinedPrivileges, err := dao.GetAllJoined()
 	if err != nil {
+		lgr.Error(err.Error())
 		return err
 	}
 
-	for _, jp := range *joinedPrivileges {
+	for _, jp := range joinedPrivileges {
 		if jp.Privileges.Name == "" {
 			continue
 		}
@@ -75,7 +75,7 @@ func (ps *privilegesService) AddPermission(levelID int64, perms ...model.Privile
 	refd := tools.PtrSlice(perms)
 	// err := ps.DM().PrivilegeDAO().UpsertMany(refd)
 	privDAO := ps.DM().PrivilegeDAO()
-	err = database.UpsertMany(privDAO, refd, tx)
+	err = privDAO.UpsertMany(refd, tx)
 	if err != nil {
 		lgr.Error("Failed to insert privileges", zap.Error(err))
 		return
@@ -89,7 +89,7 @@ func (ps *privilegesService) AddPermission(levelID int64, perms ...model.Privile
 		})
 	}
 	levelsPrivsDAO := ps.DM().PrivilegeLevelsPrivilegesDAO()
-	database.UpsertMany(levelsPrivsDAO, tools.PtrSlice(joinRows), tx)
+	levelsPrivsDAO.UpsertMany(tools.PtrSlice(joinRows), tx)
 
 	ps.Lock()
 	defer ps.Unlock()
@@ -112,7 +112,7 @@ func (ps *privilegesService) CreateLevel(name string) {
 		Name: name,
 	}
 	levelsDAO := ps.DM().PrivilegeLevelsDAO()
-	if err := database.Insert(levelsDAO, &row, ps.DB()); err != nil {
+	if err := levelsDAO.Insert(&row, ps.DB()); err != nil {
 		lgr.Error("Failed to create level", zap.Error(err))
 		return
 	}

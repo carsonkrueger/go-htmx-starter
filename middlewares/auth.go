@@ -5,7 +5,6 @@ import (
 
 	"github.com/carsonkrueger/main/constant"
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models/authModels"
@@ -30,7 +29,7 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 			}
 
 			var user model.Users
-			err = database.GetOne(usersDAO, id, &user, appCtx.DB())
+			err = usersDAO.GetOne(id, &user, appCtx.DB())
 			if err != nil {
 				req.Header.Del(constant.AUTH_TOKEN_KEY)
 				tools.RequestHttpError(ctx, lgr, res, 403, err, "Malformed auth token")
@@ -43,7 +42,7 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 				AuthToken: token,
 			}
 			var session model.Sessions
-			err = database.GetOne(sessionsDAO, key, &session, appCtx.DB())
+			err = sessionsDAO.GetOne(key, &session, appCtx.DB())
 
 			if err != nil {
 				req.Header.Del(constant.AUTH_TOKEN_KEY)

@@ -4,8 +4,10 @@ import (
 	"time"
 
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
+	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/go-jet/jet/v2/postgres"
+	"github.com/go-jet/jet/v2/qrm"
 )
 
 type IPostgresTable interface {
@@ -13,7 +15,7 @@ type IPostgresTable interface {
 	postgres.ReadableTable
 }
 
-type PK any
+type PrimaryKey any
 
 type IGetBaseCols interface {
 	InsertCols() postgres.ColumnList
@@ -35,23 +37,25 @@ type IGetTable interface {
 	Table() IPostgresTable
 }
 
+type IDAOBaseQueries[PK PrimaryKey, R any] interface {
+	Index(params models.SearchParams, models []*R, db qrm.Queryable) error
+	GetOne(pk PK, model *R, db qrm.Queryable) error
+	GetMany(pk PK, models *[]*R, db qrm.Queryable) error
+	Insert(model *R, db qrm.Queryable) error
+	InsertMany(models []*R, db qrm.Queryable) error
+	Upsert(model *R, db qrm.Queryable) error
+	UpsertMany(models []*R, db qrm.Queryable) error
+	Update(model *R, pk PK, db qrm.Queryable) error
+	Delete(pk PK, db qrm.Executable) error
+}
+
 type IDAO[PK any, R any] interface {
 	IGetTable
 	IGetBaseCols
 	IPKMatcher[PK]
 	IGetUpdatedAt[R]
+	IDAOBaseQueries[PK, R]
 }
-
-// type IDAO[M any, ID any] interface {
-// GetById(id ID) (*M, error)
-// Insert(row *M) error
-// InsertMany(rows []*M) error
-// Upsert(row *M, cols_update ...postgres.ColumnAssigment) error
-// UpsertMany(row []*M, cols_update ...postgres.ColumnAssigment) error
-// Update(row *M) error
-// Delete(id ID) error
-// GetAll() (*[]M, error)
-// }
 
 type IDAOManager interface {
 	UsersDAO() IUsersDAO
@@ -70,7 +74,7 @@ type IUsersDAO interface {
 
 type IPrivilegeDAO interface {
 	IDAO[int64, model.Privileges]
-	GetAllJoined() (*[]authModels.JoinedPrivilegesRaw, error)
+	GetAllJoined() ([]authModels.JoinedPrivilegesRaw, error)
 }
 
 type ISessionsDAO interface {
