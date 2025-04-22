@@ -1,26 +1,13 @@
 package tools
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/carsonkrueger/main/constant"
-	"go.uber.org/zap"
 )
-
-func RequestHttpError(ctx context.Context, logger *zap.Logger, res http.ResponseWriter, code int, err error, msg string) {
-	res.WriteHeader(code)
-	if code >= 500 {
-		logger.Error("Internal error: ", zap.Int("status code", code), zap.Error(err))
-		res.Write([]byte("An error occurred - Please try again later"))
-	} else {
-		logger.Warn("Request error: ", zap.Int("status code", code), zap.Error(err))
-		res.Write([]byte(msg))
-	}
-}
 
 func SetAuthCookie(res http.ResponseWriter, authToken *string) {
 	cookie := http.Cookie{

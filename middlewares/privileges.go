@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 
@@ -18,13 +17,11 @@ func ApplyPermission(permissionName string, appCtx interfaces.IAppContext) func(
 			ctx := req.Context()
 			lgr.Info(fmt.Sprintf("Permission Auth: %+v", permissionName))
 
-			deniedErr := errors.New("Permission denied")
-
 			levelID := context.GetPrivilegeLevelID(ctx)
 			cache := appCtx.SM().PrivilegesService()
 			permitted := cache.HasPermissionByName(levelID, permissionName)
 			if !permitted {
-				tools.RequestHttpError(ctx, lgr, res, 403, deniedErr, "Permission denied")
+				tools.HandleError(req, res, lgr, nil, 403, "Malformed auth token")
 				return
 			}
 

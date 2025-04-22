@@ -38,10 +38,7 @@ func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 
 	if err := req.ParseForm(); err != nil {
-		lgr.Error("Could not parse form", zap.Error(err))
-		res.WriteHeader(422)
-		noti := datadisplay.AddTextToast(models.Error, "Error parsing form", 0)
-		noti.Render(ctx, res)
+		tools.HandleError(req, res, lgr, err, 403, "Invalid Form")
 		return
 	}
 

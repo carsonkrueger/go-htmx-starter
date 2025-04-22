@@ -1,0 +1,14 @@
+package datainput
+
+type SelectOptions struct {
+	Value string
+	Label string
+}
+
+templ Select(id string, name string, options []SelectOptions) {
+	<select id={id} name={name}>
+		for _, o := range options {
+			<option value={o.Value}>{o.Label}</option>
+		}
+	</select>
+}

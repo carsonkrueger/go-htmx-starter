@@ -75,7 +75,7 @@ func (ps *privilegesService) AddPermission(levelID int64, perms ...model.Privile
 	refd := tools.PtrSlice(perms)
 	// err := ps.DM().PrivilegeDAO().UpsertMany(refd)
 	privDAO := ps.DM().PrivilegeDAO()
-	err = privDAO.UpsertMany(refd, tx)
+	err = privDAO.UpsertMany(&refd, tx)
 	if err != nil {
 		lgr.Error("Failed to insert privileges", zap.Error(err))
 		return
@@ -89,7 +89,9 @@ func (ps *privilegesService) AddPermission(levelID int64, perms ...model.Privile
 		})
 	}
 	levelsPrivsDAO := ps.DM().PrivilegeLevelsPrivilegesDAO()
-	levelsPrivsDAO.UpsertMany(tools.PtrSlice(joinRows), tx)
+
+	refdJoinRows := tools.PtrSlice(joinRows)
+	levelsPrivsDAO.UpsertMany(&refdJoinRows, tx)
 
 	ps.Lock()
 	defer ps.Unlock()

@@ -10,8 +10,8 @@ import (
 	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/pageLayouts"
+	"github.com/carsonkrueger/main/templates/pages"
 	"github.com/carsonkrueger/main/tools"
-	"go.uber.org/zap"
 )
 
 const (
@@ -72,8 +72,7 @@ func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *h
 	dao := um.DM().UsersDAO()
 	users, err := dao.GetUserPrivilegeJoinAll()
 	if err != nil || users == nil {
-		lgr.Error("Error fetching users", zap.Error(err))
-		tools.RenderErrorNotification(req, res, "Error fetching users", 0)
+		tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return
 	}
 
@@ -136,56 +135,11 @@ func (um *userManagement) userManagementLevelsGet(res http.ResponseWriter, req *
 
 	privileges, err := um.DM().PrivilegeDAO().GetAllJoined()
 	if err != nil {
-		lgr.Error("Error fetching privileges", zap.Error(err))
-		tools.RenderErrorNotification(req, res, "Error fetching privileges", 0)
+		tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return
 	}
 
-	headers := []datadisplay.CellData{
-		{
-			ID:    "h-lvl-name",
-			Width: 1,
-			Body:  datadisplay.Text("Privilege Level", models.LG),
-		},
-		{
-			ID:    "h-pr",
-			Width: 1,
-			Body:  datadisplay.Text("Privilege", models.LG),
-		},
-		{
-			ID:    "h-ca",
-			Width: 1,
-			Body:  datadisplay.Text("Created At", models.LG),
-		},
-	}
-
-	cells := make([][]datadisplay.CellData, len(privileges))
-	for i, p := range privileges {
-		ca := p.Privileges.CreatedAt
-		caStr := "No Created At"
-		if ca != nil {
-			caStr = ca.String()
-		}
-		cells[i] = []datadisplay.CellData{
-			{
-				ID:    "lvl-" + strconv.Itoa(i),
-				Width: 1,
-				Body:  datadisplay.Text(p.LevelName, models.SM),
-			},
-			{
-				ID:    "pr-" + strconv.Itoa(i),
-				Width: 1,
-				Body:  datadisplay.Text(p.Privileges.Name, models.SM),
-			},
-			{
-				ID:    "ca-" + strconv.Itoa(i),
-				Width: 1,
-				Body:  datadisplay.Text(caStr, models.MD),
-			},
-		}
-	}
-
-	datadisplay.BasicTable(headers, cells).Render(ctx, res)
+	pages.UserManagementLevels(privileges).Render(ctx, res)
 }
 
 func (um *userManagement) GetTab(hxRequest bool, index int) templ.Component {

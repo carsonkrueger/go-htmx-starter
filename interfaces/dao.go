@@ -38,13 +38,13 @@ type IGetTable interface {
 }
 
 type IDAOBaseQueries[PK PrimaryKey, R any] interface {
-	Index(params models.SearchParams, models []*R, db qrm.Queryable) error
-	GetOne(pk PK, model *R, db qrm.Queryable) error
-	GetMany(pk PK, models *[]*R, db qrm.Queryable) error
+	Index(params *models.SearchParams, db qrm.Queryable) ([]*R, error)
+	GetOne(pk PK, db qrm.Queryable) (*R, error)
+	GetMany(pk PK, db qrm.Queryable) ([]*R, error)
 	Insert(model *R, db qrm.Queryable) error
-	InsertMany(models []*R, db qrm.Queryable) error
+	InsertMany(models *[]*R, db qrm.Queryable) error
 	Upsert(model *R, db qrm.Queryable) error
-	UpsertMany(models []*R, db qrm.Queryable) error
+	UpsertMany(models *[]*R, db qrm.Queryable) error
 	Update(model *R, pk PK, db qrm.Queryable) error
 	Delete(pk PK, db qrm.Executable) error
 }

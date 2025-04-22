@@ -9,36 +9,50 @@ import (
 	"github.com/go-jet/jet/v2/qrm"
 )
 
-func index[PK interfaces.PrimaryKey, R any](DAO interfaces.IDAO[PK, R], params models.SearchParams, models []*R, db qrm.Queryable) error {
+func index[PK interfaces.PrimaryKey, R any](DAO interfaces.IDAO[PK, R], params *models.SearchParams, db qrm.Queryable) ([]*R, error) {
 	query := DAO.Table().SELECT(DAO.AllCols())
-	if params.Where != nil {
-		query = query.WHERE(params.Where)
+	if params != nil {
+		if params.Where != nil {
+			query = query.WHERE(params.Where)
+		}
+		if len(params.OrderBy) > 0 {
+			query = query.ORDER_BY(params.OrderBy...)
+		}
+		if params.Offset != nil {
+			query = query.OFFSET(*params.Offset)
+		}
+		if params.Limit != nil {
+			query = query.LIMIT(*params.Limit)
+		}
 	}
-	if len(params.OrderBy) > 0 {
-		query = query.ORDER_BY(params.OrderBy...)
+	var models []*R
+	if err := query.Query(db, &models); err != nil {
+		return nil, err
 	}
-	if params.Offset != nil {
-		query = query.OFFSET(*params.Offset)
-	}
-	if params.Limit != nil {
-		query = query.LIMIT(*params.Limit)
-	}
-	return query.Query(db, &models)
+	return models, nil
 }
 
-func getOne[PK interfaces.PrimaryKey, R any](DAO interfaces.IDAO[PK, R], pk PK, model *R, db qrm.Queryable) error {
-	return DAO.Table().
+func getOne[PK interfaces.PrimaryKey, R any](DAO interfaces.IDAO[PK, R], pk PK, db qrm.Queryable) (*R, error) {
+	var model R
+	if err := DAO.Table().
 		SELECT(DAO.AllCols()).
 		WHERE(DAO.PKMatch(pk)).
 		LIMIT(1).
-		Query(db, model)
+		Query(db, &model); err != nil {
+		return nil, err
+	}
+	return &model, nil
 }
 
-func getMany[PK interfaces.PrimaryKey, R any](DAO interfaces.IDAO[PK, R], pk PK, models *[]*R, db qrm.Queryable) error {
-	return DAO.Table().
+func getMany[PK interfaces.PrimaryKey, R any](DAO interfaces.IDAO[PK, R], pk PK, db qrm.Queryable) ([]*R, error) {
+	var models []*R
+	if err := DAO.Table().
 		SELECT(DAO.AllCols()).
 		WHERE(DAO.PKMatch(pk)).
-		Query(db, &models)
+		Query(db, &models); err != nil {
+		return nil, err
+	}
+	return models, nil
 }
 
 func insert[PK any, R any](DAO interfaces.IDAO[PK, R], model *R, db qrm.Queryable) error {
@@ -49,7 +63,7 @@ func insert[PK any, R any](DAO interfaces.IDAO[PK, R], model *R, db qrm.Queryabl
 		Query(db, model)
 }
 
-func insertMany[PK any, R any](DAO interfaces.IDAO[PK, R], models []*R, db qrm.Queryable) error {
+func insertMany[PK any, R any](DAO interfaces.IDAO[PK, R], models *[]*R, db qrm.Queryable) error {
 	return DAO.Table().
 		INSERT(DAO.InsertCols()).
 		MODELS(models).
@@ -71,8 +85,8 @@ func upsert[PK any, R any](DAO interfaces.IDAO[PK, R], model *R, db qrm.Queryabl
 		Query(db, model)
 }
 
-func upsertMany[PK any, R any](DAO interfaces.IDAO[PK, R], models []*R, db qrm.Queryable) error {
-	for _, v := range models {
+func upsertMany[PK any, R any](DAO interfaces.IDAO[PK, R], models *[]*R, db qrm.Queryable) error {
+	for _, v := range *models {
 		up := DAO.GetUpdatedAt(v)
 		if up != nil {
 			*up = time.Now()
@@ -80,11 +94,11 @@ func upsertMany[PK any, R any](DAO interfaces.IDAO[PK, R], models []*R, db qrm.Q
 	}
 	return DAO.Table().
 		INSERT(DAO.UpdateCols()).
-		MODELS(models).
+		MODELS(*models).
 		ON_CONFLICT(DAO.OnConflictCols()...).
 		DO_UPDATE(postgres.SET(DAO.UpdateOnConflictCols()...)).
 		RETURNING(DAO.AllCols()).
-		Query(db, &models)
+		Query(db, models)
 }
 
 func update[PK any, R any](DAO interfaces.IDAO[PK, R], model *R, pk PK, db qrm.Queryable) error {
@@ -118,23 +132,23 @@ func NewDAOQueryable[PK interfaces.PrimaryKey, R any](dao interfaces.IDAO[PK, R]
 	}
 }
 
-func (q *baseDAOQueryable[PK, R]) Index(params models.SearchParams, models []*R, db qrm.Queryable) error {
-	return index(q.Dao, params, models, db)
+func (q *baseDAOQueryable[PK, R]) Index(params *models.SearchParams, db qrm.Queryable) ([]*R, error) {
+	return index(q.Dao, params, db)
 }
 
-func (q *baseDAOQueryable[PK, R]) GetOne(pk PK, model *R, db qrm.Queryable) error {
-	return getOne(q.Dao, pk, model, db)
+func (q *baseDAOQueryable[PK, R]) GetOne(pk PK, db qrm.Queryable) (*R, error) {
+	return getOne(q.Dao, pk, db)
 }
 
-func (q *baseDAOQueryable[PK, R]) GetMany(pk PK, models *[]*R, db qrm.Queryable) error {
-	return getMany(q.Dao, pk, models, db)
+func (q *baseDAOQueryable[PK, R]) GetMany(pk PK, db qrm.Queryable) ([]*R, error) {
+	return getMany(q.Dao, pk, db)
 }
 
 func (q *baseDAOQueryable[PK, R]) Insert(model *R, db qrm.Queryable) error {
 	return insert(q.Dao, model, db)
 }
 
-func (q *baseDAOQueryable[PK, R]) InsertMany(models []*R, db qrm.Queryable) error {
+func (q *baseDAOQueryable[PK, R]) InsertMany(models *[]*R, db qrm.Queryable) error {
 	return insertMany(q.Dao, models, db)
 }
 
@@ -142,7 +156,7 @@ func (q *baseDAOQueryable[PK, R]) Upsert(model *R, db qrm.Queryable) error {
 	return upsert(q.Dao, model, db)
 }
 
-func (q *baseDAOQueryable[PK, R]) UpsertMany(models []*R, db qrm.Queryable) error {
+func (q *baseDAOQueryable[PK, R]) UpsertMany(models *[]*R, db qrm.Queryable) error {
 	return upsertMany(q.Dao, models, db)
 }
 

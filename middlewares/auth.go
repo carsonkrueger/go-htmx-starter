@@ -5,7 +5,6 @@ import (
 
 	"github.com/carsonkrueger/main/constant"
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/tools"
@@ -23,16 +22,15 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 
 			token, id, err := usersService.GetAuthParts(req)
 			if err != nil {
-				tools.RequestHttpError(ctx, lgr, res, 403, err, "Malformed auth token")
+				tools.HandleError(req, res, lgr, err, 403, "Malformed auth token")
 				res.Header().Set("Hx-Redirect", "/login")
 				return
 			}
 
-			var user model.Users
-			err = usersDAO.GetOne(id, &user, appCtx.DB())
+			user, err := usersDAO.GetOne(id, appCtx.DB())
 			if err != nil {
+				tools.HandleError(req, res, lgr, err, 403, "Malformed auth token")
 				req.Header.Del(constant.AUTH_TOKEN_KEY)
-				tools.RequestHttpError(ctx, lgr, res, 403, err, "Malformed auth token")
 				res.Header().Set("Hx-Redirect", "/login")
 				return
 			}
@@ -41,19 +39,18 @@ func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Han
 				UserID:    id,
 				AuthToken: token,
 			}
-			var session model.Sessions
-			err = sessionsDAO.GetOne(key, &session, appCtx.DB())
+			session, err := sessionsDAO.GetOne(key, appCtx.DB())
 
 			if err != nil {
+				tools.HandleError(req, res, lgr, err, 403, "Malformed auth token")
 				req.Header.Del(constant.AUTH_TOKEN_KEY)
-				tools.RequestHttpError(ctx, lgr, res, 403, err, "Malformed auth token")
 				res.Header().Set("Hx-Redirect", "/login")
 				return
 			}
 
 			if session.Token != token {
+				tools.HandleError(req, res, lgr, err, 403, "Malformed auth token")
 				req.Header.Del(constant.AUTH_TOKEN_KEY)
-				tools.RequestHttpError(ctx, lgr, res, 403, err, "Malformed auth token")
 				res.Header().Set("Hx-Redirect", "/login")
 				return
 			}
