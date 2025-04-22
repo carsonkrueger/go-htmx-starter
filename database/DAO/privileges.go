@@ -79,8 +79,8 @@ func (dao *privilegesDAO) GetAllJoined() ([]authModels.JoinedPrivilegesRaw, erro
 		).
 		FROM(
 			table.PrivilegeLevels.
-				LEFT_JOIN(table.PrivilegeLevelsPrivileges, table.PrivilegeLevelsPrivileges.PrivilegeLevelID.EQ(table.PrivilegeLevels.ID)).
-				LEFT_JOIN(table.Privileges, table.Privileges.ID.EQ(table.PrivilegeLevelsPrivileges.PrivilegeID)),
+				INNER_JOIN(table.PrivilegeLevelsPrivileges, table.PrivilegeLevelsPrivileges.PrivilegeLevelID.EQ(table.PrivilegeLevels.ID)).
+				INNER_JOIN(table.Privileges, table.Privileges.ID.EQ(table.PrivilegeLevelsPrivileges.PrivilegeID)),
 		).
 		Query(dao.db, &res)
 	if err != nil {

@@ -15,6 +15,7 @@ const (
 	GET    RouteMethod = "GET"
 	POST   RouteMethod = "POST"
 	PUT    RouteMethod = "PUT"
+	PATCH  RouteMethod = "PATCH"
 	DELETE RouteMethod = "DELETE"
 )
 

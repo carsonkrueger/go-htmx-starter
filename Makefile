@@ -55,6 +55,16 @@ generate-dao:
 	read schema; \
 	go run . -schema="$$schema" -table="$$table" genDAO
 
+generate-private-controller:
+	@echo "Enter camelCase controller name: "; \
+	read controller; \
+	go run . -name="$$controller" -private=true genController
+
+generate-public-controller:
+	@echo "Enter camelCase controller name: "; \
+	read controller; \
+	go run . -name="$$controller" -private=false genController
+
 seed:
 	go run . seed
 
