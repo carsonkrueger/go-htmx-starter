@@ -29,7 +29,10 @@ templ Tabs(tabs []TabModel, selectedTabIndex int) {
 						for={ id }
 						class={"tab cursor-pointer p-3 min-w-56 flex justify-center items-center border-b-[2px] " + class}
 						hx-get={ tab.HxGet }
-						hx-target="#tab-content"
+						hx-target={ "#"+TabContentID }
+						if tabs[i].PushUrl {
+							hx-push-url="true"
+						}
 						hx-trigger="click"
 						hx-swap="innerHTML"
 					>
@@ -39,9 +42,6 @@ templ Tabs(tabs []TabModel, selectedTabIndex int) {
 						id={ id }
 						type="radio"
 						class="hidden"
-						if tabs[i].PushUrl {
-							hx-push-url={ tab.HxGet }
-						}
 						if selected {
 							checked
 						}
@@ -51,13 +51,15 @@ templ Tabs(tabs []TabModel, selectedTabIndex int) {
 		</div>
 		<div
 			id={ TabContentID }
-			hx-trigger="load"
-			hx-target="this"
-			hx-swap="innerHTML"
-			if selectedTabIndex < len(tabs) && selectedTabIndex >= 0 {
-				hx-get={ tabs[selectedTabIndex].HxGet }
-				hx-push-url={ tabs[selectedTabIndex].HxGet }
-			}
-		/>
+		>
+			<div
+				hx-trigger="load"
+				hx-target={ "#"+TabContentID }
+				hx-swap="innerHTML"
+				if selectedTabIndex < len(tabs) && selectedTabIndex >= 0 {
+					hx-get={ tabs[selectedTabIndex].HxGet }
+				}
+			/>
+		</div>
 	</div>
 }

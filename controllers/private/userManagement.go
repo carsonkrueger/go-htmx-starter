@@ -19,7 +19,7 @@ const (
 	UserManagementLevelsGet = "UserManagementLevelsGet"
 )
 
-var tabModels = []pageLayouts.TabModel{
+var UserManagementTabModels = []pageLayouts.TabModel{
 	{Title: "Users", PushUrl: true, HxGet: "/user_management/users"},
 	{Title: "Privilege Levels", PushUrl: true, HxGet: "/user_management/levels"},
 }
@@ -44,13 +44,6 @@ func (um *userManagement) PrivateRoute(b *builders.PrivateRouteBuilder) {
 	b.NewHandle().Register(builders.GET, "/levels", um.userManagementLevelsGet).SetPermissionName(UserManagementLevelsGet).Build()
 }
 
-// func (um *userManagement) userManagementTabsGet(res http.ResponseWriter, req *http.Request) {
-// 	lgr := um.Lgr("userManagementTabsGet")
-// 	lgr.Info("Called")
-// 	ctx := req.Context()
-// 	render.Tab(req, tabModels, 0).Render(ctx, res)
-// }
-
 func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *http.Request) {
 	lgr := um.Lgr("userManagementUsersGet")
 	lgr.Info("Called")
@@ -69,7 +62,7 @@ func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *h
 	}
 
 	page := pages.UserManagementUsers(*users)
-	render.Tab(req, tabModels, 0, page).Render(ctx, res)
+	render.Tab(req, UserManagementTabModels, 0, page).Render(ctx, res)
 }
 
 func (um *userManagement) userManagementLevelsGet(res http.ResponseWriter, req *http.Request) {
@@ -84,5 +77,5 @@ func (um *userManagement) userManagementLevelsGet(res http.ResponseWriter, req *
 	}
 
 	page := pages.UserManagementLevels(privileges)
-	render.Tab(req, tabModels, 1, page).Render(ctx, res)
+	render.Tab(req, UserManagementTabModels, 1, page).Render(ctx, res)
 }

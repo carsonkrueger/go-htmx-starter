@@ -14,6 +14,7 @@ templ Login() {
 				hx-post="/login"
 				hx-target={ "#" + pageLayouts.MainContentID }
 				hx-swap="innerHTML"
+				hx-target-422="#response"
 				class="space-y-4"
 			>
 				<div>
@@ -35,6 +36,7 @@ templ Login() {
 						type="button"
 						class="px-3 py-2 border-[1px] border-primary text-primary font-bold py-2 rounded-sm transition cursor-pointer"
 						hx-get="/signup"
+						hx-push-url="true"
 						hx-target={ "#" + pageLayouts.MainContentID }
 						hx-swap="innerHTML"
 					>

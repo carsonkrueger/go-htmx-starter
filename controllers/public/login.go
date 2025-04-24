@@ -3,13 +3,11 @@ package public
 import (
 	"net/http"
 
-	"github.com/carsonkrueger/main/builders"
+	"github.com/carsonkrueger/main/controllers/private"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
-	"github.com/carsonkrueger/main/templates/pageLayouts"
 	"github.com/carsonkrueger/main/templates/pages"
-	"github.com/carsonkrueger/main/templates/partials"
 	"github.com/carsonkrueger/main/tools"
 	"github.com/carsonkrueger/main/tools/render"
 	"github.com/carsonkrueger/main/tools/validate"
@@ -77,8 +75,20 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 
 	hxRequest := tools.IsHxRequest(req)
 	if hxRequest {
-		content := partials.Redirect("/user_management/users", "#"+pageLayouts.MainContentID, builders.GET, "true")
-		content.Render(ctx, res)
+		dao := l.DM().UsersDAO()
+		users, err := dao.GetUserPrivilegeJoinAll()
+		if err != nil || users == nil {
+			tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
+			return
+		}
+
+		if len(*users) == 0 {
+			datadisplay.AddTextToast(models.Warning, "No Users Found", 5).Render(ctx, res)
+			return
+		}
+
+		page := pages.UserManagementUsers(*users)
+		render.Tab(req, private.UserManagementTabModels, 0, page).Render(ctx, res)
 	}
 }
 
