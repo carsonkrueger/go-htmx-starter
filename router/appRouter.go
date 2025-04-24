@@ -38,6 +38,7 @@ func NewAppRouter(ctx interfaces.IAppContext) AppRouter {
 		private: []builders.IAppPrivateRoute{
 			private.NewUserManagement(ctx),
 			private.NewPrivileges(ctx),
+			private.NewPrivilegeLevels(ctx),
 		},
 	}
 }

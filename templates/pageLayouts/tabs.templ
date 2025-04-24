@@ -4,47 +4,60 @@ import (
 	"fmt"
 )
 
+const TabContentID = "tab-content"
+
 type TabModel struct {
 	Title   string
-	PushUrl string
 	HxGet   string
+	PushUrl bool
 }
 
-templ Tabs(tabs []TabModel, tabPageHxGet string, curTabIdx int) {
+templ Tabs(tabs []TabModel, selectedTabIndex int) {
 	<div>
 		<div class="flex text-lg shadow-md">
 			for i, tab := range tabs {
 				{{
 					class := "border-b-transparent"
-					if i == curTabIdx {
+					selected := i == selectedTabIndex
+					if selected {
 						class = "border-b-secondary"
 					}
+					id := fmt.Sprintf("tab-%s", tab.HxGet)
 				}}
 				<div>
 					<label
-						for={ fmt.Sprintf("tab-%d", i) }
+						for={ id }
 						class={"tab cursor-pointer p-3 min-w-56 flex justify-center items-center border-b-[2px] " + class}
+						hx-get={ tab.HxGet }
+						hx-target="#tab-content"
+						hx-trigger="click"
+						hx-swap="innerHTML"
 					>
 						{ tab.Title }
 					</label>
 					<input
-						id={ fmt.Sprintf("tab-%d", i) }
-						type="checkbox"
+						id={ id }
+						type="radio"
 						class="hidden"
-						hx-push-url={ tab.PushUrl }
-						hx-get={ fmt.Sprintf("%s?tab=%d", tabPageHxGet, i) }
-						hx-target="#tab-content"
-						hx-swap="innerHTML"
+						if tabs[i].PushUrl {
+							hx-push-url={ tab.HxGet }
+						}
+						if selected {
+							checked
+						}
 					/>
 				</div>
 			}
 		</div>
 		<div
-			id="tab-content"
+			id={ TabContentID }
 			hx-trigger="load"
 			hx-target="this"
 			hx-swap="innerHTML"
-			hx-get={ tabs[curTabIdx].HxGet }
+			if selectedTabIndex < len(tabs) && selectedTabIndex >= 0 {
+				hx-get={ tabs[selectedTabIndex].HxGet }
+				hx-push-url={ tabs[selectedTabIndex].HxGet }
+			}
 		/>
 	</div>
 }

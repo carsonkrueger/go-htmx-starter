@@ -21,7 +21,7 @@ func ApplyPermission(permissionName string, appCtx interfaces.IAppContext) func(
 			cache := appCtx.SM().PrivilegesService()
 			permitted := cache.HasPermissionByName(levelID, permissionName)
 			if !permitted {
-				tools.HandleError(req, res, lgr, nil, 403, "Malformed auth token")
+				tools.HandleError(req, res, lgr, nil, 403, "Insufficient privileges")
 				return
 			}
 

@@ -35,11 +35,12 @@ func (um *privileges) PrivateRoute(b *builders.PrivateRouteBuilder) {
 func (r *privileges) privilegesSelectGet(res http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("privilegesSelectGet")
 	lgr.Info("Called")
+	ctx := req.Context()
 
-	dao := r.DM().PrivilegeLevelsDAO()
+	dao := r.DM().PrivilegeDAO()
 	levels, err := dao.Index(nil, r.DB())
 	if err != nil {
-		tools.HandleError(req, res, lgr, err, 500, "Error fetching privilege levels")
+		tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return
 	}
 
@@ -52,4 +53,6 @@ func (r *privileges) privilegesSelectGet(res http.ResponseWriter, req *http.Requ
 			})
 		}
 	}
+
+	datainput.Select("privileges-select", "privileges", options).Render(ctx, res)
 }

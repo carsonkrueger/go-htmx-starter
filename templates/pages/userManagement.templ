@@ -14,10 +14,48 @@ templ UserManagement() {
 	</div>
 }
 
-templ UserManagementUsers() {
-	<div>
-		Users
-	</div>
+templ UserManagementUsers(users []authModels.UserPrivilegeLevelJoin) {
+	{{
+		headers := []datadisplay.CellData{
+			{
+				ID:    "h-name",
+				Width: 1,
+				Body:  datadisplay.Text("Name", models.LG),
+			},
+			{
+				ID:    "h-pr",
+				Width: 1,
+				Body:  datadisplay.Text("Privilege Level", models.LG),
+			},
+			{
+				ID:    "h-ca",
+				Width: 1,
+				Body:  datadisplay.Text("Created At", models.LG),
+			},
+		}
+
+		cells := make([][]datadisplay.CellData, len(users))
+		for i, user := range users {
+			cells[i] = []datadisplay.CellData{
+				{
+					ID:    "n-" + strconv.Itoa(i),
+					Width: 1,
+					Body:  datadisplay.Text(user.FirstName, models.MD),
+				},
+				{
+					ID:    "pr-" + strconv.Itoa(i),
+					Width: 1,
+					Body:  datadisplay.Text(strconv.FormatInt(user.PrivilegeLevelID, 10), models.MD),
+				},
+				{
+					ID:    "ca-" + strconv.Itoa(i),
+					Width: 1,
+					Body:  datadisplay.Text(user.CreatedAt.Format("2006-01-02"), models.MD),
+				},
+			}
+		}
+	}}
+	@datadisplay.BasicTable(headers, cells)
 }
 
 templ UserManagementLevels(privileges []authModels.JoinedPrivilegesRaw) {
@@ -68,11 +106,19 @@ templ UserManagementLevels(privileges []authModels.JoinedPrivilegesRaw) {
 	}}
 	<div>
 		@datadisplay.BasicTable(headers, cells)
-		<div
-			hx-get="/privileges/select"
-			hx-target="this"
-			hx-swap="outerHTML"
-			hx-trigger="load"
-		/>
+		<div>
+			<div
+				hx-get="/privilege-levels/select"
+				hx-target="this"
+				hx-swap="outerHTML"
+				hx-trigger="load"
+			/>
+			<div
+				hx-get="/privileges/select"
+				hx-target="this"
+				hx-swap="outerHTML"
+				hx-trigger="load"
+			/>
+		</div>
 	</div>
 }

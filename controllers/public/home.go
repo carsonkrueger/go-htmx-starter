@@ -4,9 +4,8 @@ import (
 	"net/http"
 
 	"github.com/carsonkrueger/main/interfaces"
-	"github.com/carsonkrueger/main/templates/pageLayouts"
 	"github.com/carsonkrueger/main/templates/pages"
-	"github.com/carsonkrueger/main/tools"
+	"github.com/carsonkrueger/main/tools/render"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -37,11 +36,6 @@ func (hw *home) home(res http.ResponseWriter, req *http.Request) {
 	lgr := hw.Lgr("home")
 	lgr.Info("Called")
 	ctx := req.Context()
-	hxRequest := tools.IsHxRequest(req)
-	page := pageLayouts.MainPageLayout(pages.Home())
-	// If not hx request then user just arrived. Give them the index.html
-	if !hxRequest {
-		page = pageLayouts.Index(page)
-	}
-	page.Render(ctx, res)
+	page := pages.Home()
+	render.PageMainLayout(req, page).Render(ctx, res)
 }

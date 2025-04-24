@@ -13,7 +13,6 @@ templ Login() {
 			<form
 				hx-post="/login"
 				hx-target={ "#" + pageLayouts.MainContentID }
-				hx-target-422="#response"
 				hx-swap="innerHTML"
 				class="space-y-4"
 			>
@@ -38,7 +37,6 @@ templ Login() {
 						hx-get="/signup"
 						hx-target={ "#" + pageLayouts.MainContentID }
 						hx-swap="innerHTML"
-						hx-push-url="true"
 					>
 						Sign Up
 					</button>
