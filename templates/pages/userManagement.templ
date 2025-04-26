@@ -106,7 +106,11 @@ templ UserManagementLevels(privileges []authModels.JoinedPrivilegesRaw) {
 	}}
 	<div class="flex flex-col grow justify-between">
 		@datadisplay.BasicTable(headers, cells)
-		<div>
+		<form
+			class="flex gap-4 py-4 items-center justify-center"
+			hx-post="/privilege-levels-privileges"
+			hx-swap="none"
+		>
 			<div
 				hx-get="/privilege-levels/select"
 				hx-target="this"
@@ -119,6 +123,7 @@ templ UserManagementLevels(privileges []authModels.JoinedPrivilegesRaw) {
 				hx-swap="outerHTML"
 				hx-trigger="load"
 			/>
-		</div>
+			<button type="submit" class="bg-primary px-4 py-2 text-white rounded-sm">Add Privilege</button>
+		</form>
 	</div>
 }

@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	PrivilegesSelectGet = "PrivilegesSelectGet"
+	PrivilegesSelectGet  = "PrivilegesSelectGet"
+	PrivilegesSelectPost = "PrivilegesSelectPost"
 )
 
 type privileges struct {
