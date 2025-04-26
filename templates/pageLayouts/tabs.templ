@@ -13,8 +13,7 @@ type TabModel struct {
 }
 
 templ Tabs(tabs []TabModel, selectedTabIndex int) {
-	<div>
-		<div class="flex text-lg shadow-md">
+	<div class="flex text-lg shadow-md">
 			for i, tab := range tabs {
 				{{
 					class := "border-b-transparent"
@@ -45,21 +44,29 @@ templ Tabs(tabs []TabModel, selectedTabIndex int) {
 						if selected {
 							checked
 						}
+						_="
+						on click
+							remove .border-b-secondary from .tab then
+							add .border-b-transparent to .tab then
+							add .border-b-secondary to previous <label/> then
+							remove .border-b-transparent from previous <label/>
+						end
+						"
 					/>
 				</div>
 			}
-		</div>
+	</div>
+	<div
+		id={ TabContentID }
+		class="flex flex-col grow"
+	>
 		<div
-			id={ TabContentID }
-		>
-			<div
-				hx-trigger="load"
-				hx-target={ "#"+TabContentID }
-				hx-swap="innerHTML"
-				if selectedTabIndex < len(tabs) && selectedTabIndex >= 0 {
-					hx-get={ tabs[selectedTabIndex].HxGet }
-				}
-			/>
-		</div>
+			hx-trigger="load"
+			hx-target={ "#"+TabContentID }
+			hx-swap="innerHTML"
+			if selectedTabIndex < len(tabs) && selectedTabIndex >= 0 {
+				hx-get={ tabs[selectedTabIndex].HxGet }
+			}
+		/>
 	</div>
 }

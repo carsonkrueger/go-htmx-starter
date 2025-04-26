@@ -5,13 +5,13 @@ const MainContentID = "main-content"
 
 // All page layouts should extend this layout
 templ BasePageLayout() {
-	<div id={ PageLayoutID } hx-target={ PageLayoutID } hx-swap="outerHTML">
+	<div id={ PageLayoutID } class="flex flex-col grow">
 		{ children... }
 	</div>
 }
 
 templ MainContent() {
-	<div id={ MainContentID } hx-target={ MainContentID } hx-swap="outerHTML">
+	<main id={ MainContentID } class="flex flex-col grow">
 		{ children... }
-	</div>
+	</main>
 }

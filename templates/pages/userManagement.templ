@@ -104,7 +104,7 @@ templ UserManagementLevels(privileges []authModels.JoinedPrivilegesRaw) {
 			}
 		}
 	}}
-	<div>
+	<div class="flex flex-col grow justify-between">
 		@datadisplay.BasicTable(headers, cells)
 		<div>
 			<div

@@ -9,7 +9,7 @@ import (
 templ Login() {
 	@partialLayouts.CenteredLayout() {
 		<div class="p-4 max-w-96 w-full">
-			<h2 class="text-2xl font-bold text-center text-secondary mb-10">Login</h2>
+			<h2 class="text-2xl font-bold text-center mb-10">Login</h2>
 			<form
 				hx-post="/login"
 				hx-target={ "#" + pageLayouts.MainContentID }
@@ -18,11 +18,11 @@ templ Login() {
 				class="space-y-4"
 			>
 				<div>
-					<label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+					<label for="email" class="block text-sm font-medium">Email</label>
 					@datainput.Input(datainput.EmailAttrs("email", true))
 				</div>
 				<div>
-					<label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+					<label for="password" class="block text-sm font-medium">Password</label>
 					@datainput.Input(datainput.PasswordAttrs("password"))
 				</div>
 				<div class="flex justify-between items-center">

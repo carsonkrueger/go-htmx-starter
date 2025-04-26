@@ -2,10 +2,10 @@ package pageLayouts
 
 templ MainPageLayout(main templ.Component) {
 	@BasePageLayout() {
-		<div class="min-h-screen flex flex-col">
-			<header class="flex justify-between items-center bg-primary text-white text-3xl px-4 py-3">
-				<h1>Go + HTMX Starter Kit</h1>
-				<h2 class="text-xl text-white">By Carson Krueger</h2>
+		<div class="min-h-screen flex flex-col bg-surface text-main">
+			<header class="flex justify-between items-center shadow px-6 py-4 bg-primary backdrop-blur-sm">
+				<h1 class="text-2xl font-semibold tracking-tight">Go + HTMX Starter Kit</h1>
+				<h2 class="text-lg font-medium">By Carson Krueger</h2>
 			</header>
 			@MainContent() {
 				@main

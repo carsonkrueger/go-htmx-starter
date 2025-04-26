@@ -7,7 +7,7 @@ type CellData struct {
 }
 
 templ BasicTable(head []CellData, data [][]CellData) {
-	<table class="w-full">
+	<table class="w-full text-main">
 		<thead>
 			<tr>
 				for _, h := range head {
@@ -20,7 +20,7 @@ templ BasicTable(head []CellData, data [][]CellData) {
 				<tr>
 					for _, td := range tr {
 						<td
-							class="text-center hover:bg-gray-100 rounded-sm"
+							class="text-center hover:bg-[#FFFFFF33] rounded-sm"
 							id={td.ID}
 						>
 							<div

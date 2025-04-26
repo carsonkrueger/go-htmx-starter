@@ -9,6 +9,12 @@
     --color-secondary: #7a7a7a;
     --color-secondary-lo: #5c5c5c;
     --color-error: #d13449;
+
+    --color-surface: #1e1e2f;
+    --color-header: #2a2a3c;
+    --color-main: #e0e0e5;
+    --color-muted: #a0a0a0;
+    --color-accent: #4fc1ff;
 }
 
 @layer utiltities {
