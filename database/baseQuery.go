@@ -68,7 +68,7 @@ func insertMany[PK any, R any](DAO interfaces.IDAO[PK, R], models *[]*R, db qrm.
 		INSERT(DAO.InsertCols()).
 		MODELS(models).
 		RETURNING(DAO.AllCols()).
-		Query(db, &models)
+		Query(db, models)
 }
 
 func upsert[PK any, R any](DAO interfaces.IDAO[PK, R], model *R, db qrm.Queryable) error {
@@ -76,11 +76,21 @@ func upsert[PK any, R any](DAO interfaces.IDAO[PK, R], model *R, db qrm.Queryabl
 	if up != nil {
 		*up = time.Now()
 	}
+	conflictCols := DAO.OnConflictCols()
+	updateCols := DAO.UpdateOnConflictCols()
+	if len(updateCols) == 0 || len(conflictCols) == 0 {
+		return DAO.Table().
+			INSERT(DAO.UpdateCols()).
+			MODEL(model).
+			ON_CONFLICT().
+			DO_NOTHING().
+			Query(db, model)
+	}
 	return DAO.Table().
 		INSERT(DAO.UpdateCols()).
 		MODEL(model).
-		ON_CONFLICT(DAO.OnConflictCols()...).
-		DO_UPDATE(postgres.SET(DAO.UpdateOnConflictCols()...)).
+		ON_CONFLICT(conflictCols...).
+		DO_UPDATE(postgres.SET(updateCols...)).
 		RETURNING(DAO.AllCols()).
 		Query(db, model)
 }
@@ -92,11 +102,21 @@ func upsertMany[PK any, R any](DAO interfaces.IDAO[PK, R], models *[]*R, db qrm.
 			*up = time.Now()
 		}
 	}
+	conflictCols := DAO.OnConflictCols()
+	updateCols := DAO.UpdateOnConflictCols()
+	if len(updateCols) == 0 || len(conflictCols) == 0 {
+		return DAO.Table().
+			INSERT(DAO.UpdateCols()).
+			MODELS(models).
+			ON_CONFLICT().
+			DO_NOTHING().
+			Query(db, models)
+	}
 	return DAO.Table().
 		INSERT(DAO.UpdateCols()).
-		MODELS(*models).
-		ON_CONFLICT(DAO.OnConflictCols()...).
-		DO_UPDATE(postgres.SET(DAO.UpdateOnConflictCols()...)).
+		MODELS(models).
+		ON_CONFLICT(conflictCols...).
+		DO_UPDATE(postgres.SET(updateCols...)).
 		RETURNING(DAO.AllCols()).
 		Query(db, models)
 }

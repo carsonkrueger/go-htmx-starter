@@ -2,7 +2,6 @@ package DAO
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/carsonkrueger/main/database"
@@ -72,27 +71,21 @@ func (dao *privilegesDAO) GetUpdatedAt(row *model.Privileges) *time.Time {
 func (dao *privilegesDAO) GetAllJoined() ([]authModels.JoinedPrivilegesRaw, error) {
 	var res []authModels.JoinedPrivilegesRaw
 
-	query := table.PrivilegeLevels.
+	err := table.PrivilegeLevels.
 		SELECT(
-			table.PrivilegeLevels.ID.AS("JoinedPrivilegesRaw.LevelID"),
+			table.PrivilegeLevelsPrivileges.PrivilegeLevelID.AS("JoinedPrivilegesRaw.LevelID"),
 			table.PrivilegeLevels.Name.AS("JoinedPrivilegesRaw.LevelName"),
-			table.Privileges.AllColumns,
+			table.PrivilegeLevelsPrivileges.PrivilegeID.AS("JoinedPrivilegesRaw.PrivilegeID"),
+			table.Privileges.Name.AS("JoinedPrivilegesRaw.PrivilegeName"),
+			table.Privileges.CreatedAt.AS("JoinedPrivilegesRaw.PrivilegeCreatedAt"),
 		).
 		FROM(
 			table.PrivilegeLevelsPrivileges.
 				LEFT_JOIN(table.PrivilegeLevels, table.PrivilegeLevels.ID.EQ(table.PrivilegeLevelsPrivileges.PrivilegeLevelID)).
 				LEFT_JOIN(table.Privileges, table.Privileges.ID.EQ(table.PrivilegeLevelsPrivileges.PrivilegeID)),
-		)
-
-	fmt.Println(query.DebugSql())
-
-	err := query.Query(dao.db, &res)
-	// ORDER_BY(table.PrivilegeLevels.Name.ASC(), table.Privileges.Name.ASC()).
-	// Query(dao.db, &res)
-
-	for _, row := range res {
-		fmt.Printf("%v\n", row)
-	}
+		).
+		ORDER_BY(table.PrivilegeLevels.Name.ASC(), table.Privileges.Name.ASC()).
+		Query(dao.db, &res)
 
 	if err != nil {
 		return nil, err

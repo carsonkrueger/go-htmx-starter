@@ -21,7 +21,9 @@ type IUsersService interface {
 
 type IPrivilegesService interface {
 	BuildCache() error
-	AddPermission(levelID int64, perms ...model.Privileges)
+	AddPermission(levelID int64, perms ...model.Privileges) error
+	RemovePermission(levelID int64, perms ...model.Privileges) error
+	CreateLevel(name string) error
 	GetPermissions(levelID int64) []model.Privileges
 	HasPermissionByID(levelID int64, permissionID int64) bool
 	HasPermissionByName(levelID int64, permissionName string) bool

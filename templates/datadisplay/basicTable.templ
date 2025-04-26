@@ -11,22 +11,29 @@ templ BasicTable(head []CellData, data [][]CellData) {
 		<thead>
 			<tr>
 				for _, h := range head {
-					<th class="text-center" id={h.ID}>@h.Body</th>
+					<th class="text-center" id={h.ID}>
+						if h.Body != nil {
+							@h.Body
+						}
+					</th>
 				}
 			</tr>
 		</thead>
 		<tbody>
 			for _, tr := range data {
-				<tr>
+				<tr
+					class="text-center odd:bg-[#FFFFFF11] hover:bg-[#FFFFFF33] rounded-sm"
+				>
 					for _, td := range tr {
 						<td
-							class="text-center hover:bg-[#FFFFFF33] rounded-sm"
 							id={td.ID}
 						>
 							<div
 								class="px-2 py-1"
 							>
-								@td.Body
+								if td.Body != nil {
+									@td.Body
+								}
 							</div>
 						</td>
 					}

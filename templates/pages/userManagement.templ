@@ -1,11 +1,13 @@
 package pages
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/templates/datadisplay"
+	"github.com/carsonkrueger/main/templates/icons"
 )
 
 templ UserManagement() {
@@ -76,14 +78,26 @@ templ UserManagementLevels(privileges []authModels.JoinedPrivilegesRaw) {
 				Width: 1,
 				Body:  datadisplay.Text("Created At", models.LG),
 			},
+			{
+				ID:    "h-del",
+				Width: 1,
+				Body:  nil,
+			},
 		}
 
 		cells := make([][]datadisplay.CellData, len(privileges))
 		for i, p := range privileges {
-			ca := p.Privileges.CreatedAt
+			ca := p.PrivilegeCreatedAt
 			caStr := "No Created At"
 			if ca != nil {
 				caStr = ca.String()
+			}
+			xAttrs := templ.Attributes{
+				"class": "fill-red-400 size-6 p-1 rounded-xs mx-auto cursor-pointer hover:bg-[#FFFFFF44]",
+				"hx-delete": fmt.Sprintf("/privilege-levels-privileges/level/%d/privilege/%d", p.LevelID, p.PrivilegeID),
+				"hx-trigger": "click",
+				"hx-swap": "none",
+				"_": "on htmx:beforeRequest remove closest <tr/>",
 			}
 			cells[i] = []datadisplay.CellData{
 				{
@@ -94,12 +108,17 @@ templ UserManagementLevels(privileges []authModels.JoinedPrivilegesRaw) {
 				{
 					ID:    "pr-" + strconv.Itoa(i),
 					Width: 1,
-					Body:  datadisplay.Text(p.Privileges.Name, models.SM),
+					Body:  datadisplay.Text(p.PrivilegeName, models.SM),
 				},
 				{
 					ID:    "ca-" + strconv.Itoa(i),
 					Width: 1,
 					Body:  datadisplay.Text(caStr, models.MD),
+				},
+				{
+					ID:    "del-" + strconv.Itoa(i),
+					Width: 1,
+					Body:  icons.X(xAttrs),
 				},
 			}
 		}
@@ -123,7 +142,11 @@ templ UserManagementLevels(privileges []authModels.JoinedPrivilegesRaw) {
 				hx-swap="outerHTML"
 				hx-trigger="load"
 			/>
-			<button type="submit" class="bg-primary px-4 py-2 text-white rounded-sm">Add Privilege</button>
+			<button
+				type="submit"
+				class="bg-primary px-4 py-2 text-white rounded-sm cursor-pointer"
+				hx-disable-elt="this"
+			>Add Privilege</button>
 		</form>
 	</div>
 }

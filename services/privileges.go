@@ -1,6 +1,8 @@
 package services
 
 import (
+	"errors"
+	"slices"
 	"strconv"
 	"sync"
 
@@ -51,34 +53,37 @@ func (s *privilegesService) BuildCache() error {
 	}
 
 	for _, jp := range joinedPrivileges {
-		if jp.Privileges.Name == "" {
+		if jp.PrivilegeName == "" {
 			continue
 		}
-		s.AddPermission(jp.LevelID, jp.Privileges)
+		priv := model.Privileges{
+			ID:   jp.PrivilegeID,
+			Name: jp.PrivilegeName,
+		}
+		s.AddPermission(jp.LevelID, priv)
 	}
 
 	return nil
 }
 
-func (ps *privilegesService) AddPermission(levelID int64, perms ...model.Privileges) {
+func (ps *privilegesService) AddPermission(levelID int64, perms ...model.Privileges) error {
 	lgr := ps.Lgr("AddPermission")
+	lgr.Info("Called")
 	if len(perms) == 0 {
-		return
+		return nil
 	}
 
 	tx, err := ps.DB().Begin()
 	if err != nil {
 		lgr.Error("Failed to begin transaction", zap.Error(err))
-		return
+		return errors.New("Failed to begine transaction")
 	}
 
 	refd := tools.PtrSlice(perms)
-	// err := ps.DM().PrivilegeDAO().UpsertMany(refd)
 	privDAO := ps.DM().PrivilegeDAO()
-	err = privDAO.UpsertMany(&refd, tx)
-	if err != nil {
+	if err = privDAO.UpsertMany(&refd, tx); err != nil {
 		lgr.Error("Failed to insert privileges", zap.Error(err))
-		return
+		return err
 	}
 
 	var joinRows []model.PrivilegeLevelsPrivileges
@@ -91,22 +96,38 @@ func (ps *privilegesService) AddPermission(levelID int64, perms ...model.Privile
 	levelsPrivsDAO := ps.DM().PrivilegeLevelsPrivilegesDAO()
 
 	refdJoinRows := tools.PtrSlice(joinRows)
-	levelsPrivsDAO.UpsertMany(&refdJoinRows, tx)
+	if err = levelsPrivsDAO.UpsertMany(&refdJoinRows, tx); err != nil {
+		lgr.Error("Failed to insert privilege level privileges", zap.Error(err), zap.Any("privilegeLevelPrivileges", refdJoinRows))
+		return err
+	}
 
-	ps.Lock()
-	defer ps.Unlock()
-
+	ps.RLock()
 	permissions := ps.cache[levelID]
-	ps.cache[levelID] = append(permissions, perms...)
+	ps.RUnlock()
+	for _, p := range perms {
+		if ps.HasPermissionByID(levelID, p.ID) {
+			continue
+		}
+		ps.Lock()
+		ps.cache[levelID] = append(permissions, p)
+		ps.Unlock()
+	}
+
+	if err = tx.Commit(); err != nil {
+		lgr.Error("Failed to commit transaction", zap.Error(err))
+		return err
+	}
 
 	names := make([]string, len(perms))
 	for i, p := range perms {
 		names[i] = string(p.Name)
 	}
 	lgr.Info("Level:Privilege", zap.Strings(strconv.FormatInt(levelID, 10), names))
+
+	return nil
 }
 
-func (ps *privilegesService) CreateLevel(name string) {
+func (ps *privilegesService) CreateLevel(name string) error {
 	lgr := ps.Lgr("CreateLevel")
 	lgr.Info("Called")
 
@@ -116,8 +137,9 @@ func (ps *privilegesService) CreateLevel(name string) {
 	levelsDAO := ps.DM().PrivilegeLevelsDAO()
 	if err := levelsDAO.Insert(&row, ps.DB()); err != nil {
 		lgr.Error("Failed to create level", zap.Error(err))
-		return
+		return errors.New("Failed to create level")
 	}
+	return nil
 }
 
 func (ps *privilegesService) GetPermissions(levelID int64) []model.Privileges {
@@ -127,9 +149,11 @@ func (ps *privilegesService) GetPermissions(levelID int64) []model.Privileges {
 }
 
 func (ps *privilegesService) HasPermissionByID(levelID int64, permissionID int64) bool {
+	lgr := ps.Lgr("HasPermissionByID")
+	lgr.Info("Called")
 	ps.RLock()
-	defer ps.RUnlock()
 	permissions := ps.cache[levelID]
+	ps.RUnlock()
 	for _, p := range permissions {
 		if p.ID == permissionID {
 			return true
@@ -140,12 +164,44 @@ func (ps *privilegesService) HasPermissionByID(levelID int64, permissionID int64
 
 func (ps *privilegesService) HasPermissionByName(levelID int64, permissionName string) bool {
 	ps.RLock()
-	defer ps.RUnlock()
 	permissions := ps.cache[levelID]
+	ps.RUnlock()
 	for _, p := range permissions {
 		if p.Name == permissionName {
 			return true
 		}
 	}
 	return false
+}
+
+func (ps *privilegesService) RemovePermission(levelID int64, privs ...model.Privileges) error {
+	lgr := ps.Lgr("RemovePermission")
+	lgr.Info("Called")
+
+	ps.Lock()
+	defer ps.Unlock()
+
+	plpDAO := ps.DM().PrivilegeLevelsPrivilegesDAO()
+
+	privileges := ps.cache[levelID]
+	for _, removePerm := range privs {
+		for i, perm := range privileges {
+			if perm.ID == removePerm.ID {
+				privileges = slices.Delete(privileges, i, i+1)
+				pk := authModels.PrivilegeLevelsPrivilegesPrimaryKey{
+					PrivilegeLevelID: levelID,
+					PrivilegeID:      removePerm.ID,
+				}
+				if err := plpDAO.Delete(pk, ps.DB()); err != nil {
+					lgr.Error("Failed to delete privilege", zap.Error(err))
+				} else {
+					lgr.Info("Removed privilege", zap.Int64("level", levelID), zap.Int64("privilege", removePerm.ID))
+				}
+				break
+			}
+		}
+	}
+	ps.cache[levelID] = privileges
+
+	return nil
 }

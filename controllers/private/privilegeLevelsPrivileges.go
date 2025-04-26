@@ -1,15 +1,12 @@
 package private
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/carsonkrueger/main/builders"
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models"
-	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/tools"
 	"github.com/go-chi/chi/v5"
@@ -63,27 +60,13 @@ func (r *privilegeLevelsPrivileges) privilegeLevelsPrivilegesPost(res http.Respo
 		return
 	}
 
-	model := &model.PrivilegeLevelsPrivileges{
-		PrivilegeLevelID: levelInt,
-		PrivilegeID:      privilegeInt,
-	}
-
-	pk := authModels.PrivilegeLevelsPrivilegesPrimaryKey{
-		PrivilegeLevelID: levelInt,
-		PrivilegeID:      privilegeInt,
-	}
-
-	db := r.DB()
-
-	if row, _ := r.DM().PrivilegeLevelsPrivilegesDAO().GetOne(pk, db); row != nil {
-		tools.HandleError(req, res, lgr, errors.New("privilege level privilege already exists"), 400, "Already exists")
+	priv, err := r.DM().PrivilegeDAO().GetOne(privilegeInt, r.DB())
+	if err != nil || priv == nil {
+		tools.HandleError(req, res, lgr, err, 404, "Privilege not found")
 		return
 	}
 
-	if err := r.DM().PrivilegeLevelsPrivilegesDAO().Insert(model, db); err != nil {
-		tools.HandleError(req, res, lgr, err, 500, "Failed to insert privilege level privilege")
-		return
-	}
+	r.SM().PrivilegesService().AddPermission(levelInt, *priv)
 
 	if tools.IsHxRequest(req) {
 		datadisplay.AddTextToast(models.Success, "Added privilege level", 3).Render(ctx, res)
@@ -93,6 +76,7 @@ func (r *privilegeLevelsPrivileges) privilegeLevelsPrivilegesPost(res http.Respo
 func (r *privilegeLevelsPrivileges) privilegeLevelsPrivilegesDelete(res http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("privilegeLevelsPrivilegesDelete")
 	lgr.Info("Called")
+	ctx := req.Context()
 
 	level := chi.URLParam(req, "level")
 	privilege := chi.URLParam(req, "privilege")
@@ -108,14 +92,18 @@ func (r *privilegeLevelsPrivileges) privilegeLevelsPrivilegesDelete(res http.Res
 		return
 	}
 
-	pk := authModels.PrivilegeLevelsPrivilegesPrimaryKey{
-		PrivilegeLevelID: levelInt,
-		PrivilegeID:      privilegeInt,
-	}
-
-	if err := r.DM().PrivilegeLevelsPrivilegesDAO().Delete(pk, r.DB()); err != nil {
-		tools.HandleError(req, res, lgr, err, 500, "Failed to insert privilege level privilege")
+	priv, err := r.DM().PrivilegeDAO().GetOne(privilegeInt, r.DB())
+	if err != nil || priv == nil {
+		tools.HandleError(req, res, lgr, err, 404, "Privilege not found")
 		return
 	}
 
+	if err := r.SM().PrivilegesService().RemovePermission(levelInt, *priv); err != nil {
+		tools.HandleError(req, res, lgr, err, 500, "Failed to remove permission")
+		return
+	}
+
+	if tools.IsHxRequest(req) {
+		datadisplay.AddTextToast(models.Success, "Deleted privilege level", 3).Render(ctx, res)
+	}
 }

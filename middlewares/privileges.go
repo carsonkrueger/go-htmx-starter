@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/carsonkrueger/main/context"
@@ -15,7 +14,6 @@ func ApplyPermission(permissionName string, appCtx interfaces.IAppContext) func(
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			ctx := req.Context()
-			lgr.Info(fmt.Sprintf("Permission Auth: %+v", permissionName))
 
 			levelID := context.GetPrivilegeLevelID(ctx)
 			cache := appCtx.SM().PrivilegesService()

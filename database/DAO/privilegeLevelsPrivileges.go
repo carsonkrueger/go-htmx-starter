@@ -41,8 +41,6 @@ func (dao *privilegeLevelsPrivilegesDAO) InsertCols() postgres.ColumnList {
 func (dao *privilegeLevelsPrivilegesDAO) UpdateCols() postgres.ColumnList {
 	return table.PrivilegeLevelsPrivileges.AllColumns.Except(
 		table.PrivilegeLevelsPrivileges.CreatedAt,
-		table.PrivilegeLevelsPrivileges.PrivilegeID,
-		table.PrivilegeLevelsPrivileges.PrivilegeLevelID,
 	)
 }
 
