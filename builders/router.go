@@ -5,18 +5,6 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type PrivateRouteBuilder struct {
-	router chi.Router
-	appCtx interfaces.IAppContext
-}
-
-func NewPrivateRouteBuilder(appCtx interfaces.IAppContext) PrivateRouteBuilder {
-	return PrivateRouteBuilder{
-		router: chi.NewRouter(),
-		appCtx: appCtx,
-	}
-}
-
 type IRoutePath interface {
 	Path() string
 }
@@ -28,6 +16,19 @@ type IPublicRoute interface {
 type IAppPublicRoute interface {
 	IRoutePath
 	IPublicRoute
+}
+
+// DB-START
+type PrivateRouteBuilder struct {
+	router chi.Router
+	appCtx interfaces.IAppContext
+}
+
+func NewPrivateRouteBuilder(appCtx interfaces.IAppContext) PrivateRouteBuilder {
+	return PrivateRouteBuilder{
+		router: chi.NewRouter(),
+		appCtx: appCtx,
+	}
 }
 
 type IPrivateRoute interface {
@@ -49,3 +50,4 @@ func (rb *PrivateRouteBuilder) NewHandle() *privateHandlerBuilder {
 func (mb *PrivateRouteBuilder) Build() chi.Router {
 	return mb.router
 }
+// DB-END

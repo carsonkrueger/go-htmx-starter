@@ -98,7 +98,7 @@ jet:
 EXCLUDE_DIRS=volumes node_modules
 
 remove-db-files:
-	rm -rf ./builders
+	rm -f ./builders/handler.go
 	rm -f ./context/context.go
 	rm -f ./cmd/generateDAO.go
 	rm -f ./cmd/seed.go
