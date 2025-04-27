@@ -7,6 +7,7 @@ include .env
 DB_URL_EXTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_EXTERNAL_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable"
 DB_URL_INTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
 MIGRATE_CMD := ~/go/bin/migrate
+JET_CMD := ~/go/bin/jet
 # DB-END
 
 live:
@@ -90,8 +91,7 @@ jet-all:
 	echo "Schemas found: $$SCHEMAS"; \
 	for SCHEMA in $$SCHEMAS; do \
 	    echo "------ Generating models for schema: $$SCHEMA ------"; \
-		jet -dsn=${DB_URL_EXTERNAL} -schema=$$SCHEMA -path=./gen; \
-		make jet schema=$$SCHEMA; \
+		${JET_CMD} -dsn=${DB_URL_EXTERNAL} -schema=$$SCHEMA -path=./gen; \
 	done
 
 jet-all-internal:
@@ -100,12 +100,11 @@ jet-all-internal:
 	echo "Schemas found: $$SCHEMAS"; \
 	for SCHEMA in $$SCHEMAS; do \
 	    echo "------ Generating models for schema: $$SCHEMA ------"; \
-		jet -dsn=${DB_URL_INTERNAL} -schema=$$SCHEMA -path=./gen; \
-		make jet schema=$$SCHEMA; \
+		${JET_CMD} -dsn=${DB_URL_INTERNAL} -schema=$$SCHEMA -path=./gen; \
 	done
 
 jet:
-	jet -dsn=${DB_URL_EXTERNAL} -schema=$(schema) -path=./gen;
+	${JET_CMD} -dsn=${DB_URL_EXTERNAL} -schema=$(schema) -path=./gen;
 # DB-END
 
 remove-markers:
