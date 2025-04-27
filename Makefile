@@ -7,7 +7,9 @@ DB_URL_EXTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_EXTERNAL_HOST}:${D
 DB_URL_INTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
 
 live:
+# DB-START
 	make docker-postgres
+# DB-END
 	air
 
 templ:
@@ -23,11 +25,17 @@ build:
 
 docker:
 	make docker-down
-	docker compose up -d --build db go_backend --remove-orphans
+	docker compose up -d --build \
+# DB-START
+	    db \
+# DB-END
+		go_backend \
+		--remove-orphans
 
 docker-down:
 	docker compose down
 
+# DB-START
 docker-postgres:
 	make docker-postgres-down
 	docker compose up -d db --remove-orphans
@@ -59,18 +67,19 @@ generate-private-controller:
 	@echo "Enter camelCase controller name: "; \
 	read controller; \
 	go run . -name="$$controller" -private=true genController
+# DB-END
 
 generate-public-controller:
 	@echo "Enter camelCase controller name: "; \
 	read controller; \
 	go run . -name="$$controller" -private=false genController
 
+# DB-START
 seed:
 	go run . seed
 
 seed-undo:
 	go run . -undo=true seed
-
 
 jet-all:
 	@echo "Fetching schemas from database..."
@@ -94,6 +103,7 @@ jet-all-internal:
 
 jet:
 	jet -dsn=${DB_URL_EXTERNAL} -schema=$(schema) -path=./gen;
+# DB-END
 
 remove-markers:
 	@find . \( $(foreach dir,$(EXCLUDE_DIRS),-path ./$(dir) -o ) -false \) -prune -o -type f -exec sed -i '/[\/#]\s*DB-START\s*$$/d; /[\/#]\s*DB-END\s*$$/d' {} +
