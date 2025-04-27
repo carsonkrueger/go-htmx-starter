@@ -4,6 +4,7 @@
 include .env
 
 AIR_CMD := ~/go/bin/air
+TEMPL_CMD := ~/go/bin/templ
 
 # DB-START
 DB_URL_EXTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_EXTERNAL_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable"
@@ -19,7 +20,7 @@ live:
 	${AIR_CMD}
 
 templ:
-	templ generate
+	${TEMPL_CMD} generate
 
 tw:
 	npx @tailwindcss/cli -i ./public/index.css -o ./public/output.css
