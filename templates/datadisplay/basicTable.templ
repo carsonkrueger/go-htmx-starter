@@ -6,39 +6,76 @@ type CellData struct {
 	Body templ.Component
 }
 
-templ BasicTable(head []CellData, data [][]CellData) {
-	<table class="w-full text-main">
-		<thead>
-			<tr>
-				for _, h := range head {
-					<th class="text-center" id={h.ID}>
-						if h.Body != nil {
-							@h.Body
-						}
-					</th>
+type RowData struct {
+	ID string
+	Data []CellData
+}
+
+templ BasicTable(id string, head RowData, data []RowData) {
+	<table id={ id } class="w-full text-main">
+		<thead id={ id+"-thead" }>
+			<tr id={head.ID}>
+				for _, h := range head.Data {
+					@BasicTH(h)
 				}
 			</tr>
 		</thead>
-		<tbody>
-			for _, tr := range data {
-				<tr
-					class="text-center odd:bg-[#FFFFFF11] hover:bg-[#FFFFFF33] rounded-sm"
-				>
-					for _, td := range tr {
-						<td
-							id={td.ID}
-						>
-							<div
-								class="px-2 py-1"
-							>
-								if td.Body != nil {
-									@td.Body
-								}
-							</div>
-						</td>
-					}
-				</tr>
+		<tbody id={ id+"-tbody" }>
+			for _, d := range data {
+				@BasicTR(d)
 			}
 		</tbody>
 	</table>
+}
+
+templ BasicTH(data CellData) {
+	@basicTH(data.ID) {
+		if data.Body != nil {
+			@data.Body
+		}
+	}
+}
+
+templ basicTH(id string) {
+	<th class="text-center" id={id}>
+		{ children... }
+	</th>
+
+}
+
+templ BasicTR(data RowData) {
+	@basicTR(data.ID) {
+		for _, td := range data.Data {
+			@BasicTD(td)
+		}
+	}
+}
+
+templ basicTR(id string) {
+	<tr
+		class="text-center odd:bg-[#FFFFFF11] hover:bg-[#FFFFFF33] rounded-sm"
+	>
+		{ children... }
+	</tr>
+}
+
+
+templ BasicTD(data CellData) {
+	@basicTD(data.ID) {
+		if data.Body != nil {
+			@data.Body
+		}
+	}
+}
+
+templ basicTD (id string) {
+	<td
+		id={id}
+	>
+		<div
+			class="px-2 py-1"
+		>
+			{ children... }
+		</div>
+	</td>
 }

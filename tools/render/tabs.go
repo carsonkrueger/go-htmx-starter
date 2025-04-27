@@ -18,7 +18,7 @@ func Tab(req *http.Request, tabModels []pageLayouts.TabModel, selectedTabIndex i
 	if target == pageLayouts.MainContentID {
 		return content
 	} else if !hxRequest {
-		content = pageLayouts.MainPageLayout(pageLayouts.Index(content))
+		content = pageLayouts.Index(pageLayouts.MainPageLayout(content))
 	}
 	return content
 }

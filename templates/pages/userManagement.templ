@@ -1,13 +1,8 @@
 package pages
 
 import (
-	"fmt"
-	"strconv"
-
 	"github.com/carsonkrueger/main/models"
-	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/templates/datadisplay"
-	"github.com/carsonkrueger/main/templates/icons"
 )
 
 templ UserManagement() {
@@ -16,119 +11,68 @@ templ UserManagement() {
 	</div>
 }
 
-templ UserManagementUsers(users []authModels.UserPrivilegeLevelJoin) {
+templ UserManagementUsers(rows []datadisplay.RowData) {
 	{{
-		headers := []datadisplay.CellData{
-			{
-				ID:    "h-name",
-				Width: 1,
-				Body:  datadisplay.Text("Name", models.LG),
-			},
-			{
-				ID:    "h-pr",
-				Width: 1,
-				Body:  datadisplay.Text("Privilege Level", models.LG),
-			},
-			{
-				ID:    "h-ca",
-				Width: 1,
-				Body:  datadisplay.Text("Created At", models.LG),
-			},
-		}
-
-		cells := make([][]datadisplay.CellData, len(users))
-		for i, user := range users {
-			cells[i] = []datadisplay.CellData{
+		header := datadisplay.RowData{
+			ID: "header",
+			Data: []datadisplay.CellData{
 				{
-					ID:    "n-" + strconv.Itoa(i),
+					ID:    "h-name",
 					Width: 1,
-					Body:  datadisplay.Text(user.FirstName, models.MD),
+					Body:  datadisplay.Text("Name", models.LG),
 				},
 				{
-					ID:    "pr-" + strconv.Itoa(i),
+					ID:    "h-pr",
 					Width: 1,
-					Body:  datadisplay.Text(strconv.FormatInt(user.PrivilegeLevelID, 10), models.MD),
+					Body:  datadisplay.Text("Privilege Level", models.LG),
 				},
 				{
-					ID:    "ca-" + strconv.Itoa(i),
+					ID:    "h-ca",
 					Width: 1,
-					Body:  datadisplay.Text(user.CreatedAt.Format("2006-01-02"), models.MD),
+					Body:  datadisplay.Text("Created At", models.LG),
 				},
-			}
+			},
 		}
 	}}
-	@datadisplay.BasicTable(headers, cells)
+	@datadisplay.BasicTable("users", header, rows)
 }
 
-templ UserManagementLevels(privileges []authModels.JoinedPrivilegesRaw) {
+templ UserManagementLevels(data []datadisplay.RowData) {
 	{{
-		headers := []datadisplay.CellData{
-			{
-				ID:    "h-lvl-name",
-				Width: 1,
-				Body:  datadisplay.Text("Privilege Level", models.LG),
-			},
-			{
-				ID:    "h-pr",
-				Width: 1,
-				Body:  datadisplay.Text("Privilege", models.LG),
-			},
-			{
-				ID:    "h-ca",
-				Width: 1,
-				Body:  datadisplay.Text("Created At", models.LG),
-			},
-			{
-				ID:    "h-del",
-				Width: 1,
-				Body:  nil,
-			},
-		}
-
-		cells := make([][]datadisplay.CellData, len(privileges))
-		for i, p := range privileges {
-			ca := p.PrivilegeCreatedAt
-			caStr := "No Created At"
-			if ca != nil {
-				caStr = ca.String()
-			}
-			xAttrs := templ.Attributes{
-				"class": "fill-red-400 size-6 p-1 rounded-xs mx-auto cursor-pointer hover:bg-[#FFFFFF44]",
-				"hx-delete": fmt.Sprintf("/privilege-levels-privileges/level/%d/privilege/%d", p.LevelID, p.PrivilegeID),
-				"hx-trigger": "click",
-				"hx-swap": "none",
-				"_": "on htmx:beforeRequest remove closest <tr/>",
-			}
-			cells[i] = []datadisplay.CellData{
+		header := datadisplay.RowData{
+			ID: "header",
+			Data: []datadisplay.CellData{
 				{
-					ID:    "lvl-" + strconv.Itoa(i),
+					ID:    "h-lvl-name",
 					Width: 1,
-					Body:  datadisplay.Text(p.LevelName, models.SM),
+					Body:  datadisplay.Text("Privilege Level", models.LG),
 				},
 				{
-					ID:    "pr-" + strconv.Itoa(i),
+					ID:    "h-pr",
 					Width: 1,
-					Body:  datadisplay.Text(p.PrivilegeName, models.SM),
+					Body:  datadisplay.Text("Privilege", models.LG),
 				},
 				{
-					ID:    "ca-" + strconv.Itoa(i),
+					ID:    "h-ca",
 					Width: 1,
-					Body:  datadisplay.Text(caStr, models.MD),
+					Body:  datadisplay.Text("Created At", models.LG),
 				},
 				{
-					ID:    "del-" + strconv.Itoa(i),
+					ID:    "h-del",
 					Width: 1,
-					Body:  icons.X(xAttrs),
+					Body:  nil,
 				},
-			}
+			},
 		}
 	}}
 	<div class="flex flex-col grow justify-between">
-		@datadisplay.BasicTable(headers, cells)
+		@datadisplay.BasicTable("privilege-levels", header, data)
 		<form
 			class="flex gap-4 py-4 items-center justify-center"
 			hx-post="/privilege-levels-privileges"
-			hx-swap="none"
+			hx-target="#privilege-levels-tbody"
+			hx-swap="beforeend"
+			hx-disable-elt="this"
 		>
 			<div
 				hx-get="/privilege-levels/select"
@@ -145,8 +89,9 @@ templ UserManagementLevels(privileges []authModels.JoinedPrivilegesRaw) {
 			<button
 				type="submit"
 				class="bg-primary px-4 py-2 text-white rounded-sm cursor-pointer"
-				hx-disable-elt="this"
-			>Add Privilege</button>
+			>
+				Add Privilege
+			</button>
 		</form>
 	</div>
 }

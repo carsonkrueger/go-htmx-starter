@@ -1,4 +1,4 @@
-@import "tailwindcss" source("../**/*.{templ,html}");
+@import "tailwindcss" source("../**/*.{templ,html,go}");
 
 @theme inline {
     --color-primary-hi: #3283fc;

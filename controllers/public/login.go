@@ -6,6 +6,7 @@ import (
 	"github.com/carsonkrueger/main/controllers/private"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models"
+	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/pages"
 	"github.com/carsonkrueger/main/tools"
@@ -87,7 +88,8 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		page := pages.UserManagementUsers(*users)
+		rows := authModels.UserPrivilegeLevelJoinAsRowData(*users)
+		page := pages.UserManagementUsers(rows)
 		render.Tab(req, private.UserManagementTabModels, 0, page).Render(ctx, res)
 	}
 }

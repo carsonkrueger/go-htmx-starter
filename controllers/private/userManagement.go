@@ -6,6 +6,7 @@ import (
 	"github.com/carsonkrueger/main/builders"
 	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models"
+	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/pageLayouts"
 	"github.com/carsonkrueger/main/templates/pages"
@@ -61,7 +62,8 @@ func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *h
 		return
 	}
 
-	page := pages.UserManagementUsers(*users)
+	rows := authModels.UserPrivilegeLevelJoinAsRowData(*users)
+	page := pages.UserManagementUsers(rows)
 	render.Tab(req, UserManagementTabModels, 0, page).Render(ctx, res)
 }
 
@@ -75,7 +77,8 @@ func (um *userManagement) userManagementLevelsGet(res http.ResponseWriter, req *
 		tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return
 	}
+	rows := authModels.JoinedPrivilegesAsRowData(privileges)
 
-	page := pages.UserManagementLevels(privileges)
+	page := pages.UserManagementLevels(rows)
 	render.Tab(req, UserManagementTabModels, 1, page).Render(ctx, res)
 }
