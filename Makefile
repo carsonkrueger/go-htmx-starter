@@ -3,6 +3,8 @@
 
 include .env
 
+AIR_CMD := ~/go/bin/air
+
 # DB-START
 DB_URL_EXTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_EXTERNAL_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable"
 DB_URL_INTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
@@ -14,7 +16,7 @@ live:
 # DB-START
 	make docker-postgres
 # DB-END
-	air
+	${AIR_CMD}
 
 templ:
 	templ generate
