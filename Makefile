@@ -95,6 +95,9 @@ jet-all-internal:
 jet:
 	jet -dsn=${DB_URL_EXTERNAL} -schema=$(schema) -path=./gen;
 
+remove-markers:
+	@find . \( $(foreach dir,$(EXCLUDE_DIRS),-path ./$(dir) -o ) -false \) -prune -o -type f -exec sed -i '/[\/#]\s*DB-START\s*$$/d; /[\/#]\s*DB-END\s*$$/d' {} +
+
 EXCLUDE_DIRS=volumes node_modules
 
 remove-db-files:
