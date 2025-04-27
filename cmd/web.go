@@ -43,9 +43,7 @@ func web() {
 
 	appRouter := router.NewAppRouter(appCtx)
 	appRouter.BuildRouter()
-	err = appRouter.Start(cfg)
-
-	if err != nil {
+	if err := appRouter.Start(cfg); err != nil {
 		panic(err)
 	}
 }
