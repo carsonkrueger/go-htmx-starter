@@ -3,8 +3,11 @@
 
 include .env
 
+# DB-START
 DB_URL_EXTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_EXTERNAL_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable"
 DB_URL_INTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
+MIGRATE_CMD := ~/go/bin/migrate
+# DB-END
 
 live:
 # DB-START
@@ -44,17 +47,17 @@ docker-postgres-down:
 	docker compose down db
 
 migrate:
-	migrate -database ${DB_URL_EXTERNAL} -path migrations up
+	${MIGRATE_CMD} -database ${DB_URL_EXTERNAL} -path migrations up
 
 migrate-internal:
-	migrate -database ${DB_URL_INTERNAL} -path migrations up
+	${MIGRATE_CMD} -database ${DB_URL_INTERNAL} -path migrations up
 
 migrate-down:
-	migrate -database ${DB_URL_EXTERNAL} -path migrations down 1
+	${MIGRATE_CMD} -database ${DB_URL_EXTERNAL} -path migrations down 1
 
 migrate-generate:
 	@read -p "Enter migration name: " name; \
-	migrate create -ext sql -dir migrations -seq $$name
+	${MIGRATE_CMD} create -ext sql -dir migrations -seq $$name
 
 generate-dao:
 	@echo "Enter camelCase table name: "; \
