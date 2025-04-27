@@ -3,10 +3,24 @@ package pageLayouts
 templ MainPageLayout(main templ.Component) {
 	@BasePageLayout() {
 		<div class="min-h-screen flex flex-col bg-surface text-main">
-			<header class="flex justify-between items-center shadow px-6 py-4 bg-surface-hi backdrop-blur-sm">
-				<h1 class="text-2xl font-semibold tracking-tight">Go + HTMX Starter Kit</h1>
-				<h2 class="text-lg font-medium">By Carson Krueger</h2>
+			<header class="bg-blue-600 text-white p-6">
+				<div class="max-w-7xl mx-auto flex justify-between items-center">
+					<h1 class="text-3xl font-bold">Go + HTMX Starter Kit</h1>
+					<div class="flex gap-4">
+						<a href="https://github.com/carsonkrueger/go-htmx-starter" class="text-white hover:underline">GitHub Repo</a>
+						<a
+      						hx-get="/login"
+           					hx-target={ "#" + MainContentID }
+           					hx-swap="innerHTML"
+           					hx-push-url="true"
+                			class="hover:underline cursor-pointer"
+      					>
+         					Login
+         				</a>
+					</div>
+				</div>
 			</header>
+
 			@MainContent() {
 				@main
 			}

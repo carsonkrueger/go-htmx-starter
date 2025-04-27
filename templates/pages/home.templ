@@ -1,20 +1,108 @@
 package pages
 
 import (
-	"github.com/carsonkrueger/main/templates/pageLayouts"
-	"github.com/carsonkrueger/main/templates/partialLayouts"
+	// "github.com/carsonkrueger/main/templates/pageLayouts"
+	// "github.com/carsonkrueger/main/templates/partialLayouts"
 )
 
 templ Home() {
-	@partialLayouts.CenteredLayout() {
-		home
-		<button
-			hx-get="/login"
-			hx-target={ "#" + pageLayouts.MainContentID }
-			hx-swap="innerHTML"
-			hx-push-url="true"
-		>
-			Login
-		</button>
-	}
+  <!-- Hero Section -->
+  <section class="py-16">
+    <div class="max-w-5xl mx-auto text-center px-6">
+      <h2 class="text-4xl font-bold mb-4">Build Fast, Modern Web Servers</h2>
+      <p class="text-lg text-gray-600 mb-8">
+        A powerful starter kit combining Go, HTMX, TailwindCSS, PostgreSQL, and more for rapid web server development.
+      </p>
+      <a href="#installation" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition">
+        Get Started
+      </a>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="py-20 bg-[#FFFFFF11]" id="features">
+    <div class="max-w-7xl mx-auto px-6">
+      <h3 class="text-3xl font-bold text-center mb-12">Features</h3>
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+
+        <div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
+          <h4 class="text-2xl font-semibold mb-4">Go</h4>
+          <p>Statically typed, efficient, and easy to learn. Perfect for building scalable web applications.</p>
+        </div>
+
+        <div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
+          <h4 class="text-2xl font-semibold mb-4">HTMX + Templ + Hyperscript + TailwindCSS</h4>
+          <p>Dynamic frontends without heavy JavaScript. Use powerful HTML attributes, templates, and utility-first styling.</p>
+        </div>
+
+        <div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
+          <h4 class="text-2xl font-semibold mb-4">Auth & Privileges</h4>
+          <p>Session-based authentication and fine-grained privilege controls with automatic database seeding.</p>
+        </div>
+
+        <div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
+          <h4 class="text-2xl font-semibold mb-4">PostgreSQL</h4>
+          <p>Robust, open-source database integration for storing and querying data reliably and securely.</p>
+        </div>
+
+        <div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
+          <h4 class="text-2xl font-semibold mb-4">Jet Query Builder</h4>
+          <p>Type-safe SQL queries, generated directly from your schema, ensuring high reliability in database operations.</p>
+        </div>
+
+        <div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
+          <h4 class="text-2xl font-semibold mb-4">Docker & Live Reload</h4>
+          <p>Containerized deployments and instant feedback during development with Docker and Air live reload.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dependencies -->
+  <section class="py-20" id="dependencies">
+    <div class="max-w-5xl mx-auto px-6">
+      <h3 class="text-3xl font-bold text-center mb-12">Dependencies</h3>
+      <ul class="grid gap-4 text-lg list-disc list-inside">
+        <li>Go</li>
+        <li>Docker & Docker-Compose</li>
+        <li>Postgres</li>
+        <li>Templ</li>
+        <li>NPM (for TailwindCSS)</li>
+        <li>Air (Live Reload)</li>
+        <li>Migrate (DB Migrations)</li>
+        <li>Jet (Query Builder)</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Installation -->
+  <section class="py-20 bg-[#FFFFFF11]" id="installation">
+    <div class="max-w-5xl mx-auto px-6">
+      <h3 class="text-3xl font-bold text-center mb-12">Installation</h3>
+      <ol class="space-y-4 text-lg list-decimal list-inside">
+        <li>Clone the repository and navigate to the project directory.</li>
+        <li>Install Go, Docker, and Docker-Compose.</li>
+        <li>Set up your <code>.env</code> using the <code>.env.example</code> file as a template.</li>
+        <li>Run the application with Docker: <code>make docker</code>.</li>
+        <li>Access it at: <code>http://localhost:40080</code>.</li>
+        <li>Or run it locally with Postgres containerized. Follow detailed steps in the README.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-primary text-white py-6">
+    <div class="max-w-7xl mx-auto text-center text-sm">
+      Built with ❤️ using Go, HTMX, and TailwindCSS
+    </div>
+  </footer>
 }
+
+// <button
+		// 	hx-get="/login"
+		// 	hx-target={ "#" + pageLayouts.MainContentID }
+		// 	hx-swap="innerHTML"
+		// 	hx-push-url="true"
+		// >
+		// 	Login
+		// </button>
