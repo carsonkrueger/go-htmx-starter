@@ -17,6 +17,7 @@ func web() {
 	cfg := cfg.LoadConfig()
 	lgr := logger.NewLogger(&cfg)
 
+// DB-START
 	db, err := sql.Open("postgres", cfg.DbUrl())
 	defer db.Close()
 	if err != nil {
@@ -27,16 +28,22 @@ func web() {
 	}
 
 	dm := DAO.NewDAOManager(db)
+// DB-END
 	sm := services.NewServiceManager(nil)
-	appCtx := context.NewAppContext(lgr, sm, dm, db)
+	appCtx := context.NewAppContext(
+		lgr,
+		sm,
+// DB-START
+		dm,
+		db,
+// DB-END
+	)
 	sm.SetAppContext(appCtx)
 	defer appCtx.CleanUp()
 
 	appRouter := router.NewAppRouter(appCtx)
 	appRouter.BuildRouter()
-	err = appRouter.Start(cfg)
-
-	if err != nil {
+	if err := appRouter.Start(cfg); err != nil {
 		panic(err)
 	}
 }

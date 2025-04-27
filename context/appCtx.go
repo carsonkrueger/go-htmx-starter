@@ -11,16 +11,27 @@ import (
 type appContext struct {
 	lgr *zap.Logger
 	sm  interfaces.IServiceManager
-	dm  interfaces.IDAOManager
-	db  *sql.DB
+	// DB-START
+	dm interfaces.IDAOManager
+	db *sql.DB
+	// DB-END
 }
 
-func NewAppContext(lgr *zap.Logger, sm interfaces.IServiceManager, dm interfaces.IDAOManager, db *sql.DB) *appContext {
+func NewAppContext(
+	lgr *zap.Logger,
+	sm interfaces.IServiceManager,
+	// DB-START
+	dm interfaces.IDAOManager,
+	db *sql.DB,
+	// DB-END
+) *appContext {
 	return &appContext{
 		lgr,
 		sm,
+		// DB-START
 		dm,
 		db,
+		// DB-END
 	}
 }
 
@@ -32,6 +43,7 @@ func (ctx *appContext) SM() interfaces.IServiceManager {
 	return ctx.sm
 }
 
+// DB-START
 func (ctx *appContext) DM() interfaces.IDAOManager {
 	return ctx.dm
 }
@@ -39,6 +51,8 @@ func (ctx *appContext) DM() interfaces.IDAOManager {
 func (ctx *appContext) DB() *sql.DB {
 	return ctx.db
 }
+
+// DB-END
 
 func (ctx *appContext) CleanUp() {
 	if err := ctx.lgr.Sync(); err != nil {

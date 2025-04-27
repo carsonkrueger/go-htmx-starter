@@ -94,3 +94,32 @@ jet-all-internal:
 
 jet:
 	jet -dsn=${DB_URL_EXTERNAL} -schema=$(schema) -path=./gen;
+
+remove-markers:
+	@find . \( $(foreach dir,$(EXCLUDE_DIRS),-path ./$(dir) -o ) -false \) -prune -o -type f -exec sed -i '/[\/#]\s*DB-START\s*$$/d; /[\/#]\s*DB-END\s*$$/d' {} +
+
+EXCLUDE_DIRS=volumes node_modules
+
+remove-db-files:
+	rm -f ./builders/handler.go
+	rm -f ./context/context.go
+	rm -f ./cmd/generateDAO.go
+	rm -f ./cmd/seed.go
+	rm -rf ./controllers/private
+	rm -rf ./controllers/public/login.go
+	rm -rf ./controllers/public/signup.go
+	rm -rf ./database
+	rm -rf ./gen
+	rm -rf ./interfaces/dao.go
+	rm -rf ./middlewares
+	rm -rf ./migrations
+	rm -rf ./models/authModels
+	rm -f ./models/database.go
+	rm -rf ./seeders
+	rm -rf ./constant
+	rm -f ./services/privileges.go
+	rm -f ./services/users.go
+	make cut-db-start-end
+
+cut-db-start-end:
+	@find . \( $(foreach dir,$(EXCLUDE_DIRS),-path ./$(dir) -o ) -false \) -prune -o -type f -exec sed -i '/[\/#]\s*DB-START/,/[\/#]\s*DB-END/d' {} +

@@ -1,4 +1,5 @@
 services:
+# DB-START
     db:
         container_name: go_db
         image: postgres
@@ -14,12 +15,15 @@ services:
             test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}"]
             interval: 3s
             retries: 5
+# DB-END
 
     go_backend:
         container_name: go_backend
+# DB-START
         depends_on:
             db:
                 condition: service_healthy
+# DB-END
         build:
             dockerfile: ./Dockerfile
             context: .

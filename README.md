@@ -80,3 +80,14 @@ To run the application locally, follow these steps:
 14. `make live` to start the server - this will create privileges associated with each controller.
 15. Stop the server and run `make seed` to create 'basic' and 'admin' privilege levels and give all privileges to the admin privilege level.
 16. `make live` again to being live development!
+
+# Don't want to use a database?
+
+### No Problem!
+Run `make remove-db-files` to remove all files and source related to the database.
+This uses markers to define areas in the source code that are database specific.
+
+# Don't like the 'DB-START' markers in your source code?
+
+### No Problem!
+Run `make remove-markers` to remove all markers.

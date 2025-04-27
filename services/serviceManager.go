@@ -5,8 +5,10 @@ import (
 )
 
 type serviceManager struct {
+// DB-START
 	usersService      interfaces.IUsersService
 	privilegesService interfaces.IPrivilegesService
+// DB-END
 	interfaces.IAppContext
 }
 
@@ -20,6 +22,7 @@ func (sm *serviceManager) SetAppContext(appCtx interfaces.IAppContext) {
 	sm.IAppContext = appCtx
 }
 
+// DB-START
 func (sm *serviceManager) UsersService() interfaces.IUsersService {
 	if sm.usersService == nil {
 		sm.usersService = NewUsersService(sm.IAppContext)
@@ -34,3 +37,4 @@ func (sm *serviceManager) PrivilegesService() interfaces.IPrivilegesService {
 	}
 	return sm.privilegesService
 }
+// DB-END
