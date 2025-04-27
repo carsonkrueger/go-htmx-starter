@@ -6,12 +6,14 @@ import (
 
 func Execute(cmd string) {
 	switch cmd {
-	case "seed":
-		seed()
 	case "web":
 		web()
+// DB-START
+	case "seed":
+		seed()
 	case "genDAO":
 		generateDAO()
+// DB-END
 	case "genController":
 		generateController()
 	default:

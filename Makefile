@@ -94,3 +94,19 @@ jet-all-internal:
 
 jet:
 	jet -dsn=${DB_URL_EXTERNAL} -schema=$(schema) -path=./gen;
+
+remove-db-files:
+	rm -rf ./builders
+	rm -f ./context/context.go
+	rm -f ./cmd/generateDAO.go
+	rm -f ./cmd/seed.go
+	rm -rf ./controllers/private
+	rm -rf ./database
+	rm -rf ./gen
+	rm -rf ./interfaces/dao.go
+	rm -rf ./middlewares
+	rm -rf ./migrations
+	rm -rf ./models/authModels
+	rm -f ./models/database.go
+	rm -rf ./seeders
+	rm -rf ./constant

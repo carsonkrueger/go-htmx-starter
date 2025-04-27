@@ -20,7 +20,9 @@ import (
 
 type AppRouter struct {
 	public  []builders.IAppPublicRoute
+// DB-START
 	private []builders.IAppPrivateRoute
+// DB-END
 	addr    string
 	router  chi.Router
 	appCtx  interfaces.IAppContext
@@ -35,12 +37,14 @@ func NewAppRouter(ctx interfaces.IAppContext) AppRouter {
 			public.NewSignUp(ctx),
 			public.NewHome(ctx),
 		},
+// DB-START
 		private: []builders.IAppPrivateRoute{
 			private.NewUserManagement(ctx),
 			private.NewPrivileges(ctx),
 			private.NewPrivilegeLevels(ctx),
 			private.NewPrivilegeLevelsPrivileges(ctx),
 		},
+// DB-END
 	}
 }
 
@@ -55,6 +59,7 @@ func (a *AppRouter) BuildRouter() {
 		lgr.Info(r.Path())
 	}
 
+// DB-START
 	// enforce authentication middleware
 	a.router = a.router.With(middlewares.EnforceAuth(a.appCtx))
 
@@ -69,6 +74,7 @@ func (a *AppRouter) BuildRouter() {
 	if err != nil {
 		lgr.Fatal("Error building permission cache", zap.Error(err))
 	}
+// DB-END
 }
 
 func (a *AppRouter) Start(cfg cfg.Config) error {

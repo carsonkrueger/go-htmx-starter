@@ -13,8 +13,10 @@ type INamedLogger interface {
 type IAppContext interface {
 	INamedLogger
 	SM() IServiceManager
+// DB-START
 	DM() IDAOManager
 	DB() *sql.DB
+// DB-END
 }
 
 type ISetAppContext interface {
