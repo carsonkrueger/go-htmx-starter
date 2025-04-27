@@ -3,11 +3,16 @@
 
 include .env
 
+# DB-START
 DB_URL_EXTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_EXTERNAL_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable"
 DB_URL_INTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
+MIGRATE_CMD := ~/go/bin/migrate
+# DB-END
 
 live:
+# DB-START
 	make docker-postgres
+# DB-END
 	air
 
 templ:
@@ -23,11 +28,17 @@ build:
 
 docker:
 	make docker-down
-	docker compose up -d --build db go_backend --remove-orphans
+	docker compose up -d --build \
+# DB-START
+	    db \
+# DB-END
+		go_backend \
+		--remove-orphans
 
 docker-down:
 	docker compose down
 
+# DB-START
 docker-postgres:
 	make docker-postgres-down
 	docker compose up -d db --remove-orphans
@@ -36,17 +47,17 @@ docker-postgres-down:
 	docker compose down db
 
 migrate:
-	migrate -database ${DB_URL_EXTERNAL} -path migrations up
+	${MIGRATE_CMD} -database ${DB_URL_EXTERNAL} -path migrations up
 
 migrate-internal:
-	migrate -database ${DB_URL_INTERNAL} -path migrations up
+	${MIGRATE_CMD} -database ${DB_URL_INTERNAL} -path migrations up
 
 migrate-down:
-	migrate -database ${DB_URL_EXTERNAL} -path migrations down 1
+	${MIGRATE_CMD} -database ${DB_URL_EXTERNAL} -path migrations down 1
 
 migrate-generate:
 	@read -p "Enter migration name: " name; \
-	migrate create -ext sql -dir migrations -seq $$name
+	${MIGRATE_CMD} create -ext sql -dir migrations -seq $$name
 
 generate-dao:
 	@echo "Enter camelCase table name: "; \
@@ -59,18 +70,19 @@ generate-private-controller:
 	@echo "Enter camelCase controller name: "; \
 	read controller; \
 	go run . -name="$$controller" -private=true genController
+# DB-END
 
 generate-public-controller:
 	@echo "Enter camelCase controller name: "; \
 	read controller; \
 	go run . -name="$$controller" -private=false genController
 
+# DB-START
 seed:
 	go run . seed
 
 seed-undo:
 	go run . -undo=true seed
-
 
 jet-all:
 	@echo "Fetching schemas from database..."
@@ -94,6 +106,7 @@ jet-all-internal:
 
 jet:
 	jet -dsn=${DB_URL_EXTERNAL} -schema=$(schema) -path=./gen;
+# DB-END
 
 remove-markers:
 	@find . \( $(foreach dir,$(EXCLUDE_DIRS),-path ./$(dir) -o ) -false \) -prune -o -type f -exec sed -i '/[\/#]\s*DB-START\s*$$/d; /[\/#]\s*DB-END\s*$$/d' {} +

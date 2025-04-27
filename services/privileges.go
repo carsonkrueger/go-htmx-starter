@@ -149,8 +149,6 @@ func (ps *privilegesService) GetPermissions(levelID int64) []model.Privileges {
 }
 
 func (ps *privilegesService) HasPermissionByID(levelID int64, permissionID int64) bool {
-	lgr := ps.Lgr("HasPermissionByID")
-	lgr.Info("Called")
 	ps.RLock()
 	permissions := ps.cache[levelID]
 	ps.RUnlock()
