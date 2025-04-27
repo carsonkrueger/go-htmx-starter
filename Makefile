@@ -94,7 +94,7 @@ jet-all-internal:
 
 jet:
 	jet -dsn=${DB_URL_EXTERNAL} -schema=$(schema) -path=./gen;
-	
+
 EXCLUDE_DIRS=volumes node_modules
 
 remove-db-files:
@@ -103,6 +103,8 @@ remove-db-files:
 	rm -f ./cmd/generateDAO.go
 	rm -f ./cmd/seed.go
 	rm -rf ./controllers/private
+	rm -rf ./controllers/public/login.go
+	rm -rf ./controllers/public/signup.go
 	rm -rf ./database
 	rm -rf ./gen
 	rm -rf ./interfaces/dao.go
@@ -112,4 +114,9 @@ remove-db-files:
 	rm -f ./models/database.go
 	rm -rf ./seeders
 	rm -rf ./constant
-	@find . $(foreach dir,$(EXCLUDE_DIRS),\( -path ./$(dir) -prune -o \)) -type f -exec sed -i '/[\/#]\s*DB-START/,/[\/#]\s*DB-END/d' {} +
+	rm -f ./services/privileges.go
+	rm -f ./services/users.go
+	make cut-db-start-end
+
+cut-db-start-end:
+	@find . \( $(foreach dir,$(EXCLUDE_DIRS),-path ./$(dir) -o ) -false \) -prune -o -type f -exec sed -i '/[\/#]\s*DB-START/,/[\/#]\s*DB-END/d' {} +

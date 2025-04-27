@@ -32,9 +32,11 @@ func NewAppRouter(ctx interfaces.IAppContext) AppRouter {
 	return AppRouter{
 		appCtx: ctx,
 		public: []builders.IAppPublicRoute{
-			public.NewWebPublic(ctx),
+// DB-START
 			public.NewLogin(ctx),
 			public.NewSignUp(ctx),
+// DB-END
+			public.NewWebPublic(ctx),
 			public.NewHome(ctx),
 		},
 // DB-START

@@ -8,10 +8,13 @@ import (
 
 type IServiceManager interface {
 	SetAppContext(appCtx IAppContext)
+// DB-START
 	UsersService() IUsersService
 	PrivilegesService() IPrivilegesService
+// DB-END
 }
 
+// DB-START
 type IUsersService interface {
 	Login(email string, password string, req *http.Request) (*string, error)
 	Logout(id int64, token string) error
@@ -28,3 +31,4 @@ type IPrivilegesService interface {
 	HasPermissionByID(levelID int64, permissionID int64) bool
 	HasPermissionByName(levelID int64, permissionName string) bool
 }
+// DB-END
