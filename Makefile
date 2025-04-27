@@ -3,14 +3,15 @@
 
 include .env
 
-AIR_CMD := ~/go/bin/air
-TEMPL_CMD := ~/go/bin/templ
+GO_BIN_PATH := ~/go/bin
+AIR_CMD := ${GO_BIN_PATH}/air
+TEMPL_CMD := ${GO_BIN_PATH}/templ
 
 # DB-START
+MIGRATE_CMD := ${GO_BIN_PATH}/migrate
+JET_CMD := ${GO_BIN_PATH}/jet
 DB_URL_EXTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_EXTERNAL_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable"
 DB_URL_INTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
-MIGRATE_CMD := ~/go/bin/migrate
-JET_CMD := ~/go/bin/jet
 # DB-END
 
 live:
