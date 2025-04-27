@@ -110,3 +110,4 @@ remove-db-files:
 	rm -f ./models/database.go
 	rm -rf ./seeders
 	rm -rf ./constant
+	@find . -type f -exec sed -i '/[\/#]\s*DB-START/,/[\/#]\s*DB-END/d' {} +

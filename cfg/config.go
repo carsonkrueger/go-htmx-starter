@@ -12,9 +12,9 @@ type Config struct {
 	AppEnv string
 	Host   string
 	Port   string
-	// DB-START
+// DB-START
 	DbConfig DbConfig
-	// DB-END
+// DB-END
 }
 
 // DB-START
@@ -29,7 +29,7 @@ type DbConfig struct {
 // DB-END
 
 func LoadConfig() Config {
-	// DB-START
+// DB-START
 	internal := flag.Bool("internal", false, "internal=true if running inside docker container")
 	flag.Parse()
 	dbPort := os.Getenv("DB_EXTERNAL_PORT")
@@ -38,12 +38,12 @@ func LoadConfig() Config {
 		dbPort = os.Getenv("DB_PORT")
 		dbHost = os.Getenv("DB_HOST")
 	}
-	// DB-END
+// DB-END
 	return Config{
 		AppEnv: os.Getenv("APP_ENV"),
 		Host:   os.Getenv("HOST"),
 		Port:   os.Getenv("PORT"),
-		// DB-START
+// DB-START
 		DbConfig: DbConfig{
 			user:     os.Getenv("DB_USER"),
 			password: os.Getenv("DB_PASSWORD"),
@@ -51,7 +51,7 @@ func LoadConfig() Config {
 			Host:     dbHost,
 			Port:     dbPort,
 		},
-		// DB-END
+// DB-END
 	}
 }
 
@@ -65,5 +65,4 @@ func (cfg *Config) DbUrl() string {
 		cfg.DbConfig.Name,
 	)
 }
-
 // DB-END
