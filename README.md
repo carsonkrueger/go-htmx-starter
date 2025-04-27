@@ -79,7 +79,7 @@ To run the application locally, follow these steps:
 13. `make jet-all` to generate all database objects and query building functionality.
 14. `make live` to start the server - this will create privileges associated with each controller.
 15. In a separate terminal, run `make seed` to create 'basic' and 'admin' privilege levels and give all privileges to the admin level.
-16. `make live` again to being live development!
+16. Begin live development!
 
 # Don't want to use a database?
 
