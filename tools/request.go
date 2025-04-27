@@ -9,6 +9,7 @@ import (
 	"github.com/carsonkrueger/main/constant"
 )
 
+// DB-START
 func SetAuthCookie(res http.ResponseWriter, authToken *string) {
 	cookie := http.Cookie{
 		Name:     constant.AUTH_TOKEN_KEY,
@@ -43,6 +44,7 @@ func GetAuthParts(cookie *http.Cookie) (string, int64, error) {
 	}
 	return token, int64(id), err
 }
+// DB-END
 
 func IsHxRequest(req *http.Request) bool {
 	return req.Header.Get("HX-Request") == "true"

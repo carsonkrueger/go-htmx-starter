@@ -15,8 +15,10 @@ import (
 
 func generateController() {
 	controller := flag.String("name", "", "camelCase Name of the controller")
+// DB-START
 	private := flag.Bool("private", true, "Is a private controller")
 	flag.Parse()
+// DB-END
 
 	// lower first letter of table name
 	controller = tools.Ptr(tools.ToLowerFirst(*controller))
