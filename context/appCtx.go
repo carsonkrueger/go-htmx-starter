@@ -3,59 +3,67 @@ package context
 import (
 	"database/sql"
 
-	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/database/DAO"
+	"github.com/carsonkrueger/main/services"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
+type AppContext interface {
+	Lgr(name string) *zap.Logger
+	DM() DAO.DAOManager
+	SM() services.ServiceManager
+	DB() *sql.DB
+}
+
 type appContext struct {
-	lgr *zap.Logger
-	sm  interfaces.IServiceManager
+	Logger         *zap.Logger
+	ServiceManager services.ServiceManager
 	// DB-START
-	dm interfaces.IDAOManager
-	db *sql.DB
+	DAOManger DAO.DAOManager
+	Database  *sql.DB
 	// DB-END
 }
 
 func NewAppContext(
-	lgr *zap.Logger,
-	sm interfaces.IServiceManager,
+	Logger *zap.Logger,
+	ServiceManager services.ServiceManager,
 	// DB-START
-	dm interfaces.IDAOManager,
-	db *sql.DB,
+	DAOManger DAO.DAOManager,
+	Database *sql.DB,
 	// DB-END
 ) *appContext {
 	return &appContext{
-		lgr,
-		sm,
+		Logger,
+		ServiceManager,
 		// DB-START
-		dm,
-		db,
+		DAOManger,
+		Database,
 		// DB-END
 	}
 }
 
 func (ctx *appContext) Lgr(name string) *zap.Logger {
-	return ctx.lgr.Named(name)
+	return ctx.Logger.Named(name)
 }
 
-func (ctx *appContext) SM() interfaces.IServiceManager {
-	return ctx.sm
+func (ctx *appContext) SM() services.ServiceManager {
+	return ctx.ServiceManager
 }
 
 // DB-START
-func (ctx *appContext) DM() interfaces.IDAOManager {
-	return ctx.dm
+func (ctx *appContext) DM() DAO.DAOManager {
+	return ctx.DAOManger
 }
 
 func (ctx *appContext) DB() *sql.DB {
-	return ctx.db
+	return ctx.Database
 }
 
 // DB-END
 
 func (ctx *appContext) CleanUp() {
-	if err := ctx.lgr.Sync(); err != nil {
-		ctx.lgr.Error("failed to sync logger", zap.Error(err))
+	if err := ctx.Logger.Sync(); err != nil {
+		ctx.Logger.Error("failed to sync logger", zap.Error(err))
 	}
 }

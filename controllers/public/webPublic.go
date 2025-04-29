@@ -5,17 +5,17 @@ import (
 	"os"
 	"path"
 
-	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/context"
 	"github.com/go-chi/chi/v5"
 )
 
 type webPublic struct {
-	interfaces.IAppContext
+	context.AppContext
 }
 
-func NewWebPublic(ctx interfaces.IAppContext) *webPublic {
+func NewWebPublic(ctx context.AppContext) *webPublic {
 	return &webPublic{
-		IAppContext: ctx,
+		AppContext: ctx,
 	}
 }
 

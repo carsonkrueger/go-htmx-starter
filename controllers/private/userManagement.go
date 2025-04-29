@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/carsonkrueger/main/builders"
-	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/templates/datadisplay"
@@ -26,12 +26,12 @@ var UserManagementTabModels = []pageLayouts.TabModel{
 }
 
 type userManagement struct {
-	interfaces.IAppContext
+	context.AppContext
 }
 
-func NewUserManagement(ctx interfaces.IAppContext) *userManagement {
+func NewUserManagement(ctx context.AppContext) *userManagement {
 	return &userManagement{
-		IAppContext: ctx,
+		AppContext: ctx,
 	}
 }
 

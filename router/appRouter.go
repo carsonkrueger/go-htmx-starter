@@ -3,9 +3,9 @@ package router
 import (
 	"github.com/carsonkrueger/main/builders"
 	"github.com/carsonkrueger/main/cfg"
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/controllers/private"
 	"github.com/carsonkrueger/main/controllers/public"
-	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/middlewares"
 	"go.uber.org/zap"
 
@@ -19,34 +19,34 @@ import (
 )
 
 type AppRouter struct {
-	public  []builders.IAppPublicRoute
-// DB-START
+	public []builders.IAppPublicRoute
+	// DB-START
 	private []builders.IAppPrivateRoute
-// DB-END
-	addr    string
-	router  chi.Router
-	appCtx  interfaces.IAppContext
+	// DB-END
+	addr   string
+	router chi.Router
+	appCtx context.AppContext
 }
 
-func NewAppRouter(ctx interfaces.IAppContext) AppRouter {
+func NewAppRouter(ctx context.AppContext) AppRouter {
 	return AppRouter{
 		appCtx: ctx,
 		public: []builders.IAppPublicRoute{
-// DB-START
+			// DB-START
 			public.NewLogin(ctx),
 			public.NewSignUp(ctx),
-// DB-END
+			// DB-END
 			public.NewWebPublic(ctx),
 			public.NewHome(ctx),
 		},
-// DB-START
+		// DB-START
 		private: []builders.IAppPrivateRoute{
 			private.NewUserManagement(ctx),
 			private.NewPrivileges(ctx),
 			private.NewPrivilegeLevels(ctx),
 			private.NewPrivilegeLevelsPrivileges(ctx),
 		},
-// DB-END
+		// DB-END
 	}
 }
 
@@ -61,7 +61,7 @@ func (a *AppRouter) BuildRouter() {
 		lgr.Info(r.Path())
 	}
 
-// DB-START
+	// DB-START
 	// enforce authentication middleware
 	a.router = a.router.With(middlewares.EnforceAuth(a.appCtx))
 
@@ -76,7 +76,7 @@ func (a *AppRouter) BuildRouter() {
 	if err != nil {
 		lgr.Fatal("Error building permission cache", zap.Error(err))
 	}
-// DB-END
+	// DB-END
 }
 
 func (a *AppRouter) Start(cfg cfg.Config) error {

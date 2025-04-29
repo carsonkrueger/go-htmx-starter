@@ -1,7 +1,7 @@
 package builders
 
 import (
-	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/context"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -21,10 +21,10 @@ type IAppPublicRoute interface {
 // DB-START
 type PrivateRouteBuilder struct {
 	router chi.Router
-	appCtx interfaces.IAppContext
+	appCtx context.AppContext
 }
 
-func NewPrivateRouteBuilder(appCtx interfaces.IAppContext) PrivateRouteBuilder {
+func NewPrivateRouteBuilder(appCtx context.AppContext) PrivateRouteBuilder {
 	return PrivateRouteBuilder{
 		router: chi.NewRouter(),
 		appCtx: appCtx,
@@ -50,4 +50,5 @@ func (rb *PrivateRouteBuilder) NewHandle() *privateHandlerBuilder {
 func (mb *PrivateRouteBuilder) Build() chi.Router {
 	return mb.router
 }
+
 // DB-END

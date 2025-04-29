@@ -3,8 +3,8 @@ package public
 import (
 	"net/http"
 
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
-	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/pageLayouts"
@@ -16,11 +16,11 @@ import (
 )
 
 type signUp struct {
-	interfaces.IAppContext
+	context.AppContext
 }
 
-func NewSignUp(ctx interfaces.IAppContext) *signUp {
-	return &signUp{IAppContext: ctx}
+func NewSignUp(ctx context.AppContext) *signUp {
+	return &signUp{AppContext: ctx}
 }
 
 func (s *signUp) Path() string {

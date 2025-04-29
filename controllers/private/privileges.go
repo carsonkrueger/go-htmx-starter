@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/carsonkrueger/main/builders"
-	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/templates/datainput"
 	"github.com/carsonkrueger/main/tools"
 )
@@ -16,12 +16,12 @@ const (
 )
 
 type privileges struct {
-	interfaces.IAppContext
+	context.AppContext
 }
 
-func NewPrivileges(ctx interfaces.IAppContext) *privileges {
+func NewPrivileges(ctx context.AppContext) *privileges {
 	return &privileges{
-		IAppContext: ctx,
+		AppContext: ctx,
 	}
 }
 

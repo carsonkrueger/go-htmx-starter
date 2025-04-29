@@ -4,30 +4,28 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
-	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
 type privilegesDAO struct {
 	db *sql.DB
-	interfaces.IDAOBaseQueries[int64, model.Privileges]
+	DAOBaseQueries[int64, model.Privileges]
 }
 
 func newPrivilegesDAO(db *sql.DB) *privilegesDAO {
 	dao := &privilegesDAO{
-		db:              db,
-		IDAOBaseQueries: nil,
+		db:             db,
+		DAOBaseQueries: nil,
 	}
-	queries := database.NewDAOQueryable(dao)
-	dao.IDAOBaseQueries = &queries
+	queries := newDAOQueryable[int64, model.Privileges](dao)
+	dao.DAOBaseQueries = &queries
 	return dao
 }
 
-func (dao *privilegesDAO) Table() interfaces.IPostgresTable {
+func (dao *privilegesDAO) Table() PostgresTable {
 	return table.Privileges
 }
 

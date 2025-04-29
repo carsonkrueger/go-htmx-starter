@@ -3,19 +3,19 @@ package public
 import (
 	"net/http"
 
-	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/templates/pages"
 	"github.com/carsonkrueger/main/tools/render"
 	"github.com/go-chi/chi/v5"
 )
 
 type home struct {
-	interfaces.IAppContext
+	context.AppContext
 }
 
-func NewHome(ctx interfaces.IAppContext) *home {
+func NewHome(ctx context.AppContext) *home {
 	return &home{
-		IAppContext: ctx,
+		AppContext: ctx,
 	}
 }
 
