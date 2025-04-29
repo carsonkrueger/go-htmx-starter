@@ -11,9 +11,11 @@ import (
 
 type AppContext interface {
 	Lgr(name string) *zap.Logger
-	DM() DAO.DAOManager
 	SM() services.ServiceManager
+	// DB-START
+	DM() DAO.DAOManager
 	DB() *sql.DB
+	// DB-END
 }
 
 type appContext struct {
