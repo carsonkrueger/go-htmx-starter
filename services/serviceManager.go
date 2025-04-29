@@ -46,8 +46,10 @@ func NewAppContext(
 }
 
 type ServiceManager interface {
+	// DB-START
 	UsersService() UsersService
 	PrivilegesService() PrivilegesService
+	// DB-END
 }
 
 // DB-START
