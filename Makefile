@@ -111,6 +111,14 @@ jet:
 	${JET_CMD} -dsn=${DB_URL_EXTERNAL} -schema=$(schema) -path=./gen;
 # DB-END
 
+install-system-deps:
+	go install github.com/a-h/templ/cmd/templ@latest` \
+	go install github.com/air-verse/air@latest` \
+	# DB-START
+	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest` \
+	go install github.com/go-jet/jet/v2/cmd/jet@latest`
+	# DB-END
+
 remove-markers:
 	@find . \( $(foreach dir,$(EXCLUDE_DIRS),-path ./$(dir) -o ) -false \) -prune -o -type f -exec sed -i '/[\/#]\s*DB-START\s*$$/d; /[\/#]\s*DB-END\s*$$/d' {} +
 

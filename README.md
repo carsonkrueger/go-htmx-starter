@@ -42,7 +42,6 @@ Make is a build automation tool that is used to automate the building of softwar
 # Dependencies
 - Go
 - Docker
-- Docker-Compose
 - Postgres
 - [Templ](https://templ.guide)
 - NPM (for TailwindCSS)
@@ -54,13 +53,14 @@ Make is a build automation tool that is used to automate the building of softwar
 To run the application locally, follow these steps:
 
 1. Clone the repository and navigate to the project directory.
-2. Install Go, Docker, and Docker-Compose.
+2. Install Go and Docker.
 3. Setup your `.env` using the `.env.example` file as a template.
 
 ## Running the Application with Docker
 
-4. Build and run the Docker image using the command `make docker`.
-5. Open your browser and navigate to `http://localhost:40080` to access the application.
+4. Build and run the Docker image using the command `make docker` - when the controllers are built and run using `make web` it will create privileges associated with each controller and insert them into the database.
+5. In a separate terminal, run `make seed` to create 'basic' and 'admin' privilege levels and give all privileges to the admin level.
+6. Open your browser and navigate to `http://localhost:40080` to access the application.
     - If you changed the `DB_EXTERNAL_PORT` in your `.env` file, update this URL accordingly (`http://localhost:<DB_EXTERNAL_PORT>`)
     - If you changed the `PORT` in your `.env` file, you will also need to update the Dockerfile.
 
@@ -70,16 +70,13 @@ To run the application locally, follow these steps:
 4. Install PostgreSQL, Make, and NPM on your machine. Start your PostgreSQL service.
 5. `go mod download`
 6. `npm install`
-7. `go install github.com/a-h/templ/cmd/templ@latest`
-8. `go install github.com/air-verse/air@latest`
-9. `go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest`
-10. `go install github.com/go-jet/jet/v2/cmd/jet@latest`
-11. Start the PostgreSQL container using the command: `make docker-postgres`
-12. Run migrations on the postgres container: `make migrate`
-13. `make jet-all` to generate all database objects and query building functionality.
-14. `make live` to start the server - this will create privileges associated with each controller.
-15. In a separate terminal, run `make seed` to create 'basic' and 'admin' privilege levels and give all privileges to the admin level.
-16. Begin live development!
+7. Install system dependencies with `make install-system-deps`
+8. Start the PostgreSQL container using the command: `make docker-postgres`
+9. Run migrations on the postgres container: `make migrate`
+10. `make jet-all` to generate all database objects and query building functionality.
+11. `make live` to start the server - this will create privileges associated with each controller and insert them into the database.
+12. In a separate terminal, run `make seed` to create 'basic' and 'admin' privilege levels and give all privileges to the admin level.
+13. Begin live development!
 
 # Don't want to use a database?
 
