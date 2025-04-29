@@ -4,30 +4,28 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
-	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
 type sessionsDAO struct {
 	db *sql.DB
-	interfaces.IDAOBaseQueries[authModels.SessionsPrimaryKey, model.Sessions]
+	DAOBaseQueries[authModels.SessionsPrimaryKey, model.Sessions]
 }
 
 func newSessionsDAO(db *sql.DB) *sessionsDAO {
 	dao := &sessionsDAO{
-		db:              db,
-		IDAOBaseQueries: nil,
+		db:             db,
+		DAOBaseQueries: nil,
 	}
-	queries := database.NewDAOQueryable(dao)
-	dao.IDAOBaseQueries = &queries
+	queries := newDAOQueryable[authModels.SessionsPrimaryKey, model.Sessions](dao)
+	dao.DAOBaseQueries = &queries
 	return dao
 }
 
-func (dao *sessionsDAO) Table() interfaces.IPostgresTable {
+func (dao *sessionsDAO) Table() PostgresTable {
 	return table.Sessions
 }
 

@@ -5,12 +5,11 @@ import (
 
 	"github.com/carsonkrueger/main/constant"
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/tools"
 )
 
-func EnforceAuth(appCtx interfaces.IAppContext) func(next http.Handler) http.Handler {
+func EnforceAuth(appCtx context.AppContext) func(next http.Handler) http.Handler {
 	usersService := appCtx.SM().UsersService()
 	usersDAO := appCtx.DM().UsersDAO()
 	sessionsDAO := appCtx.DM().SessionsDAO()

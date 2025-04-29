@@ -4,11 +4,10 @@ import (
 	"net/http"
 
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/tools"
 )
 
-func ApplyPermission(permissionName string, appCtx interfaces.IAppContext) func(next http.Handler) http.Handler {
+func ApplyPermission(permissionName string, appCtx context.AppContext) func(next http.Handler) http.Handler {
 	lgr := appCtx.Lgr("MW ApplyPermission")
 
 	return func(next http.Handler) http.Handler {

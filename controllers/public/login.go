@@ -3,8 +3,8 @@ package public
 import (
 	"net/http"
 
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/controllers/private"
-	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/templates/datadisplay"
@@ -17,12 +17,12 @@ import (
 )
 
 type login struct {
-	interfaces.IAppContext
+	context.AppContext
 }
 
-func NewLogin(ctx interfaces.IAppContext) *login {
+func NewLogin(ctx context.AppContext) *login {
 	return &login{
-		IAppContext: ctx,
+		AppContext: ctx,
 	}
 }
 

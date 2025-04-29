@@ -6,7 +6,7 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/carsonkrueger/main/builders"
-	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/templates/datadisplay"
@@ -20,12 +20,12 @@ const (
 )
 
 type privilegeLevelsPrivileges struct {
-	interfaces.IAppContext
+	context.AppContext
 }
 
-func NewPrivilegeLevelsPrivileges(ctx interfaces.IAppContext) *privilegeLevelsPrivileges {
+func NewPrivilegeLevelsPrivileges(ctx context.AppContext) *privilegeLevelsPrivileges {
 	return &privilegeLevelsPrivileges{
-		IAppContext: ctx,
+		AppContext: ctx,
 	}
 }
 

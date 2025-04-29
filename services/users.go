@@ -8,17 +8,16 @@ import (
 
 	"github.com/carsonkrueger/main/constant"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
-	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/tools"
 	"go.uber.org/zap"
 )
 
 type usersService struct {
-	interfaces.IAppContext
+	ServiceContext
 }
 
-func NewUsersService(ctx interfaces.IAppContext) *usersService {
+func NewUsersService(ctx ServiceContext) *usersService {
 	return &usersService{
 		ctx,
 	}

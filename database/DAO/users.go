@@ -4,30 +4,28 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
-	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
 type usersDAO struct {
 	db *sql.DB
-	interfaces.IDAOBaseQueries[int64, model.Users]
+	DAOBaseQueries[int64, model.Users]
 }
 
-func newUsersDAO(db *sql.DB) interfaces.IUsersDAO {
+func newUsersDAO(db *sql.DB) UsersDAO {
 	dao := &usersDAO{
-		db:              db,
-		IDAOBaseQueries: nil,
+		db:             db,
+		DAOBaseQueries: nil,
 	}
-	queries := database.NewDAOQueryable(dao)
-	dao.IDAOBaseQueries = &queries
+	queries := newDAOQueryable[int64, model.Users](dao)
+	dao.DAOBaseQueries = &queries
 	return dao
 }
 
-func (dao *usersDAO) Table() interfaces.IPostgresTable {
+func (dao *usersDAO) Table() PostgresTable {
 	return table.Users
 }
 

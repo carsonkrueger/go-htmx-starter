@@ -7,18 +7,17 @@ import (
 	"sync"
 
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
-	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/tools"
 	"go.uber.org/zap"
 )
 
 type privilegesService struct {
-	interfaces.IServiceContext
+	ServiceContext
 	*permissionCache
 }
 
-func NewPrivilegesService(ctx interfaces.IServiceContext, cache *permissionCache) *privilegesService {
+func NewPrivilegesService(ctx ServiceContext, cache *permissionCache) *privilegesService {
 	lgr := ctx.Lgr("NewPrivilegesService")
 	if cache == nil {
 		lgr.Panic("Permission cache is nil")
@@ -35,7 +34,7 @@ type permissionCache struct {
 	levelNameCache authModels.LevelNameCache
 }
 
-func NewPermissionCache() *permissionCache {
+func newPermissionCache() *permissionCache {
 	return &permissionCache{
 		cache: authModels.PermissionCache{},
 	}

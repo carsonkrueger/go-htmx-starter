@@ -3,8 +3,8 @@ package builders
 import (
 	"net/http"
 
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
-	"github.com/carsonkrueger/main/interfaces"
 	"github.com/carsonkrueger/main/middlewares"
 	"github.com/go-chi/chi/v5"
 )
@@ -20,7 +20,7 @@ const (
 )
 
 type privateHandlerBuilder struct {
-	appCtx         interfaces.IAppContext
+	appCtx         context.AppContext
 	router         chi.Router
 	mw             []func(next http.Handler) http.Handler
 	method         RouteMethod
