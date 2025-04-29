@@ -69,10 +69,8 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/carsonkrueger/main/database"
 	"github.com/carsonkrueger/main/gen/%[1]s/%[2]s/model"
 	"github.com/carsonkrueger/main/gen/%[1]s/%[2]s/table"
-	"github.com/carsonkrueger/main/interfaces"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
@@ -80,20 +78,20 @@ type %[3]sPrimaryKey int64;
 
 type %[4]sDAO struct {
 	db *sql.DB
-	interfaces.IDAOBaseQueries[%[3]sPrimaryKey, model.%[3]s]
+	DAOBaseQueries[%[3]sPrimaryKey, model.%[3]s]
 }
 
-func new%[3]sDAO(db *sql.DB) interfaces.I%[3]sDAO {
+func new%[3]sDAO(db *sql.DB) *%[4]sDAO {
 	dao := &%[4]sDAO{
 		db:              db,
-		IDAOBaseQueries: nil,
+		DAOBaseQueries: nil,
 	}
-	queries := database.NewDAOQueryable(dao)
-	dao.IDAOBaseQueries = &queries
+	queries := newDAOQueryable[%[3]sPrimaryKey, model.%[3]s](dao)
+	dao.DAOBaseQueries = &queries
 	return dao
 }
 
-func (dao *%[4]sDAO) Table() interfaces.IPostgresTable {
+func (dao *%[4]sDAO) Table() PostgresTable {
 	return table.%[3]s
 }
 

@@ -15,10 +15,10 @@ import (
 
 func generateController() {
 	controller := flag.String("name", "", "camelCase Name of the controller")
-// DB-START
+	// DB-START
 	private := flag.Bool("private", true, "Is a private controller")
 	flag.Parse()
-// DB-END
+	// DB-END
 
 	// lower first letter of table name
 	controller = tools.Ptr(tools.ToLowerFirst(*controller))
@@ -33,30 +33,30 @@ func generateController() {
 	}
 
 	var filePath string
-// DB-START
+	// DB-START
 	if *private {
 		filePath = fmt.Sprintf("%s/controllers/private/%s.go", wd, *controller)
 	} else {
-// DB-END
+		// DB-END
 		filePath = fmt.Sprintf("%s/controllers/public/%s.go", wd, *controller)
-// DB-START
+		// DB-START
 	}
-// DB-END
+	// DB-END
 	if err := os.MkdirAll(path.Dir(filePath), 0755); err != nil {
 		lgr.Error("failed to create directory", zap.Error(err))
 		os.Exit(1)
 	}
 
 	var contents string
-// DB-START
+	// DB-START
 	if *private {
 		contents = privateControllerFileContents(*controller)
 	} else {
-// DB-END
+		// DB-END
 		contents = publicControllerFileContents(*controller)
-// DB-START
+		// DB-START
 	}
-// DB-END
+	// DB-END
 	file, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0644)
 	if err != nil {
 		if os.IsExist(err) {
@@ -81,7 +81,7 @@ import (
 	"net/http"
 
 	"github.com/carsonkrueger/main/builders"
-	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/context"
 )
 
 const (
@@ -93,12 +93,12 @@ const (
 )
 
 type %[1]s struct {
-	interfaces.IAppContext
+	context.AppContext
 }
 
-func New%[2]s(ctx interfaces.IAppContext) *%[1]s {
+func New%[2]s(ctx context.AppContext) *%[1]s {
 	return &%[1]s{
-		IAppContext: ctx,
+		AppContext: ctx,
 	}
 }
 
@@ -140,6 +140,7 @@ func (r *%[1]s) %[1]sDelete(res http.ResponseWriter, req *http.Request) {
 }
 `, lower, upper)
 }
+
 // DB-END
 
 func publicControllerFileContents(name string) string {
@@ -151,17 +152,17 @@ func publicControllerFileContents(name string) string {
 import (
 	"net/http"
 
-	"github.com/carsonkrueger/main/interfaces"
+	"github.com/carsonkrueger/main/context"
 	"github.com/go-chi/chi/v5"
 )
 
 type %[1]s struct {
-	interfaces.IAppContext
+	context.AppContext
 }
 
-func New%[2]s(ctx interfaces.IAppContext) *%[1]s {
+func New%[2]s(ctx context.AppContext) *%[1]s {
 	return &%[1]s{
-		IAppContext: ctx,
+		AppContext: ctx,
 	}
 }
 
