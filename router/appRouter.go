@@ -68,7 +68,7 @@ func (a *AppRouter) BuildRouter() {
 	for _, r := range a.private {
 		builder := builders.NewPrivateRouteBuilder(a.appCtx)
 		r.PrivateRoute(&builder)
-		a.router.Mount(r.Path(), builder.Build())
+		a.router.Mount(r.Path(), builder.RawRouter())
 		lgr.Info(r.Path())
 	}
 

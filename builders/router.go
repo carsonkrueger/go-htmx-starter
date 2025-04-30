@@ -1,6 +1,8 @@
 package builders
 
 import (
+	"net/http"
+
 	"github.com/carsonkrueger/main/context"
 	"github.com/go-chi/chi/v5"
 )
@@ -47,8 +49,23 @@ func (rb *PrivateRouteBuilder) NewHandle() *privateHandlerBuilder {
 	}
 }
 
-func (mb *PrivateRouteBuilder) Build() chi.Router {
-	return mb.router
+func (rb *PrivateRouteBuilder) NewGroup(f func(g *PrivateRouteBuilder)) {
+	builder := PrivateRouteBuilder{
+		router: nil,
+		appCtx: rb.appCtx,
+	}
+	rb.router.Group(func(g chi.Router) {
+		builder.router = g
+	})
+	f(&builder)
+}
+
+func (rb *PrivateRouteBuilder) AddMiddleware(middleware func(next http.Handler) http.Handler) {
+	rb.router.Use(middleware)
+}
+
+func (rb *PrivateRouteBuilder) RawRouter() chi.Router {
+	return rb.router
 }
 
 // DB-END
