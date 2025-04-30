@@ -5,7 +5,6 @@ import (
 
 	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
-	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/pageLayouts"
 	"github.com/carsonkrueger/main/templates/pages"
@@ -67,7 +66,7 @@ func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
 	if err := usersDAO.Insert(&user, s.DB()); err != nil {
 		lgr.Warn("Could not insert user", zap.Error(err))
 		res.WriteHeader(422)
-		noti := datadisplay.AddTextToast(models.Warning, "Email taken", 0)
+		noti := datadisplay.AddTextToast(datadisplay.Warning, "Email taken", 0)
 		noti.Render(ctx, res)
 		return
 	}
@@ -80,7 +79,7 @@ func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
 	if err := sessionDAO.Insert(session, s.DB()); err != nil {
 		lgr.Error("Could not insert session", zap.Error(err))
 		res.WriteHeader(500)
-		noti := datadisplay.AddTextToast(models.Error, "Error creating session", 0)
+		noti := datadisplay.AddTextToast(datadisplay.Error, "Error creating session", 0)
 		noti.Render(ctx, res)
 		return
 	}

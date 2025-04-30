@@ -1,4 +1,4 @@
-package models
+package datadisplay
 
 type NotificationVariant int
 
@@ -23,7 +23,7 @@ const (
 type IconType int
 
 const (
-	X IconType = iota
+	XIcon IconType = iota
 )
 
 type Color int

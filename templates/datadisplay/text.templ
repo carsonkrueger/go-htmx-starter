@@ -1,22 +1,18 @@
 package datadisplay
 
-import (
-	"github.com/carsonkrueger/main/models"
-)
-
-templ Text(text string, size models.Size) {
+templ Text(text string, size Size) {
 	{{
 		class := ""
 		switch size {
-		case models.XS:
+		case XS:
 			class += "text-xs"
-		case models.SM:
+		case SM:
 			class += "text-sm"
-		case models.LG:
+		case LG:
 			class += "text-lg"
-		case models.XL:
+		case XL:
 			class += "text-xl"
-		case models.XL2:
+		case XL2:
 			class += "text-2xl"
 		default:
 			class += "text-base"

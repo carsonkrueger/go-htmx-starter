@@ -5,10 +5,17 @@ type SelectOptions struct {
 	Label string
 }
 
-templ Select(id string, name string, options []SelectOptions) {
-	<select id={id} name={name}>
+templ Select(id string, name string, defaultValue string, options []SelectOptions, attrs templ.Attributes) {
+	<select id={id} name={name} {attrs...}>
 		for _, o := range options {
-			<option value={o.Value}>{o.Label}</option>
+			<option
+				value={o.Value}
+				if o.Value == defaultValue {
+					selected="selected"
+				}
+			>
+				{o.Label}
+			</option>
 		}
 	</select>
 }

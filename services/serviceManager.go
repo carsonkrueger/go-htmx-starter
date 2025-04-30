@@ -2,10 +2,8 @@ package services
 
 import (
 	"database/sql"
-	"net/http"
 
 	"github.com/carsonkrueger/main/database/DAO"
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"go.uber.org/zap"
 )
 
@@ -51,26 +49,6 @@ type ServiceManager interface {
 	PrivilegesService() PrivilegesService
 	// DB-END
 }
-
-// DB-START
-type UsersService interface {
-	Login(email string, password string, req *http.Request) (*string, error)
-	Logout(id int64, token string) error
-	LogoutRequest(req *http.Request) error
-	GetAuthParts(req *http.Request) (string, int64, error)
-}
-
-type PrivilegesService interface {
-	BuildCache() error
-	AddPermission(levelID int64, perms ...model.Privileges) error
-	RemovePermission(levelID int64, perms ...model.Privileges) error
-	CreateLevel(name string) error
-	GetPermissions(levelID int64) []model.Privileges
-	HasPermissionByID(levelID int64, permissionID int64) bool
-	HasPermissionByName(levelID int64, permissionName string) bool
-}
-
-// DB-END
 
 type serviceManager struct {
 	// DB-START

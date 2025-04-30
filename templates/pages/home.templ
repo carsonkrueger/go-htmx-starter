@@ -2,20 +2,20 @@ package pages
 
 templ Home() {
   <!-- Hero Section -->
-  <section class="py-16">
+  <section class="py-32">
     <div class="max-w-5xl mx-auto text-center px-6">
       <h2 class="text-4xl font-bold mb-4">Build Fast, Modern Web Servers</h2>
       <p class="text-lg text-gray-600 mb-8">
         A powerful starter kit combining Go, HTMX, TailwindCSS, PostgreSQL, and more for rapid web server development.
       </p>
-      <a href="#installation" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition">
+      <a href="#quick" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition">
         Get Started
       </a>
     </div>
   </section>
 
   <!-- Features -->
-  <section class="py-20 bg-[#FFFFFF11]" id="features">
+  <section class="py-32 bg-[#FFFFFF11]" id="features">
     <div class="max-w-7xl mx-auto px-6">
       <h3 class="text-3xl font-bold text-center mb-12">Features</h3>
       <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -26,7 +26,7 @@ templ Home() {
         </div>
 
         <div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
-          <h4 class="text-2xl font-semibold mb-4">HTMX + Templ + Hyperscript + TailwindCSS</h4>
+          <h4 class="text-2xl font-semibold mb-4">HTMX, Templ, Hyperscript & Tailwind</h4>
           <p>Dynamic frontends without heavy JavaScript. Use powerful HTML attributes, templates, and utility-first styling.</p>
         </div>
 
@@ -42,7 +42,7 @@ templ Home() {
 
         <div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
           <h4 class="text-2xl font-semibold mb-4">Jet Query Builder</h4>
-          <p>Type-safe SQL queries, generated directly from your schema, ensuring high reliability in database operations.</p>
+          <p>Type-safe SQL queries, generated directly from your schema, ensuring high reliability in database operations and a great developer experience.</p>
         </div>
 
         <div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
@@ -54,7 +54,7 @@ templ Home() {
   </section>
 
   <!-- Dependencies -->
-  <section class="py-20" id="dependencies">
+  <section class="py-32" id="dependencies">
     <div class="max-w-5xl mx-auto px-6">
       <h3 class="text-3xl font-bold text-center mb-12">Dependencies</h3>
       <ul class="grid gap-4 text-lg list-disc list-inside">
@@ -70,17 +70,19 @@ templ Home() {
     </div>
   </section>
 
-  <!-- Installation -->
-  <section class="py-20 bg-[#FFFFFF11]" id="installation">
+  <!-- Quick Start -->
+  <section class="py-32 bg-[#FFFFFF11]" id="quick">
     <div class="max-w-5xl mx-auto px-6">
-      <h3 class="text-3xl font-bold text-center mb-12">Installation</h3>
+      <h3 class="text-3xl font-bold text-center mb-12">Quick Start</h3>
       <ol class="space-y-4 text-lg list-decimal list-inside">
-        <li>Clone the repository and navigate to the project directory.</li>
-        <li>Install Go, Docker, and Docker-Compose.</li>
-        <li>Set up your <code>.env</code> using the <code>.env.example</code> file as a template.</li>
-        <li>Run the application with Docker: <code>make docker</code>.</li>
-        <li>Access it at: <code>http://localhost:40080</code>.</li>
-        <li>Or run it locally with Postgres containerized. Follow detailed steps in the README.</li>
+        <li>
+        	Run <span class="rounded-sm p-1 bg-gray-700">make generateDAO</span> and follow the CLI instructions to generate a Database Access Object for a new database model.
+        	Don't forget to add the new DAO to the <a class="underline" href="https://github.com/carsonkrueger/go-htmx-starter/blob/main/database/DAO/daoManager.go">DAOManager</a>.
+        </li>
+        <li>
+        	Run <span class="rounded-sm p-1 bg-gray-700">make generate-private-controller</span> to generate a private controller for a new API endpoint.
+        	Don't forget to add the new controller to the <a class="underline" href="https://github.com/carsonkrueger/go-htmx-starter/blob/main/router/appRouter.go">AppRouter</a>.
+        </li>
       </ol>
     </div>
   </section>
@@ -92,12 +94,3 @@ templ Home() {
     </div>
   </footer>
 }
-
-// <button
-		// 	hx-get="/login"
-		// 	hx-target={ "#" + pageLayouts.MainContentID }
-		// 	hx-swap="innerHTML"
-		// 	hx-push-url="true"
-		// >
-		// 	Login
-		// </button>

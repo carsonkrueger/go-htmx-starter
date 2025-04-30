@@ -13,6 +13,13 @@ import (
 	"go.uber.org/zap"
 )
 
+type UsersService interface {
+	Login(email string, password string, req *http.Request) (*string, error)
+	Logout(id int64, token string) error
+	LogoutRequest(req *http.Request) error
+	GetAuthParts(req *http.Request) (string, int64, error)
+}
+
 type usersService struct {
 	ServiceContext
 }

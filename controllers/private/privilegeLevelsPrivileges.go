@@ -7,7 +7,6 @@ import (
 	"github.com/a-h/templ"
 	"github.com/carsonkrueger/main/builders"
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/tools"
@@ -94,9 +93,9 @@ func (r *privilegeLevelsPrivileges) privilegeLevelsPrivilegesPost(res http.Respo
 				PrivilegeCreatedAt: priv.CreatedAt,
 			},
 		}
-		rows := authModels.JoinedPrivilegesAsRowData(jpl)
+		rows := r.SM().PrivilegesService().JoinedPrivilegesAsRowData(jpl)
 		tr := datadisplay.BasicTR(rows[0])
-		toast := datadisplay.AddTextToast(models.Success, "Added privilege level", 3)
+		toast := datadisplay.AddTextToast(datadisplay.Success, "Added privilege level", 3)
 		templ.Join(tr, toast).Render(ctx, res)
 	}
 }
@@ -132,6 +131,6 @@ func (r *privilegeLevelsPrivileges) privilegeLevelsPrivilegesDelete(res http.Res
 	}
 
 	if tools.IsHxRequest(req) {
-		datadisplay.AddTextToast(models.Success, "Deleted privilege level", 3).Render(ctx, res)
+		datadisplay.AddTextToast(datadisplay.Success, "Deleted privilege level", 3).Render(ctx, res)
 	}
 }

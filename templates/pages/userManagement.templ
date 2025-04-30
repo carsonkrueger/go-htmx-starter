@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 )
 
@@ -19,17 +18,22 @@ templ UserManagementUsers(rows []datadisplay.RowData) {
 				{
 					ID:    "h-name",
 					Width: 1,
-					Body:  datadisplay.Text("Name", models.LG),
+					Body:  datadisplay.Text("Name", datadisplay.LG),
+				},
+				{
+					ID:    "h-email",
+					Width: 1,
+					Body:  datadisplay.Text("Email", datadisplay.LG),
 				},
 				{
 					ID:    "h-pr",
 					Width: 1,
-					Body:  datadisplay.Text("Privilege Level", models.LG),
+					Body:  datadisplay.Text("Privilege Level", datadisplay.LG),
 				},
 				{
 					ID:    "h-ca",
 					Width: 1,
-					Body:  datadisplay.Text("Created At", models.LG),
+					Body:  datadisplay.Text("Created At", datadisplay.LG),
 				},
 			},
 		}
@@ -45,17 +49,17 @@ templ UserManagementLevels(data []datadisplay.RowData) {
 				{
 					ID:    "h-lvl-name",
 					Width: 1,
-					Body:  datadisplay.Text("Privilege Level", models.LG),
+					Body:  datadisplay.Text("Privilege Level", datadisplay.LG),
 				},
 				{
 					ID:    "h-pr",
 					Width: 1,
-					Body:  datadisplay.Text("Privilege", models.LG),
+					Body:  datadisplay.Text("Privilege", datadisplay.LG),
 				},
 				{
 					ID:    "h-ca",
 					Width: 1,
-					Body:  datadisplay.Text("Created At", models.LG),
+					Body:  datadisplay.Text("Created At", datadisplay.LG),
 				},
 				{
 					ID:    "h-del",

@@ -5,8 +5,6 @@ import (
 
 	"github.com/carsonkrueger/main/builders"
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/models"
-	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/pageLayouts"
 	"github.com/carsonkrueger/main/templates/pages"
@@ -58,11 +56,17 @@ func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *h
 	}
 
 	if len(*users) == 0 {
-		datadisplay.AddTextToast(models.Warning, "No Users Found", 5).Render(ctx, res)
+		datadisplay.AddTextToast(datadisplay.Warning, "No Users Found", 5).Render(ctx, res)
 		return
 	}
 
-	rows := authModels.UserPrivilegeLevelJoinAsRowData(*users)
+	allLevels, err := um.DM().PrivilegeLevelsDAO().Index(nil, um.DB())
+	if err != nil || allLevels == nil {
+		tools.HandleError(req, res, lgr, err, 500, "Error fetching privilege levels")
+		return
+	}
+
+	rows := um.SM().PrivilegesService().UserPrivilegeLevelJoinAsRowData(*users, allLevels)
 	page := pages.UserManagementUsers(rows)
 	render.Tab(req, UserManagementTabModels, 0, page).Render(ctx, res)
 }
@@ -77,7 +81,7 @@ func (um *userManagement) userManagementLevelsGet(res http.ResponseWriter, req *
 		tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return
 	}
-	rows := authModels.JoinedPrivilegesAsRowData(privileges)
+	rows := um.SM().PrivilegesService().JoinedPrivilegesAsRowData(privileges)
 
 	page := pages.UserManagementLevels(rows)
 	render.Tab(req, UserManagementTabModels, 1, page).Render(ctx, res)

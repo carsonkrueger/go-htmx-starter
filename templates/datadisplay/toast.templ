@@ -3,18 +3,16 @@ package datadisplay
 import (
 	"fmt"
 
-	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/templates/pageLayouts"
-	"github.com/carsonkrueger/main/templates/icons"
 )
 
-templ AddToast(variant models.NotificationVariant, template templ.Component, durationSeconds int) {
+templ AddToast(variant NotificationVariant, template templ.Component, durationSeconds int) {
 	@toast(variant, durationSeconds) {
 		@template
 	}
 }
 
-templ AddTextToast(variant models.NotificationVariant, text string, durationSeconds int) {
+templ AddTextToast(variant NotificationVariant, text string, durationSeconds int) {
 	@toast(variant, durationSeconds) {
 		{ text }
 	}
@@ -22,26 +20,26 @@ templ AddTextToast(variant models.NotificationVariant, text string, durationSeco
 
 templ AddToastErrors(durationSeconds int, errs ...error) {
 	for _, e := range errs {
-		@toast(models.Error, durationSeconds) {
+		@toast(Error, durationSeconds) {
 			{ e.Error() }
 		}
 	}
 }
 
-templ toast(variant models.NotificationVariant, durationSeconds int) {
+templ toast(variant NotificationVariant, durationSeconds int) {
 	{{
 		class := ""
 		switch variant {
-		case models.Success:
+		case Success:
 			class = "bg-green-400"
 			break
-		case models.Error:
+		case Error:
 			class = "bg-red-400"
 			break
-		case models.Warning:
+		case Warning:
 			class = "bg-yellow-400"
 			break
-		case models.Info:
+		case Info:
 			class = "bg-blue-400"
 			break
 		}
@@ -63,7 +61,7 @@ templ toast(variant models.NotificationVariant, durationSeconds int) {
 				type="button"
 				class="cursor-pointer absolute right-2 self-center"
 			>
-				@icons.Icon(models.X, models.SM, models.White)
+				@Icon(XIcon, SM, White)
 			</button>
 		</div>
 	</div>

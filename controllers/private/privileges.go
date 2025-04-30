@@ -55,5 +55,5 @@ func (r *privileges) privilegesSelectGet(res http.ResponseWriter, req *http.Requ
 		}
 	}
 
-	datainput.Select("privileges-select", "privileges", options).Render(ctx, res)
+	datainput.Select("privileges-select", "privileges", "", options, nil).Render(ctx, res)
 }

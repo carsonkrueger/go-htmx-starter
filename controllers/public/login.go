@@ -5,8 +5,6 @@ import (
 
 	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/controllers/private"
-	"github.com/carsonkrueger/main/models"
-	"github.com/carsonkrueger/main/models/authModels"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/pages"
 	"github.com/carsonkrueger/main/tools"
@@ -43,7 +41,7 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	if err := req.ParseForm(); err != nil {
 		lgr.Error("Could not parse form", zap.Error(err))
 		res.WriteHeader(422)
-		noti := datadisplay.AddTextToast(models.Error, "Error parsing form", 0)
+		noti := datadisplay.AddTextToast(datadisplay.Error, "Error parsing form", 0)
 		noti.Render(ctx, res)
 		return
 	}
@@ -67,7 +65,7 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		lgr.Warn("Could not login")
 		res.WriteHeader(422)
-		noti := datadisplay.AddTextToast(models.Error, "Invalid username or password", 5)
+		noti := datadisplay.AddTextToast(datadisplay.Error, "Invalid username or password", 5)
 		noti.Render(ctx, res)
 		return
 	}
@@ -84,11 +82,17 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 		}
 
 		if len(*users) == 0 {
-			datadisplay.AddTextToast(models.Warning, "No Users Found", 5).Render(ctx, res)
+			datadisplay.AddTextToast(datadisplay.Warning, "No Users Found", 5).Render(ctx, res)
 			return
 		}
 
-		rows := authModels.UserPrivilegeLevelJoinAsRowData(*users)
+		allLevels, err := l.DM().PrivilegeLevelsDAO().Index(nil, l.DB())
+		if err != nil || allLevels == nil {
+			tools.HandleError(req, res, lgr, err, 500, "Error fetching privilege levels")
+			return
+		}
+
+		rows := l.SM().PrivilegesService().UserPrivilegeLevelJoinAsRowData(*users, allLevels)
 		page := pages.UserManagementUsers(rows)
 		render.Tab(req, private.UserManagementTabModels, 0, page).Render(ctx, res)
 	}
