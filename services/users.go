@@ -49,7 +49,7 @@ func (us *usersService) Login(email string, password string, req *http.Request) 
 		return nil, errors.New("Invalid password")
 	}
 
-	token, _ := tools.GenerateSalt()
+	token, _ := tools.GenerateToken(32)
 	fullToken := fmt.Sprintf("%s$%d", token, user.ID)
 
 	row := &model.Sessions{

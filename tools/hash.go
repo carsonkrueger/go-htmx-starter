@@ -3,6 +3,7 @@ package tools
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"strings"
 
@@ -36,4 +37,12 @@ func VerifyPassword(password, storedHash string) bool {
 	// Hash the provided password with the stored salt
 	newHash := HashPassword(password, salt)
 	return newHash == storedHash
+}
+
+func GenerateToken(length int) (string, error) {
+	bytes := make([]byte, length)
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(bytes), nil
 }
