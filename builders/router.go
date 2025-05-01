@@ -7,17 +7,17 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type IRoutePath interface {
+type RoutePath interface {
 	Path() string
 }
 
-type IPublicRoute interface {
+type PublicRoute interface {
 	PublicRoute(r chi.Router)
 }
 
-type IAppPublicRoute interface {
-	IRoutePath
-	IPublicRoute
+type AppPublicRoute interface {
+	RoutePath
+	PublicRoute
 }
 
 // DB-START
@@ -33,13 +33,13 @@ func NewPrivateRouteBuilder(appCtx context.AppContext) PrivateRouteBuilder {
 	}
 }
 
-type IPrivateRoute interface {
+type PrivateRoute interface {
 	PrivateRoute(b *PrivateRouteBuilder)
 }
 
-type IAppPrivateRoute interface {
-	IRoutePath
-	IPrivateRoute
+type AppPrivateRoute interface {
+	RoutePath
+	PrivateRoute
 }
 
 func (rb *PrivateRouteBuilder) NewHandle() *privateHandlerBuilder {

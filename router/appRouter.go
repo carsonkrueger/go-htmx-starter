@@ -19,9 +19,9 @@ import (
 )
 
 type AppRouter struct {
-	public []builders.IAppPublicRoute
+	public []builders.AppPublicRoute
 	// DB-START
-	private []builders.IAppPrivateRoute
+	private []builders.AppPrivateRoute
 	// DB-END
 	addr   string
 	router chi.Router
@@ -31,7 +31,7 @@ type AppRouter struct {
 func NewAppRouter(ctx context.AppContext) AppRouter {
 	return AppRouter{
 		appCtx: ctx,
-		public: []builders.IAppPublicRoute{
+		public: []builders.AppPublicRoute{
 			// DB-START
 			public.NewLogin(ctx),
 			public.NewSignUp(ctx),
@@ -40,7 +40,7 @@ func NewAppRouter(ctx context.AppContext) AppRouter {
 			public.NewHome(ctx),
 		},
 		// DB-START
-		private: []builders.IAppPrivateRoute{
+		private: []builders.AppPrivateRoute{
 			private.NewUserManagement(ctx),
 			private.NewPrivileges(ctx),
 			private.NewPrivilegeLevels(ctx),
