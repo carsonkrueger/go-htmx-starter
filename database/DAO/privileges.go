@@ -91,3 +91,22 @@ func (dao *privilegesDAO) GetAllJoined() ([]authModels.JoinedPrivilegesRaw, erro
 
 	return res, nil
 }
+
+func (dao *privilegesDAO) GetPrivilegesByLevelID(levelID int64) ([]model.PrivilegeLevels, error) {
+	var privileges []model.PrivilegeLevels
+	err := table.PrivilegeLevelsPrivileges.
+		SELECT(
+			table.PrivilegeLevelsPrivileges.PrivilegeLevelID,
+			table.PrivilegeLevelsPrivileges.PrivilegeID,
+			table.Privileges.AllColumns,
+		).
+		FROM(
+			table.PrivilegeLevelsPrivileges.
+				LEFT_JOIN(table.Privileges, table.Privileges.ID.EQ(table.PrivilegeLevelsPrivileges.PrivilegeLevelID)),
+		).
+		Query(dao.db, &privileges)
+	if err != nil {
+		return privileges, err
+	}
+	return privileges, nil
+}

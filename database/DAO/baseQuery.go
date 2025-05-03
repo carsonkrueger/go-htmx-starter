@@ -77,19 +77,15 @@ func upsert[PK any, R any](DAO DAO[PK, R], model *R, db qrm.Queryable) error {
 	}
 	conflictCols := DAO.OnConflictCols()
 	updateCols := DAO.UpdateOnConflictCols()
-	if len(updateCols) == 0 || len(conflictCols) == 0 {
-		return DAO.Table().
-			INSERT(DAO.UpdateCols()).
-			MODEL(model).
-			ON_CONFLICT().
-			DO_NOTHING().
-			Query(db, model)
-	}
-	return DAO.Table().
+	query := DAO.Table().
 		INSERT(DAO.UpdateCols()).
-		MODEL(model).
-		ON_CONFLICT(conflictCols...).
-		DO_UPDATE(postgres.SET(updateCols...)).
+		MODEL(model)
+	if len(updateCols) > 0 && len(conflictCols) > 0 {
+		query = query.
+			ON_CONFLICT(conflictCols...).
+			DO_UPDATE(postgres.SET(updateCols...))
+	}
+	return query.
 		RETURNING(DAO.AllCols()).
 		Query(db, model)
 }
@@ -103,19 +99,15 @@ func upsertMany[PK any, R any](DAO DAO[PK, R], models *[]*R, db qrm.Queryable) e
 	}
 	conflictCols := DAO.OnConflictCols()
 	updateCols := DAO.UpdateOnConflictCols()
-	if len(updateCols) == 0 || len(conflictCols) == 0 {
-		return DAO.Table().
-			INSERT(DAO.UpdateCols()).
-			MODELS(models).
-			ON_CONFLICT().
-			DO_NOTHING().
-			Query(db, models)
-	}
-	return DAO.Table().
+	query := DAO.Table().
 		INSERT(DAO.UpdateCols()).
-		MODELS(models).
-		ON_CONFLICT(conflictCols...).
-		DO_UPDATE(postgres.SET(updateCols...)).
+		MODELS(models)
+	if len(updateCols) > 0 && len(conflictCols) > 0 {
+		query = query.
+			ON_CONFLICT(conflictCols...).
+			DO_UPDATE(postgres.SET(updateCols...))
+	}
+	return query.
 		RETURNING(DAO.AllCols()).
 		Query(db, models)
 }

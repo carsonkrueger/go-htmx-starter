@@ -47,11 +47,17 @@ func (dao *privilegeLevelsPrivilegesDAO) AllCols() postgres.ColumnList {
 }
 
 func (dao *privilegeLevelsPrivilegesDAO) OnConflictCols() postgres.ColumnList {
-	return []postgres.Column{}
+	return []postgres.Column{
+		table.PrivilegeLevelsPrivileges.PrivilegeID,
+		table.PrivilegeLevelsPrivileges.PrivilegeLevelID,
+	}
 }
 
 func (dao *privilegeLevelsPrivilegesDAO) UpdateOnConflictCols() []postgres.ColumnAssigment {
-	return []postgres.ColumnAssigment{}
+	return []postgres.ColumnAssigment{
+		table.PrivilegeLevelsPrivileges.PrivilegeID.SET(table.PrivilegeLevelsPrivileges.PrivilegeID),
+		table.PrivilegeLevelsPrivileges.PrivilegeLevelID.SET(table.PrivilegeLevelsPrivileges.PrivilegeLevelID),
+	}
 }
 
 func (dao *privilegeLevelsPrivilegesDAO) PKMatch(pk authModels.PrivilegeLevelsPrivilegesPrimaryKey) postgres.BoolExpression {

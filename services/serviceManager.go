@@ -78,8 +78,7 @@ func (sm *serviceManager) UsersService() UsersService {
 
 func (sm *serviceManager) PrivilegesService() PrivilegesService {
 	if sm.privilegesService == nil {
-		cache := newPermissionCache()
-		sm.privilegesService = NewPrivilegesService(sm.svcCtx, cache)
+		sm.privilegesService = NewPrivilegesService(sm.svcCtx)
 	}
 	return sm.privilegesService
 }

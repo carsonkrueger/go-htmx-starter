@@ -7,7 +7,7 @@ import (
 	"github.com/carsonkrueger/main/tools"
 )
 
-func ApplyPermission(permissionName string, appCtx context.AppContext) func(next http.Handler) http.Handler {
+func ApplyPermission(privilegeID int64, appCtx context.AppContext) func(next http.Handler) http.Handler {
 	lgr := appCtx.Lgr("MW ApplyPermission")
 
 	return func(next http.Handler) http.Handler {
@@ -16,7 +16,7 @@ func ApplyPermission(permissionName string, appCtx context.AppContext) func(next
 
 			levelID := context.GetPrivilegeLevelID(ctx)
 			cache := appCtx.SM().PrivilegesService()
-			permitted := cache.HasPermissionByName(levelID, permissionName)
+			permitted := cache.HasPermissionByID(levelID, privilegeID)
 			if !permitted {
 				tools.HandleError(req, res, lgr, nil, 403, "Insufficient privileges")
 				return

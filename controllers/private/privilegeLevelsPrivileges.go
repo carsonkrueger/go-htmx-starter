@@ -78,7 +78,7 @@ func (r *privilegeLevelsPrivileges) privilegeLevelsPrivilegesPost(res http.Respo
 		return
 	}
 
-	if err = r.SM().PrivilegesService().AddPermission(levelInt, *priv); err != nil {
+	if err = r.SM().PrivilegesService().CreatePrivilegeAssociation(levelInt, priv.ID); err != nil {
 		tools.HandleError(req, res, lgr, err, 500, "Failed to add permission")
 		return
 	}
@@ -119,13 +119,7 @@ func (r *privilegeLevelsPrivileges) privilegeLevelsPrivilegesDelete(res http.Res
 		return
 	}
 
-	priv, err := r.DM().PrivilegeDAO().GetOne(privilegeInt, r.DB())
-	if err != nil || priv == nil {
-		tools.HandleError(req, res, lgr, err, 404, "Privilege not found")
-		return
-	}
-
-	if err := r.SM().PrivilegesService().RemovePermission(levelInt, *priv); err != nil {
+	if err := r.SM().PrivilegesService().DeletePrivilegeAssociation(levelInt, privilegeInt); err != nil {
 		tools.HandleError(req, res, lgr, err, 500, "Failed to remove permission")
 		return
 	}

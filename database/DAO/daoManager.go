@@ -77,6 +77,7 @@ type UsersDAO interface {
 type PrivilegeDAO interface {
 	DAO[int64, model.Privileges]
 	GetAllJoined() ([]authModels.JoinedPrivilegesRaw, error)
+	GetPrivilegesByLevelID(levelID int64) ([]model.PrivilegeLevels, error)
 }
 
 type SessionsDAO interface {
