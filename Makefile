@@ -64,6 +64,11 @@ migrate-generate:
 	@read -p "Enter migration name: " name; \
 	${MIGRATE_CMD} create -ext sql -dir migrations -seq $$name
 
+generate-service:
+	@echo "Enter camelCase service name: "; \
+	read service; \
+	go run . -service="$$service" genService
+
 generate-dao:
 	@echo "Enter camelCase table name: "; \
 	read table; \

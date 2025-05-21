@@ -8,14 +8,16 @@ func Execute(cmd string) {
 	switch cmd {
 	case "web":
 		web()
-// DB-START
+		// DB-START
 	case "seed":
 		seed()
 	case "genDAO":
 		generateDAO()
-// DB-END
+		// DB-END
 	case "genController":
 		generateController()
+	case "genService":
+		generateService()
 	default:
 		panic(fmt.Sprintf("Invalid cmd: %s", cmd))
 	}
