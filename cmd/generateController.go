@@ -102,16 +102,16 @@ func New%[2]s(ctx context.AppContext) *%[1]s {
 	}
 }
 
-func (um %[1]s) Path() string {
+func (r %[1]s) Path() string {
 	return "/%[1]s"
 }
 
-func (um *%[1]s) PrivateRoute(b *builders.PrivateRouteBuilder) {
-	b.NewHandle().Register(builders.GET, "/", um.%[1]sGet).SetPermissionName(%[2]sGet).Build()
-	b.NewHandle().Register(builders.POST, "/", um.%[1]sPost).SetPermissionName(%[2]sPost).Build()
-	b.NewHandle().Register(builders.PUT, "/", um.%[1]sPut).SetPermissionName(%[2]sPut).Build()
-	b.NewHandle().Register(builders.PATCH, "/", um.%[1]sPatch).SetPermissionName(%[2]sPatch).Build()
-	b.NewHandle().Register(builders.DELETE, "/", um.%[1]sDelete).SetPermissionName(%[2]sDelete).Build()
+func (r *%[1]s) PrivateRoute(b *builders.PrivateRouteBuilder) {
+	b.NewHandle().Register(builders.GET, "/", r.%[1]sGet).SetPermissionName(%[2]sGet).Build()
+	b.NewHandle().Register(builders.POST, "/", r.%[1]sPost).SetPermissionName(%[2]sPost).Build()
+	b.NewHandle().Register(builders.PUT, "/", r.%[1]sPut).SetPermissionName(%[2]sPut).Build()
+	b.NewHandle().Register(builders.PATCH, "/", r.%[1]sPatch).SetPermissionName(%[2]sPatch).Build()
+	b.NewHandle().Register(builders.DELETE, "/", r.%[1]sDelete).SetPermissionName(%[2]sDelete).Build()
 }
 
 func (r *%[1]s) %[1]sGet(res http.ResponseWriter, req *http.Request) {
