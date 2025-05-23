@@ -15,7 +15,7 @@ type privilegeLevelsPrivilegesDAO struct {
 	DAOBaseQueries[authModels.PrivilegeLevelsPrivilegesPrimaryKey, model.PrivilegeLevelsPrivileges]
 }
 
-func newPrivilegeLevelsPrivilegesDAO(db *sql.DB) *privilegeLevelsPrivilegesDAO {
+func NewPrivilegeLevelsPrivilegesDAO(db *sql.DB) *privilegeLevelsPrivilegesDAO {
 	dao := &privilegeLevelsPrivilegesDAO{
 		db:             db,
 		DAOBaseQueries: nil,

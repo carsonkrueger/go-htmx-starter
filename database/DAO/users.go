@@ -15,7 +15,7 @@ type usersDAO struct {
 	DAOBaseQueries[int64, model.Users]
 }
 
-func newUsersDAO(db *sql.DB) UsersDAO {
+func NewUsersDAO(db *sql.DB) UsersDAO {
 	dao := &usersDAO{
 		db:             db,
 		DAOBaseQueries: nil,

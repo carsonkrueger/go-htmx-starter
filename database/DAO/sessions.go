@@ -15,7 +15,7 @@ type sessionsDAO struct {
 	DAOBaseQueries[authModels.SessionsPrimaryKey, model.Sessions]
 }
 
-func newSessionsDAO(db *sql.DB) *sessionsDAO {
+func NewSessionsDAO(db *sql.DB) *sessionsDAO {
 	dao := &sessionsDAO{
 		db:             db,
 		DAOBaseQueries: nil,

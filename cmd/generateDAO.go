@@ -72,7 +72,7 @@ func generateDAO() {
 `, upperDAOName))
 	tools.InsertAt(daoMgrFilePath, "// INSERT INIT DAO", true, fmt.Sprintf(`func (dm *daoManager) %[1]s() %[1]s {
 	if dm.%[2]s == nil {
-		dm.%[2]s = new%[1]s(dm.db)
+		dm.%[2]s = New%[1]s(dm.db)
 	}
 	return dm.%[2]s
 }
@@ -101,7 +101,7 @@ type %[4]sDAO struct {
 	DAOBaseQueries[%[3]sPrimaryKey, model.%[3]s]
 }
 
-func new%[3]sDAO(db *sql.DB) *%[4]sDAO {
+func New%[3]sDAO(db *sql.DB) *%[4]sDAO {
 	dao := &%[4]sDAO{
 		db:              db,
 		DAOBaseQueries: nil,

@@ -14,7 +14,7 @@ type privilegeLevelsDAO struct {
 	DAOBaseQueries[int64, model.PrivilegeLevels]
 }
 
-func newPrivilegeLevelsDAO(db *sql.DB) *privilegeLevelsDAO {
+func NewPrivilegeLevelsDAO(db *sql.DB) *privilegeLevelsDAO {
 	dao := &privilegeLevelsDAO{
 		db:             db,
 		DAOBaseQueries: nil,
