@@ -32,13 +32,15 @@ func generateController() {
 		os.Exit(1)
 	}
 
+	snakeCase := tools.ToSnakeCase(*controller)
+
 	var filePath string
 	// DB-START
 	if *private {
-		filePath = fmt.Sprintf("%s/controllers/private/%s.go", wd, *controller)
+		filePath = fmt.Sprintf("%s/controllers/private/%s.go", wd, snakeCase)
 	} else {
 		// DB-END
-		filePath = fmt.Sprintf("%s/controllers/public/%s.go", wd, *controller)
+		filePath = fmt.Sprintf("%s/controllers/public/%s.go", wd, snakeCase)
 		// DB-START
 	}
 	// DB-END
@@ -81,7 +83,7 @@ func generateController() {
 		newContent = fmt.Sprintf("\t\t\tpublic.New%s(ctx),", upper)
 	}
 
-	appRouterPath := fmt.Sprintf("%s/router/appRouter.go", wd)
+	appRouterPath := fmt.Sprintf("%s/router/app_router.go", wd)
 	tools.InsertAt(appRouterPath, marker, true, newContent)
 }
 
@@ -122,11 +124,11 @@ func (r %[1]s) Path() string {
 }
 
 func (r *%[1]s) PrivateRoute(b *builders.PrivateRouteBuilder) {
-	b.NewHandle().Register(builders.GET, "/", r.%[1]sGet).SetPermissionName(%[2]sGet).Build()
-	b.NewHandle().Register(builders.POST, "/", r.%[1]sPost).SetPermissionName(%[2]sPost).Build()
-	b.NewHandle().Register(builders.PUT, "/", r.%[1]sPut).SetPermissionName(%[2]sPut).Build()
-	b.NewHandle().Register(builders.PATCH, "/", r.%[1]sPatch).SetPermissionName(%[2]sPatch).Build()
-	b.NewHandle().Register(builders.DELETE, "/", r.%[1]sDelete).SetPermissionName(%[2]sDelete).Build()
+	b.NewHandler().Register(builders.GET, "/", r.%[1]sGet).SetPermissionName(%[2]sGet).Build()
+	b.NewHandler().Register(builders.POST, "/", r.%[1]sPost).SetPermissionName(%[2]sPost).Build()
+	b.NewHandler().Register(builders.PUT, "/", r.%[1]sPut).SetPermissionName(%[2]sPut).Build()
+	b.NewHandler().Register(builders.PATCH, "/", r.%[1]sPatch).SetPermissionName(%[2]sPatch).Build()
+	b.NewHandler().Register(builders.DELETE, "/", r.%[1]sDelete).SetPermissionName(%[2]sDelete).Build()
 }
 
 func (r *%[1]s) %[1]sGet(res http.ResponseWriter, req *http.Request) {

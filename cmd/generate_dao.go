@@ -14,8 +14,8 @@ import (
 )
 
 func generateDAO() {
-	table := flag.String("table", "", "camelCase Name of the DAO")
-	schema := flag.String("schema", "", "camelCase Schema Name of the DAO")
+	table := flag.String("table", "", "camelCase name of the table")
+	schema := flag.String("schema", "", "camelCase name of the schema name")
 	flag.Parse()
 
 	// lower first letter of table name
@@ -39,8 +39,10 @@ func generateDAO() {
 		os.Exit(1)
 	}
 
-	daoMgrFilePath := fmt.Sprintf("%s/database/DAO/daoManager.go", wd)
-	daoFilePath := fmt.Sprintf("%s/database/DAO/%s.go", wd, *table)
+	snakeCaseTable := tools.ToSnakeCase(*table)
+
+	daoMgrFilePath := fmt.Sprintf("%s/database/daos/dao_manager.go", wd)
+	daoFilePath := fmt.Sprintf("%s/database/daos/%s.go", wd, snakeCaseTable)
 	if err := os.MkdirAll(path.Dir(daoFilePath), 0755); err != nil {
 		lgr.Error("failed to create directory", zap.Error(err))
 		os.Exit(1)
@@ -83,7 +85,7 @@ func daoFileContents(dbName, schema, table string) string {
 	// upperSchema := tools.ToUpperFirst(schema)
 	upperTable := tools.ToUpperFirst(table)
 
-	return fmt.Sprintf(`package DAO
+	return fmt.Sprintf(`package daos
 
 import (
 	"database/sql"

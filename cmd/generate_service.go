@@ -29,7 +29,9 @@ func generateService() {
 		os.Exit(1)
 	}
 
-	filePath := fmt.Sprintf("%s/services/%s.go", wd, *service)
+	snakeCaseService := tools.ToSnakeCase(*service)
+
+	filePath := fmt.Sprintf("%s/services/%s.go", wd, snakeCaseService)
 	if err := os.MkdirAll(path.Dir(filePath), 0755); err != nil {
 		lgr.Error("failed to create directory", zap.Error(err))
 		os.Exit(1)
@@ -50,7 +52,7 @@ func generateService() {
 
 	upperSvcName := tools.ToUpperFirst(*service) + "Service"
 	svcName := tools.ToLowerFirst(*service) + "Service"
-	serviceMgrPath := fmt.Sprintf("%s/services/serviceManager.go", wd)
+	serviceMgrPath := fmt.Sprintf("%s/services/service_manager.go", wd)
 
 	tools.InsertAt(serviceMgrPath, "// INSERT GET SERVICE", true, fmt.Sprintf("\t%s() %s", upperSvcName, upperSvcName))
 	tools.InsertAt(serviceMgrPath, "// INSERT SERVICE", true, fmt.Sprintf("\t%s %s", svcName, upperSvcName))
