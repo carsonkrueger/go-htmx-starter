@@ -67,9 +67,9 @@ func generateDAO() {
 	tools.InsertAt(daoMgrFilePath, "// INSERT GET DAO", true, fmt.Sprintf("\t%s() %s", upperDAOName, upperDAOName))
 	tools.InsertAt(daoMgrFilePath, "// INSERT DAO", true, fmt.Sprintf("\t%s %s", daoName, upperDAOName))
 	tools.InsertAt(daoMgrFilePath, "// INSERT INTERFACE DAO", true, fmt.Sprintf(`type %[1]s interface {
-	DAO[int64, model.%[1]s]
+	DAO[int64, model.%[2]s]
 }
-`, upperDAOName))
+`, upperDAOName, upper))
 	tools.InsertAt(daoMgrFilePath, "// INSERT INIT DAO", true, fmt.Sprintf(`func (dm *daoManager) %[1]s() %[1]s {
 	if dm.%[2]s == nil {
 		dm.%[2]s = New%[1]s(dm.db)
