@@ -5,7 +5,7 @@ import (
 
 	"github.com/carsonkrueger/main/cfg"
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/database/DAO"
+	"github.com/carsonkrueger/main/database/daos"
 	"github.com/carsonkrueger/main/logger"
 	"github.com/carsonkrueger/main/router"
 	"github.com/carsonkrueger/main/services"
@@ -17,7 +17,7 @@ func web() {
 	cfg := cfg.LoadConfig()
 	lgr := logger.NewLogger(&cfg)
 
-// DB-START
+	// DB-START
 	db, err := sql.Open("postgres", cfg.DbUrl())
 	defer db.Close()
 	if err != nil {
@@ -27,16 +27,16 @@ func web() {
 		panic("Database connection is nil")
 	}
 
-	dm := DAO.NewDAOManager(db)
-// DB-END
+	dm := daos.NewDAOManager(db)
+	// DB-END
 	sm := services.NewServiceManager(nil)
 	appCtx := context.NewAppContext(
 		lgr,
 		sm,
-// DB-START
+		// DB-START
 		dm,
 		db,
-// DB-END
+		// DB-END
 	)
 	sm.SetAppContext(appCtx)
 	defer appCtx.CleanUp()

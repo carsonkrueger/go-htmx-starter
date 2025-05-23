@@ -2,12 +2,12 @@ package pages
 
 import (
 	"github.com/carsonkrueger/main/templates/datainput"
-	"github.com/carsonkrueger/main/templates/pageLayouts"
-	"github.com/carsonkrueger/main/templates/partialLayouts"
+	"github.com/carsonkrueger/main/templates/page_layouts"
+	"github.com/carsonkrueger/main/templates/partial_layouts"
 )
 
 templ Signup() {
-	@partialLayouts.CenteredLayout() {
+	@partial_layouts.CenteredLayout() {
 		<div class="p-4 max-w-96 w-full">
 			<h2 class="text-2xl font-bold text-center mb-10">Sign Up</h2>
 			<form
@@ -38,7 +38,7 @@ templ Signup() {
 						hx-post="/signup"
 						type="button"
 						class="px-3 py-2 border-[1px] border-primary text-primary font-bold py-2 rounded-xl transition cursor-pointer"
-						hx-target={ "#" + pageLayouts.MainContentID }
+						hx-target={ "#" + page_layouts.MainContentID }
 						hx-target-422="#response"
 						hx-swap="innerHTML"
 						hx-push-url="true"

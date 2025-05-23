@@ -1,8 +1,6 @@
-package pageLayouts
+package page_layouts
 
-import (
-	"fmt"
-)
+import "fmt"
 
 const TabContentID = "tab-content"
 
@@ -14,37 +12,37 @@ type TabModel struct {
 
 templ Tabs(tabs []TabModel, selectedTabIndex int) {
 	<div class="flex text-lg shadow-md">
-			for i, tab := range tabs {
-				{{
+		for i, tab := range tabs {
+			{{
 					class := "border-b-transparent"
 					selected := i == selectedTabIndex
 					if selected {
 						class = "border-b-secondary"
 					}
 					id := fmt.Sprintf("tab-%s", tab.HxGet)
-				}}
-				<div>
-					<label
-						for={ id }
-						class={"tab cursor-pointer p-3 min-w-56 flex justify-center items-center border-b-[2px] " + class}
-						hx-get={ tab.HxGet }
-						hx-target={ "#"+TabContentID }
-						if tabs[i].PushUrl {
-							hx-push-url="true"
-						}
-						hx-trigger="click"
-						hx-swap="innerHTML"
-					>
-						{ tab.Title }
-					</label>
-					<input
-						id={ id }
-						type="radio"
-						class="hidden"
-						if selected {
-							checked
-						}
-						_="
+			}}
+			<div>
+				<label
+					for={ id }
+					class={ "tab cursor-pointer p-3 min-w-56 flex justify-center items-center border-b-[2px] " + class }
+					hx-get={ tab.HxGet }
+					hx-target={ "#" + TabContentID }
+					if tabs[i].PushUrl {
+						hx-push-url="true"
+					}
+					hx-trigger="click"
+					hx-swap="innerHTML"
+				>
+					{ tab.Title }
+				</label>
+				<input
+					id={ id }
+					type="radio"
+					class="hidden"
+					if selected {
+						checked
+					}
+					_="
 						on click
 							remove .border-b-secondary from .tab then
 							add .border-b-transparent to .tab then
@@ -52,9 +50,9 @@ templ Tabs(tabs []TabModel, selectedTabIndex int) {
 							remove .border-b-transparent from previous <label/>
 						end
 						"
-					/>
-				</div>
-			}
+				/>
+			</div>
+		}
 	</div>
 	<div
 		id={ TabContentID }
@@ -62,11 +60,11 @@ templ Tabs(tabs []TabModel, selectedTabIndex int) {
 	>
 		<div
 			hx-trigger="load"
-			hx-target={ "#"+TabContentID }
+			hx-target={ "#" + TabContentID }
 			hx-swap="innerHTML"
 			if selectedTabIndex < len(tabs) && selectedTabIndex >= 0 {
 				hx-get={ tabs[selectedTabIndex].HxGet }
 			}
-		/>
+		></div>
 	</div>
 }

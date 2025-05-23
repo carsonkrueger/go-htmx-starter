@@ -4,21 +4,21 @@ import (
 	"net/http"
 
 	"github.com/a-h/templ"
-	"github.com/carsonkrueger/main/templates/pageLayouts"
+	"github.com/carsonkrueger/main/templates/page_layouts"
 	"github.com/carsonkrueger/main/tools"
 )
 
-func Tab(req *http.Request, tabModels []pageLayouts.TabModel, selectedTabIndex int, tabContent templ.Component) templ.Component {
+func Tab(req *http.Request, tabModels []page_layouts.TabModel, selectedTabIndex int, tabContent templ.Component) templ.Component {
 	hxRequest := tools.IsHxRequest(req)
 	target := req.Header.Get("HX-Target")
-	if target == pageLayouts.TabContentID {
+	if target == page_layouts.TabContentID {
 		return tabContent
 	}
-	content := pageLayouts.Tabs(tabModels, selectedTabIndex)
-	if target == pageLayouts.MainContentID {
+	content := page_layouts.Tabs(tabModels, selectedTabIndex)
+	if target == page_layouts.MainContentID {
 		return content
 	} else if !hxRequest {
-		content = pageLayouts.Index(pageLayouts.MainPageLayout(content))
+		content = page_layouts.Index(page_layouts.MainPageLayout(content))
 	}
 	return content
 }

@@ -7,7 +7,7 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
-	"github.com/carsonkrueger/main/models/authModels"
+	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/datainput"
 	"github.com/carsonkrueger/main/templates/partials"
@@ -56,7 +56,7 @@ func (ps *privilegesService) CreateLevel(name string) error {
 }
 
 func (ps *privilegesService) HasPermissionByID(levelID int64, permissionID int64) bool {
-	pk := authModels.PrivilegeLevelsPrivilegesPrimaryKey{
+	pk := auth_models.PrivilegeLevelsPrivilegesPrimaryKey{
 		PrivilegeID:      permissionID,
 		PrivilegeLevelID: levelID,
 	}
@@ -68,7 +68,7 @@ func (ps *privilegesService) DeletePrivilegeAssociation(levelID int64, privID in
 	lgr := ps.Lgr("DeletePrivilegeAssociation")
 	lgr.Info("Called")
 
-	pk := authModels.PrivilegeLevelsPrivilegesPrimaryKey{
+	pk := auth_models.PrivilegeLevelsPrivilegesPrimaryKey{
 		PrivilegeID:      privID,
 		PrivilegeLevelID: levelID,
 	}
@@ -107,7 +107,7 @@ func (us *privilegesService) SetUserPrivilegeLevel(levelID int64, userID int64) 
 	return nil
 }
 
-func (us *privilegesService) UserPrivilegeLevelJoinAsRowData(upl []authModels.UserPrivilegeLevelJoin, allLevels []*model.PrivilegeLevels) []datadisplay.RowData {
+func (us *privilegesService) UserPrivilegeLevelJoinAsRowData(upl []auth_models.UserPrivilegeLevelJoin, allLevels []*model.PrivilegeLevels) []datadisplay.RowData {
 	levelOptions := make([]datainput.SelectOptions, len(allLevels))
 	for i, level := range allLevels {
 		levelOptions[i].Label = level.Name
@@ -155,7 +155,7 @@ func (us *privilegesService) UserPrivilegeLevelJoinAsRowData(upl []authModels.Us
 	return rows
 }
 
-func (us *privilegesService) JoinedPrivilegeLevelAsRowData(jpl []authModels.JoinedPrivilegeLevel) []datadisplay.RowData {
+func (us *privilegesService) JoinedPrivilegeLevelAsRowData(jpl []auth_models.JoinedPrivilegeLevel) []datadisplay.RowData {
 	rows := make([]datadisplay.RowData, len(jpl))
 	for i, j := range jpl {
 		rows[i] = datadisplay.RowData{
@@ -182,7 +182,7 @@ func (us *privilegesService) JoinedPrivilegeLevelAsRowData(jpl []authModels.Join
 	return rows
 }
 
-func (us *privilegesService) JoinedPrivilegesAsRowData(jpl []authModels.JoinedPrivilegesRaw) []datadisplay.RowData {
+func (us *privilegesService) JoinedPrivilegesAsRowData(jpl []auth_models.JoinedPrivilegesRaw) []datadisplay.RowData {
 	rows := make([]datadisplay.RowData, len(jpl))
 	for i, p := range jpl {
 		ca := p.PrivilegeCreatedAt

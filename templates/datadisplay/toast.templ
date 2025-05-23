@@ -3,7 +3,7 @@ package datadisplay
 import (
 	"fmt"
 
-	"github.com/carsonkrueger/main/templates/pageLayouts"
+	"github.com/carsonkrueger/main/templates/page_layouts"
 )
 
 templ AddToast(variant NotificationVariant, template templ.Component, durationSeconds int) {
@@ -50,13 +50,13 @@ templ toast(variant NotificationVariant, durationSeconds int) {
 		}
 	}}
 	<div
-		hx-swap-oob={"beforeend:#"+pageLayouts.GlobalToastID}
+		hx-swap-oob={ "beforeend:#" + page_layouts.GlobalToastID }
 	>
 		<div
-			class={"relative p-3 pr-7 text-sm text-white rounded-sm shadow-sm flex items-center cursor-default w-fit "+class}
-			_={durationHyperscript + " on click remove me"}
+			class={ "relative p-3 pr-7 text-sm text-white rounded-sm shadow-sm flex items-center cursor-default w-fit " + class }
+			_={ durationHyperscript + " on click remove me" }
 		>
-			{children...}
+			{ children... }
 			<button
 				type="button"
 				class="cursor-pointer absolute right-2 self-center"

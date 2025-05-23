@@ -1,11 +1,11 @@
-package DAO
+package daos
 
 import (
 	"time"
 
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/models"
-	"github.com/carsonkrueger/main/models/authModels"
+	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/go-jet/jet/v2/postgres"
 	"github.com/go-jet/jet/v2/qrm"
 
@@ -72,17 +72,17 @@ type UsersDAO interface {
 	DAO[int64, model.Users]
 	GetByEmail(email string) (*model.Users, error)
 	GetPrivilegeLevelID(id int64) (*int64, error)
-	GetUserPrivilegeJoinAll() (*[]authModels.UserPrivilegeLevelJoin, error)
+	GetUserPrivilegeJoinAll() (*[]auth_models.UserPrivilegeLevelJoin, error)
 }
 
 type PrivilegeDAO interface {
 	DAO[int64, model.Privileges]
-	GetAllJoined() ([]authModels.JoinedPrivilegesRaw, error)
+	GetAllJoined() ([]auth_models.JoinedPrivilegesRaw, error)
 	GetPrivilegesByLevelID(levelID int64) ([]model.PrivilegeLevels, error)
 }
 
 type SessionsDAO interface {
-	DAO[authModels.SessionsPrimaryKey, model.Sessions]
+	DAO[auth_models.SessionsPrimaryKey, model.Sessions]
 }
 
 type PrivilegeLevelsDAO interface {
@@ -90,7 +90,7 @@ type PrivilegeLevelsDAO interface {
 }
 
 type PrivilegeLevelsPrivilegesDAO interface {
-	DAO[authModels.PrivilegeLevelsPrivilegesPrimaryKey, model.PrivilegeLevelsPrivileges]
+	DAO[auth_models.PrivilegeLevelsPrivilegesPrimaryKey, model.PrivilegeLevelsPrivileges]
 }
 
 // INSERT INTERFACE DAO

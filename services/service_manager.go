@@ -3,9 +3,9 @@ package services
 import (
 	"database/sql"
 
-	"github.com/carsonkrueger/main/database/DAO"
+	"github.com/carsonkrueger/main/database/daos"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
-	"github.com/carsonkrueger/main/models/authModels"
+	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"go.uber.org/zap"
 )
@@ -14,7 +14,7 @@ type ServiceContext interface {
 	Lgr(name string) *zap.Logger
 	SM() ServiceManager
 	// DB-START
-	DM() DAO.DAOManager
+	DM() daos.DAOManager
 	DB() *sql.DB
 	// DB-END
 }
@@ -23,7 +23,7 @@ type appContext struct {
 	Lgr *zap.Logger
 	SM  ServiceManager
 	// DB-START
-	DM DAO.DAOManager
+	DM daos.DAOManager
 	DB *sql.DB
 	// DB-END
 }
@@ -32,7 +32,7 @@ func NewAppContext(
 	lgr *zap.Logger,
 	sm ServiceManager,
 	// DB-START
-	dm DAO.DAOManager,
+	dm daos.DAOManager,
 	db *sql.DB,
 	// DB-END
 ) *appContext {
@@ -60,9 +60,9 @@ type PrivilegesService interface {
 	CreateLevel(name string) error
 	HasPermissionByID(levelID int64, permissionID int64) bool
 	SetUserPrivilegeLevel(levelID int64, userID int64) error
-	UserPrivilegeLevelJoinAsRowData(upl []authModels.UserPrivilegeLevelJoin, allLevels []*model.PrivilegeLevels) []datadisplay.RowData
-	JoinedPrivilegeLevelAsRowData(jpl []authModels.JoinedPrivilegeLevel) []datadisplay.RowData
-	JoinedPrivilegesAsRowData(jpl []authModels.JoinedPrivilegesRaw) []datadisplay.RowData
+	UserPrivilegeLevelJoinAsRowData(upl []auth_models.UserPrivilegeLevelJoin, allLevels []*model.PrivilegeLevels) []datadisplay.RowData
+	JoinedPrivilegeLevelAsRowData(jpl []auth_models.JoinedPrivilegeLevel) []datadisplay.RowData
+	JoinedPrivilegesAsRowData(jpl []auth_models.JoinedPrivilegesRaw) []datadisplay.RowData
 }
 
 // INSERT INTERFACE SERVICE

@@ -1,4 +1,4 @@
-package DAO
+package daos
 
 import (
 	"database/sql"
@@ -6,13 +6,13 @@ import (
 
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
-	"github.com/carsonkrueger/main/models/authModels"
+	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
 type privilegeLevelsPrivilegesDAO struct {
 	db *sql.DB
-	DAOBaseQueries[authModels.PrivilegeLevelsPrivilegesPrimaryKey, model.PrivilegeLevelsPrivileges]
+	DAOBaseQueries[auth_models.PrivilegeLevelsPrivilegesPrimaryKey, model.PrivilegeLevelsPrivileges]
 }
 
 func NewPrivilegeLevelsPrivilegesDAO(db *sql.DB) *privilegeLevelsPrivilegesDAO {
@@ -20,7 +20,7 @@ func NewPrivilegeLevelsPrivilegesDAO(db *sql.DB) *privilegeLevelsPrivilegesDAO {
 		db:             db,
 		DAOBaseQueries: nil,
 	}
-	queries := newDAOQueryable[authModels.PrivilegeLevelsPrivilegesPrimaryKey, model.PrivilegeLevelsPrivileges](dao)
+	queries := newDAOQueryable[auth_models.PrivilegeLevelsPrivilegesPrimaryKey, model.PrivilegeLevelsPrivileges](dao)
 	dao.DAOBaseQueries = &queries
 	return dao
 }
@@ -60,7 +60,7 @@ func (dao *privilegeLevelsPrivilegesDAO) UpdateOnConflictCols() []postgres.Colum
 	}
 }
 
-func (dao *privilegeLevelsPrivilegesDAO) PKMatch(pk authModels.PrivilegeLevelsPrivilegesPrimaryKey) postgres.BoolExpression {
+func (dao *privilegeLevelsPrivilegesDAO) PKMatch(pk auth_models.PrivilegeLevelsPrivilegesPrimaryKey) postgres.BoolExpression {
 	return table.PrivilegeLevelsPrivileges.
 		PrivilegeID.EQ(postgres.Int(pk.PrivilegeID)).
 		AND(table.PrivilegeLevelsPrivileges.PrivilegeLevelID.EQ(postgres.Int(pk.PrivilegeLevelID)))

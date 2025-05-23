@@ -1,4 +1,4 @@
-package authModels
+package auth_models
 
 import (
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"

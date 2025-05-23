@@ -7,7 +7,7 @@ import (
 	"github.com/a-h/templ"
 	"github.com/carsonkrueger/main/builders"
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/models/authModels"
+	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/tools"
 	"github.com/go-chi/chi/v5"
@@ -84,7 +84,7 @@ func (r *privilegeLevelsPrivileges) privilegeLevelsPrivilegesPost(res http.Respo
 	}
 
 	if tools.IsHxRequest(req) {
-		jpl := []authModels.JoinedPrivilegesRaw{
+		jpl := []auth_models.JoinedPrivilegesRaw{
 			{
 				LevelID:            levelInt,
 				LevelName:          lvl.Name,

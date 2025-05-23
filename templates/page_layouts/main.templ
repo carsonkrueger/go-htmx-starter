@@ -1,4 +1,4 @@
-package pageLayouts
+package page_layouts
 
 templ MainPageLayout(main templ.Component) {
 	@BasePageLayout() {
@@ -9,18 +9,17 @@ templ MainPageLayout(main templ.Component) {
 					<div class="flex gap-4">
 						<a href="https://github.com/carsonkrueger/go-htmx-starter" class="text-white hover:underline">GitHub Repo</a>
 						<a
-      						hx-get="/login"
-           					hx-target={ "#" + MainContentID }
-           					hx-swap="innerHTML"
-           					hx-push-url="true"
-                			class="hover:underline cursor-pointer"
-      					>
-         					Login
-         				</a>
+							hx-get="/login"
+							hx-target={ "#" + MainContentID }
+							hx-swap="innerHTML"
+							hx-push-url="true"
+							class="hover:underline cursor-pointer"
+						>
+							Login
+						</a>
 					</div>
 				</div>
 			</header>
-
 			@MainContent() {
 				@main
 			}

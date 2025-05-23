@@ -6,7 +6,7 @@ import (
 	"github.com/carsonkrueger/main/builders"
 	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/templates/datadisplay"
-	"github.com/carsonkrueger/main/templates/pageLayouts"
+	"github.com/carsonkrueger/main/templates/page_layouts"
 	"github.com/carsonkrueger/main/templates/pages"
 	"github.com/carsonkrueger/main/tools"
 	"github.com/carsonkrueger/main/tools/render"
@@ -18,7 +18,7 @@ const (
 	UserManagementLevelsGet = "UserManagementLevelsGet"
 )
 
-var UserManagementTabModels = []pageLayouts.TabModel{
+var UserManagementTabModels = []page_layouts.TabModel{
 	{Title: "Users", PushUrl: true, HxGet: "/user_management/users"},
 	{Title: "Privilege Levels", PushUrl: true, HxGet: "/user_management/levels"},
 }

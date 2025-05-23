@@ -142,7 +142,7 @@ remove-db-files:
 	rm -rf ./interfaces/dao.go
 	rm -rf ./middlewares
 	rm -rf ./migrations
-	rm -rf ./models/authModels
+	rm -rf ./models/auth_models
 	rm -f ./models/database.go
 	rm -rf ./seeders
 	rm -rf ./constant

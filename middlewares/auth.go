@@ -5,7 +5,7 @@ import (
 
 	"github.com/carsonkrueger/main/constant"
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/models/authModels"
+	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/carsonkrueger/main/tools"
 )
 
@@ -34,7 +34,7 @@ func EnforceAuth(appCtx context.AppContext) func(next http.Handler) http.Handler
 				return
 			}
 
-			key := authModels.SessionsPrimaryKey{
+			key := auth_models.SessionsPrimaryKey{
 				UserID:    id,
 				AuthToken: token,
 			}

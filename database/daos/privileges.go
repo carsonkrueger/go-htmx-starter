@@ -1,4 +1,4 @@
-package DAO
+package daos
 
 import (
 	"database/sql"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
-	"github.com/carsonkrueger/main/models/authModels"
+	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
@@ -66,8 +66,8 @@ func (dao *privilegesDAO) GetUpdatedAt(row *model.Privileges) *time.Time {
 	return row.UpdatedAt
 }
 
-func (dao *privilegesDAO) GetAllJoined() ([]authModels.JoinedPrivilegesRaw, error) {
-	var res []authModels.JoinedPrivilegesRaw
+func (dao *privilegesDAO) GetAllJoined() ([]auth_models.JoinedPrivilegesRaw, error) {
+	var res []auth_models.JoinedPrivilegesRaw
 
 	err := table.PrivilegeLevels.
 		SELECT(

@@ -8,7 +8,7 @@ import (
 
 	"github.com/carsonkrueger/main/constant"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
-	"github.com/carsonkrueger/main/models/authModels"
+	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/carsonkrueger/main/tools"
 	"go.uber.org/zap"
 )
@@ -68,7 +68,7 @@ func (us *usersService) Logout(id int64, token string) error {
 	lgr := us.Lgr("Logout")
 	lgr.Info("Logging out", zap.Int64("user id", id))
 
-	key := authModels.SessionsPrimaryKey{
+	key := auth_models.SessionsPrimaryKey{
 		UserID:    id,
 		AuthToken: token,
 	}

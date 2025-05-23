@@ -6,7 +6,7 @@ import (
 	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/templates/datadisplay"
-	"github.com/carsonkrueger/main/templates/pageLayouts"
+	"github.com/carsonkrueger/main/templates/page_layouts"
 	"github.com/carsonkrueger/main/templates/pages"
 	"github.com/carsonkrueger/main/tools"
 	"github.com/carsonkrueger/main/tools/validate"
@@ -90,7 +90,7 @@ func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
 	page := pages.Login()
 	// If not hx request then user just arrived. Give them the index.html
 	if !hxRequest {
-		page = pageLayouts.Index(pageLayouts.MainPageLayout(page))
+		page = page_layouts.Index(page_layouts.MainPageLayout(page))
 	}
 	page.Render(ctx, res)
 }
@@ -103,7 +103,7 @@ func (s *signUp) getSignup(res http.ResponseWriter, req *http.Request) {
 	page := pages.Signup()
 	// If not hx request then user just arrived. Give them the index.html
 	if !hxRequest {
-		page = pageLayouts.Index(pageLayouts.MainPageLayout(page))
+		page = page_layouts.Index(page_layouts.MainPageLayout(page))
 	}
 	page.Render(ctx, res)
 }
