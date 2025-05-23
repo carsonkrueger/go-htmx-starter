@@ -68,6 +68,21 @@ func generateController() {
 	}
 	io.WriteString(file, contents)
 	file.Close()
+
+	upper := tools.ToUpperFirst(*controller)
+
+	marker := ""
+	newContent := ""
+	if *private {
+		marker = "// INSERT PRIVATE"
+		newContent = fmt.Sprintf("\t\t\tprivate.New%s(ctx),", upper)
+	} else {
+		marker = "// INSERT PUBLIC"
+		newContent = fmt.Sprintf("\t\t\tpublic.New%s(ctx),", upper)
+	}
+
+	appRouterPath := fmt.Sprintf("%s/router/appRouter.go", wd)
+	tools.InsertAt(appRouterPath, marker, true, newContent)
 }
 
 // DB-START

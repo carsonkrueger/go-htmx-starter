@@ -3,7 +3,6 @@ package tools
 import (
 	"bufio"
 	"bytes"
-	"fmt"
 	"os"
 	"strings"
 )
@@ -29,8 +28,6 @@ func InsertAt(filePath, search string, before bool, newContent string) error {
 		// If we find the comment, append the new content on the next line
 		if strings.TrimSpace(line) == search {
 			newLines = append(newLines, newContent)
-		} else {
-			fmt.Println(strings.TrimSpace(line))
 		}
 
 		if before {
