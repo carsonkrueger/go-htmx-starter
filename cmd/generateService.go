@@ -47,6 +47,23 @@ func generateService() {
 	}
 	io.WriteString(file, contents)
 	file.Close()
+
+	upperSvcName := tools.ToUpperFirst(*service) + "Service"
+	svcName := tools.ToLowerFirst(*service) + "Service"
+	serviceMgrPath := fmt.Sprintf("%s/services/serviceManager.go", wd)
+
+	tools.InsertAt(serviceMgrPath, "// INSERT GET SERVICE", true, fmt.Sprintf("\t%s() %s", upperSvcName, upperSvcName))
+	tools.InsertAt(serviceMgrPath, "// INSERT SERVICE", true, fmt.Sprintf("\t%s %s", svcName, upperSvcName))
+	tools.InsertAt(serviceMgrPath, "// INSERT INTERFACE SERVICE", true, fmt.Sprintf(`type %[1]s interface {
+}
+`, upperSvcName))
+	tools.InsertAt(serviceMgrPath, "// INSERT INIT SERVICE", true, fmt.Sprintf(`func (sm *serviceManager) %[1]s() %[1]s {
+	if sm.%[2]s == nil {
+		sm.%[2]s = New%[1]s(sm.svcCtx)
+	}
+	return sm.%[2]s
+}
+`, upperSvcName, svcName))
 }
 
 func ServiceFileContents(name string) string {
@@ -55,15 +72,12 @@ func ServiceFileContents(name string) string {
 
 	return fmt.Sprintf(`package services
 
-type %[2]sService interface {
-}
-
-type %[1]s struct {
+type %[1]sService struct {
 	ServiceContext
 }
 
-func New%[2]sService(ctx ServiceContext) *%[1]s {
-	return &%[1]s{
+func New%[2]sService(ctx ServiceContext) *%[1]sService {
+	return &%[1]sService{
 		ServiceContext: ctx,
 	}
 }

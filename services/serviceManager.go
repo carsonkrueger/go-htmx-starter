@@ -4,6 +4,9 @@ import (
 	"database/sql"
 
 	"github.com/carsonkrueger/main/database/DAO"
+	"github.com/carsonkrueger/main/gen/go_db/auth/model"
+	"github.com/carsonkrueger/main/models/authModels"
+	"github.com/carsonkrueger/main/templates/datadisplay"
 	"go.uber.org/zap"
 )
 
@@ -48,14 +51,29 @@ type ServiceManager interface {
 	UsersService() UsersService
 	PrivilegesService() PrivilegesService
 	// DB-END
+	// INSERT GET SERVICE
 }
 
+type PrivilegesService interface {
+	CreatePrivilegeAssociation(levelID int64, privID int64) error
+	DeletePrivilegeAssociation(levelID int64, privID int64) error
+	CreateLevel(name string) error
+	HasPermissionByID(levelID int64, permissionID int64) bool
+	SetUserPrivilegeLevel(levelID int64, userID int64) error
+	UserPrivilegeLevelJoinAsRowData(upl []authModels.UserPrivilegeLevelJoin, allLevels []*model.PrivilegeLevels) []datadisplay.RowData
+	JoinedPrivilegeLevelAsRowData(jpl []authModels.JoinedPrivilegeLevel) []datadisplay.RowData
+	JoinedPrivilegesAsRowData(jpl []authModels.JoinedPrivilegesRaw) []datadisplay.RowData
+}
+
+// INSERT INTERFACE SERVICE
+
 type serviceManager struct {
+	svcCtx ServiceContext
 	// DB-START
 	usersService      UsersService
 	privilegesService PrivilegesService
 	// DB-END
-	svcCtx ServiceContext
+	// INSERT SERVICE
 }
 
 func NewServiceManager(svcCtx ServiceContext) *serviceManager {
@@ -84,3 +102,5 @@ func (sm *serviceManager) PrivilegesService() PrivilegesService {
 }
 
 // DB-END
+
+// INSERT INIT SERVICE

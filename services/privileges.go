@@ -14,17 +14,6 @@ import (
 	"go.uber.org/zap"
 )
 
-type PrivilegesService interface {
-	CreatePrivilegeAssociation(levelID int64, privID int64) error
-	DeletePrivilegeAssociation(levelID int64, privID int64) error
-	CreateLevel(name string) error
-	HasPermissionByID(levelID int64, permissionID int64) bool
-	SetUserPrivilegeLevel(levelID int64, userID int64) error
-	UserPrivilegeLevelJoinAsRowData(upl []authModels.UserPrivilegeLevelJoin, allLevels []*model.PrivilegeLevels) []datadisplay.RowData
-	JoinedPrivilegeLevelAsRowData(jpl []authModels.JoinedPrivilegeLevel) []datadisplay.RowData
-	JoinedPrivilegesAsRowData(jpl []authModels.JoinedPrivilegesRaw) []datadisplay.RowData
-}
-
 type privilegesService struct {
 	ServiceContext
 }
