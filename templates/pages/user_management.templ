@@ -1,8 +1,6 @@
 package pages
 
-import (
-	"github.com/carsonkrueger/main/templates/datadisplay"
-)
+import "github.com/carsonkrueger/main/templates/datadisplay"
 
 templ UserManagement() {
 	<div>
@@ -83,13 +81,13 @@ templ UserManagementLevels(data []datadisplay.RowData) {
 				hx-target="this"
 				hx-swap="outerHTML"
 				hx-trigger="load"
-			/>
+			></div>
 			<div
 				hx-get="/privileges/select"
 				hx-target="this"
 				hx-swap="outerHTML"
 				hx-trigger="load"
-			/>
+			></div>
 			<button
 				type="submit"
 				class="bg-primary px-4 py-2 text-white rounded-sm cursor-pointer"

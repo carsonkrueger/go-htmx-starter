@@ -1,96 +1,87 @@
 package pages
 
 templ Home() {
-  <!-- Hero Section -->
-  <section class="py-32">
-    <div class="max-w-5xl mx-auto text-center px-6">
-      <h2 class="text-4xl font-bold mb-4">Build Fast, Modern Web Servers</h2>
-      <p class="text-lg text-gray-600 mb-8">
-        A powerful starter kit combining Go, HTMX, TailwindCSS, PostgreSQL, and more for rapid web server development.
-      </p>
-      <a href="#quick" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition">
-        Get Started
-      </a>
-    </div>
-  </section>
-
-  <!-- Features -->
-  <section class="py-32 bg-[#FFFFFF11]" id="features">
-    <div class="max-w-7xl mx-auto px-6">
-      <h3 class="text-3xl font-bold text-center mb-12">Features</h3>
-      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-
-        <div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
-          <h4 class="text-2xl font-semibold mb-4">Go</h4>
-          <p>Statically typed, efficient, and easy to learn. Perfect for building scalable web applications.</p>
-        </div>
-
-        <div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
-          <h4 class="text-2xl font-semibold mb-4">HTMX, Templ, Hyperscript & Tailwind</h4>
-          <p>Dynamic frontends without heavy JavaScript. Use powerful HTML attributes, templates, and utility-first styling.</p>
-        </div>
-
-        <div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
-          <h4 class="text-2xl font-semibold mb-4">Auth & Privileges</h4>
-          <p>Session-based authentication and fine-grained privilege controls with automatic database seeding.</p>
-        </div>
-
-        <div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
-          <h4 class="text-2xl font-semibold mb-4">PostgreSQL</h4>
-          <p>Robust, open-source database integration for storing and querying data reliably and securely.</p>
-        </div>
-
-        <div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
-          <h4 class="text-2xl font-semibold mb-4">Jet Query Builder</h4>
-          <p>Type-safe SQL queries, generated directly from your schema, ensuring high reliability in database operations and a great developer experience.</p>
-        </div>
-
-        <div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
-          <h4 class="text-2xl font-semibold mb-4">Docker & Live Reload</h4>
-          <p>Containerized deployments and instant feedback during development with Docker and Air live reload.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Dependencies -->
-  <section class="py-32" id="dependencies">
-    <div class="max-w-5xl mx-auto px-6">
-      <h3 class="text-3xl font-bold text-center mb-12">Dependencies</h3>
-      <ul class="grid gap-4 text-lg list-disc list-inside">
-        <li>Go</li>
-        <li>Docker & Docker-Compose</li>
-        <li>Postgres</li>
-        <li>Templ</li>
-        <li>NPM (for TailwindCSS)</li>
-        <li>Air (Live Reload)</li>
-        <li>Migrate (DB Migrations)</li>
-        <li>Jet (Query Builder)</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- Quick Start -->
-  <section class="py-32 bg-[#FFFFFF11]" id="quick">
-    <div class="max-w-5xl mx-auto px-6">
-      <h3 class="text-3xl font-bold text-center mb-12">Quick Start</h3>
-      <ol class="space-y-4 text-lg list-decimal list-inside">
-        <li>
-        	Run <span class="rounded-sm p-1 bg-gray-700">make generateDAO</span> and follow the CLI instructions to generate a Database Access Object for a new database model.
-        	Don't forget to add the new DAO to the <a class="underline" href="https://github.com/carsonkrueger/go-htmx-starter/blob/main/database/DAO/daoManager.go">DAOManager</a>.
-        </li>
-        <li>
-        	Run <span class="rounded-sm p-1 bg-gray-700">make generate-private-controller</span> to generate a private controller for a new API endpoint.
-        	Don't forget to add the new controller to the <a class="underline" href="https://github.com/carsonkrueger/go-htmx-starter/blob/main/router/appRouter.go">AppRouter</a>.
-        </li>
-      </ol>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-primary text-white py-6">
-    <div class="max-w-7xl mx-auto text-center text-sm">
-      Built with ❤️ using Go, HTMX, and TailwindCSS
-    </div>
-  </footer>
+	<!-- Hero Section -->
+	<section class="py-32">
+		<div class="max-w-5xl mx-auto text-center px-6">
+			<h2 class="text-4xl font-bold mb-4">Build Fast, Modern Web Servers</h2>
+			<p class="text-lg text-gray-600 mb-8">
+				A powerful starter kit combining Go, HTMX, TailwindCSS, PostgreSQL, and more for rapid web server development.
+			</p>
+			<a href="#quick" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition">
+				Get Started
+			</a>
+		</div>
+	</section>
+	<!-- Features -->
+	<section class="py-32 bg-[#FFFFFF11]" id="features">
+		<div class="max-w-7xl mx-auto px-6">
+			<h3 class="text-3xl font-bold text-center mb-12">Features</h3>
+			<div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+				<div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
+					<h4 class="text-2xl font-semibold mb-4">Go</h4>
+					<p>Statically typed, efficient, and easy to learn. Perfect for building scalable web applications.</p>
+				</div>
+				<div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
+					<h4 class="text-2xl font-semibold mb-4">HTMX, Templ, Hyperscript & Tailwind</h4>
+					<p>Dynamic frontends without heavy JavaScript. Use powerful HTML attributes, templates, and utility-first styling.</p>
+				</div>
+				<div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
+					<h4 class="text-2xl font-semibold mb-4">Auth & Privileges</h4>
+					<p>Session-based authentication and fine-grained privilege controls with automatic database seeding.</p>
+				</div>
+				<div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
+					<h4 class="text-2xl font-semibold mb-4">PostgreSQL</h4>
+					<p>Robust, open-source database integration for storing and querying data reliably and securely.</p>
+				</div>
+				<div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
+					<h4 class="text-2xl font-semibold mb-4">Jet Query Builder</h4>
+					<p>Type-safe SQL queries, generated directly from your schema, ensuring high reliability in database operations and a great developer experience.</p>
+				</div>
+				<div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
+					<h4 class="text-2xl font-semibold mb-4">Docker & Live Reload</h4>
+					<p>Containerized deployments and instant feedback during development with Docker and Air live reload.</p>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- Dependencies -->
+	<section class="py-32" id="dependencies">
+		<div class="max-w-5xl mx-auto px-6">
+			<h3 class="text-3xl font-bold text-center mb-12">Dependencies</h3>
+			<ul class="grid gap-4 text-lg list-disc list-inside">
+				<li>Go</li>
+				<li>Docker & Docker-Compose</li>
+				<li>Postgres</li>
+				<li>Templ</li>
+				<li>NPM (for TailwindCSS)</li>
+				<li>Air (Live Reload)</li>
+				<li>Migrate (DB Migrations)</li>
+				<li>Jet (Query Builder)</li>
+			</ul>
+		</div>
+	</section>
+	<!-- Quick Start -->
+	<section class="py-32 bg-[#FFFFFF11]" id="quick">
+		<div class="max-w-5xl mx-auto px-6">
+			<h3 class="text-3xl font-bold text-center mb-12">Quick Start</h3>
+			<ol class="space-y-4 text-lg list-decimal list-inside">
+				<li>
+					Run <span class="rounded-sm p-1 bg-gray-700">make generateDAO</span> and follow the CLI instructions to generate a Database Access Object for a new database model.
+				</li>
+				<li>
+					Run <span class="rounded-sm p-1 bg-gray-700">make generate-private-controller</span> to generate a private controller for a new API endpoint.
+				</li>
+				<li>
+					Run <span class="rounded-sm p-1 bg-gray-700">make generate-service</span> to generate a new service to handle your business logic.
+				</li>
+			</ol>
+		</div>
+	</section>
+	<!-- Footer -->
+	<footer class="bg-primary text-white py-6">
+		<div class="max-w-7xl mx-auto text-center text-sm">
+			Built with ❤️ using Go, HTMX, and TailwindCSS
+		</div>
+	</footer>
 }
