@@ -39,6 +39,7 @@ func generateDAO() {
 		os.Exit(1)
 	}
 
+	daoMgrFilePath := fmt.Sprintf("%s/database/DAO/daoManager.go", wd)
 	daoFilePath := fmt.Sprintf("%s/database/DAO/%s.go", wd, *table)
 	if err := os.MkdirAll(path.Dir(daoFilePath), 0755); err != nil {
 		lgr.Error("failed to create directory", zap.Error(err))
@@ -57,6 +58,25 @@ func generateDAO() {
 	}
 	io.WriteString(file, contents)
 	file.Close()
+
+	upper := tools.ToUpperFirst(*table)
+
+	upperDAOName := upper + "DAO"
+	daoName := *table + "DAO"
+
+	tools.InsertAt(daoMgrFilePath, "// INSERT GET DAO", true, fmt.Sprintf("\t%s() %s", upperDAOName, upperDAOName))
+	tools.InsertAt(daoMgrFilePath, "// INSERT DAO", true, fmt.Sprintf("\t%s %s", daoName, upperDAOName))
+	tools.InsertAt(daoMgrFilePath, "// INSERT INTERFACE DAO", true, fmt.Sprintf(`type %[1]s interface {
+	DAO[int64, model.%[1]s]
+}
+`, upperDAOName))
+	tools.InsertAt(daoMgrFilePath, "// INSERT INIT DAO", true, fmt.Sprintf(`func (dm *daoManager) %[1]s() %[1]s {
+	if dm.%[2]s == nil {
+		dm.%[2]s = new%[1]s(dm.db)
+	}
+	return dm.%[2]s
+}
+`, upperDAOName, daoName))
 }
 
 func daoFileContents(dbName, schema, table string) string {

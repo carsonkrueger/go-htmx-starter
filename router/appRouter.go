@@ -37,6 +37,7 @@ func NewAppRouter(ctx context.AppContext) AppRouter {
 			// DB-END
 			public.NewWebPublic(ctx),
 			public.NewHome(ctx),
+			// INSERT PUBLIC
 		},
 		// DB-START
 		private: []builders.AppPrivateRoute{
@@ -44,6 +45,7 @@ func NewAppRouter(ctx context.AppContext) AppRouter {
 			private.NewPrivileges(ctx),
 			private.NewPrivilegeLevels(ctx),
 			private.NewPrivilegeLevelsPrivileges(ctx),
+			// INSERT PRIVATE
 		},
 		// DB-END
 	}

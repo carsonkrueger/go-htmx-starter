@@ -65,6 +65,7 @@ type DAOManager interface {
 	PrivilegeLevelsDAO() PrivilegeLevelsDAO
 	SessionsDAO() SessionsDAO
 	PrivilegeLevelsPrivilegesDAO() PrivilegeLevelsPrivilegesDAO
+	// INSERT GET DAO
 }
 
 type UsersDAO interface {
@@ -92,13 +93,16 @@ type PrivilegeLevelsPrivilegesDAO interface {
 	DAO[authModels.PrivilegeLevelsPrivilegesPrimaryKey, model.PrivilegeLevelsPrivileges]
 }
 
+// INSERT INTERFACE DAO
+
 type daoManager struct {
+	db                            *sql.DB
 	usersDAO                      UsersDAO
 	privilegesDAO                 PrivilegeDAO
 	privilegesLevelsDAO           PrivilegeLevelsDAO
 	sessionsDAO                   SessionsDAO
 	privilegesLevelsPrivilegesDAO PrivilegeLevelsPrivilegesDAO
-	db                            *sql.DB
+	// INSERT DAO
 }
 
 func NewDAOManager(db *sql.DB) DAOManager {
@@ -141,3 +145,5 @@ func (dm *daoManager) PrivilegeLevelsPrivilegesDAO() PrivilegeLevelsPrivilegesDA
 	}
 	return dm.privilegesLevelsPrivilegesDAO
 }
+
+// INSERT INIT DAO
