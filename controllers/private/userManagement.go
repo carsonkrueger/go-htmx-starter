@@ -39,8 +39,8 @@ func (um userManagement) Path() string {
 
 func (um *userManagement) PrivateRoute(b *builders.PrivateRouteBuilder) {
 	// b.NewHandle().Register(builders.GET, "/tabs", um.userManagementTabsGet).SetPermissionName(UserManagementTabsGet).Build()
-	b.NewHandle().Register(builders.GET, "/users", um.userManagementUsersGet).SetPermissionName(UserManagementUsersGet).Build()
-	b.NewHandle().Register(builders.GET, "/levels", um.userManagementLevelsGet).SetPermissionName(UserManagementLevelsGet).Build()
+	b.NewHandler().Register(builders.GET, "/users", um.userManagementUsersGet).SetPermissionName(UserManagementUsersGet).Build()
+	b.NewHandler().Register(builders.GET, "/levels", um.userManagementLevelsGet).SetPermissionName(UserManagementLevelsGet).Build()
 }
 
 func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *http.Request) {

@@ -32,8 +32,8 @@ func (um privilegeLevels) Path() string {
 }
 
 func (um *privilegeLevels) PrivateRoute(b *builders.PrivateRouteBuilder) {
-	b.NewHandle().Register(builders.GET, "/select", um.privilegeLevelsSelectGet).SetPermissionName(PrivilegeLevelsSelectGet).Build()
-	b.NewHandle().Register(builders.PUT, "/user/{user}", um.setUserLevelPut).SetPermissionName(SetUserLevelPut).Build()
+	b.NewHandler().Register(builders.GET, "/select", um.privilegeLevelsSelectGet).SetPermissionName(PrivilegeLevelsSelectGet).Build()
+	b.NewHandler().Register(builders.PUT, "/user/{user}", um.setUserLevelPut).SetPermissionName(SetUserLevelPut).Build()
 }
 
 func (r *privilegeLevels) privilegeLevelsSelectGet(res http.ResponseWriter, req *http.Request) {

@@ -42,7 +42,7 @@ type AppPrivateRoute interface {
 	PrivateRoute
 }
 
-func (rb *PrivateRouteBuilder) NewHandle() *privateHandlerBuilder {
+func (rb *PrivateRouteBuilder) NewHandler() *privateHandlerBuilder {
 	return &privateHandlerBuilder{
 		router: rb.router,
 		appCtx: rb.appCtx,
@@ -58,6 +58,17 @@ func (rb *PrivateRouteBuilder) NewGroup(f func(g *PrivateRouteBuilder)) {
 		builder.router = g
 	})
 	f(&builder)
+}
+
+func (rb *PrivateRouteBuilder) NewRoute(path string) PrivateRouteBuilder {
+	builder := PrivateRouteBuilder{
+		router: nil,
+		appCtx: rb.appCtx,
+	}
+	rb.router.Route(path, func(r chi.Router) {
+		builder.router = r
+	})
+	return builder
 }
 
 func (rb *PrivateRouteBuilder) AddMiddleware(middleware func(next http.Handler) http.Handler) {

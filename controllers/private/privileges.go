@@ -30,7 +30,7 @@ func (um privileges) Path() string {
 }
 
 func (um *privileges) PrivateRoute(b *builders.PrivateRouteBuilder) {
-	b.NewHandle().Register(builders.GET, "/select", um.privilegesSelectGet).SetPermissionName(PrivilegesSelectGet).Build()
+	b.NewHandler().Register(builders.GET, "/select", um.privilegesSelectGet).SetPermissionName(PrivilegesSelectGet).Build()
 }
 
 func (r *privileges) privilegesSelectGet(res http.ResponseWriter, req *http.Request) {

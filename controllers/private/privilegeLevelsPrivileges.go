@@ -33,8 +33,8 @@ func (um privilegeLevelsPrivileges) Path() string {
 }
 
 func (um *privilegeLevelsPrivileges) PrivateRoute(b *builders.PrivateRouteBuilder) {
-	b.NewHandle().Register(builders.POST, "/", um.privilegeLevelsPrivilegesPost).SetPermissionName(PrivilegeLevelsPrivilegesPost).Build()
-	b.NewHandle().Register(builders.DELETE, "/level/{level}/privilege/{privilege}", um.privilegeLevelsPrivilegesDelete).SetPermissionName(PrivilegeLevelsPrivilegesDelete).Build()
+	b.NewHandler().Register(builders.POST, "/", um.privilegeLevelsPrivilegesPost).SetPermissionName(PrivilegeLevelsPrivilegesPost).Build()
+	b.NewHandler().Register(builders.DELETE, "/level/{level}/privilege/{privilege}", um.privilegeLevelsPrivilegesDelete).SetPermissionName(PrivilegeLevelsPrivilegesDelete).Build()
 }
 
 func (r *privilegeLevelsPrivileges) privilegeLevelsPrivilegesPost(res http.ResponseWriter, req *http.Request) {
