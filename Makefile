@@ -132,6 +132,7 @@ EXCLUDE_DIRS=volumes node_modules
 remove-db-files:
 	rm -f ./builders/handler.go
 	rm -f ./context/context.go
+	rm -f ./context/dao.go
 	rm -f ./cmd/generate_dao.go
 	rm -f ./cmd/seed.go
 	rm -rf ./controllers/private
@@ -139,7 +140,6 @@ remove-db-files:
 	rm -rf ./controllers/public/signup.go
 	rm -rf ./database
 	rm -rf ./gen
-	rm -rf ./interfaces/dao.go
 	rm -rf ./middlewares
 	rm -rf ./migrations
 	rm -rf ./models/auth_models
