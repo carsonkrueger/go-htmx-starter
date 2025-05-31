@@ -41,8 +41,8 @@ func generateDAO() {
 
 	snakeCaseTable := tools.ToSnakeCase(*table)
 
-	daoMgrFilePath := fmt.Sprintf("%s/database/daos/dao_manager.go", wd)
-	daoFilePath := fmt.Sprintf("%s/database/daos/%s.go", wd, snakeCaseTable)
+	daoMgrFilePath := fmt.Sprintf("%s/database/dao/dao_manager.go", wd)
+	daoFilePath := fmt.Sprintf("%s/database/dao/%s.go", wd, snakeCaseTable)
 	if err := os.MkdirAll(path.Dir(daoFilePath), 0755); err != nil {
 		lgr.Error("failed to create directory", zap.Error(err))
 		os.Exit(1)
@@ -63,16 +63,17 @@ func generateDAO() {
 
 	upper := tools.ToUpperFirst(*table)
 
+	daoContextFilePath := fmt.Sprintf("%s/context/dao.go", wd)
 	upperDAOName := upper + "DAO"
 	daoName := *table + "DAO"
 
-	tools.InsertAt(daoMgrFilePath, "// INSERT GET DAO", true, fmt.Sprintf("\t%s() %s", upperDAOName, upperDAOName))
-	tools.InsertAt(daoMgrFilePath, "// INSERT DAO", true, fmt.Sprintf("\t%s %s", daoName, upperDAOName))
-	tools.InsertAt(daoMgrFilePath, "// INSERT INTERFACE DAO", true, fmt.Sprintf(`type %[1]s interface {
+	tools.InsertAt(daoContextFilePath, "// INSERT GET DAO", true, fmt.Sprintf("\t%s() %s", upperDAOName, upperDAOName))
+	tools.InsertAt(daoContextFilePath, "// INSERT INTERFACE DAO", true, fmt.Sprintf(`type %[1]s interface {
 	DAO[int64, model.%[2]s]
 }
 `, upperDAOName, upper))
-	tools.InsertAt(daoMgrFilePath, "// INSERT INIT DAO", true, fmt.Sprintf(`func (dm *daoManager) %[1]s() %[1]s {
+	tools.InsertAt(daoMgrFilePath, "// INSERT DAO", true, fmt.Sprintf("\t%s context.%s", daoName, upperDAOName))
+	tools.InsertAt(daoMgrFilePath, "// INSERT INIT DAO", true, fmt.Sprintf(`func (dm *daoManager) %[1]s() context.%[1]s {
 	if dm.%[2]s == nil {
 		dm.%[2]s = New%[1]s(dm.db)
 	}
@@ -85,12 +86,13 @@ func daoFileContents(dbName, schema, table string) string {
 	// upperSchema := tools.ToUpperFirst(schema)
 	upperTable := tools.ToUpperFirst(table)
 
-	return fmt.Sprintf(`package daos
+	return fmt.Sprintf(`package dao
 
 import (
 	"database/sql"
 	"time"
 
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/gen/%[1]s/%[2]s/model"
 	"github.com/carsonkrueger/main/gen/%[1]s/%[2]s/table"
 	"github.com/go-jet/jet/v2/postgres"
@@ -100,7 +102,7 @@ type %[3]sPrimaryKey int64;
 
 type %[4]sDAO struct {
 	db *sql.DB
-	DAOBaseQueries[%[3]sPrimaryKey, model.%[3]s]
+	context.DAOBaseQueries[%[3]sPrimaryKey, model.%[3]s]
 }
 
 func New%[3]sDAO(db *sql.DB) *%[4]sDAO {
@@ -113,7 +115,7 @@ func New%[3]sDAO(db *sql.DB) *%[4]sDAO {
 	return dao
 }
 
-func (dao *%[4]sDAO) Table() PostgresTable {
+func (dao *%[4]sDAO) Table() context.PostgresTable {
 	return table.%[3]s
 }
 
