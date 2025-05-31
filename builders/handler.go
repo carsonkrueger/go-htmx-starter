@@ -49,7 +49,7 @@ func (mb *privateHandlerBuilder) SetMiddlewares(middlewares ...func(next http.Ha
 func (mb *privateHandlerBuilder) Build() {
 	privDAO := mb.appCtx.DM().PrivilegeDAO()
 
-	var r chi.Router
+	r := mb.router
 	if mb.permissionName != nil {
 		priv := model.Privileges{Name: *mb.permissionName}
 		privDAO.Upsert(&priv, mb.appCtx.DB())
