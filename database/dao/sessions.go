@@ -1,9 +1,10 @@
-package daos
+package dao
 
 import (
 	"database/sql"
 	"time"
 
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
 	"github.com/carsonkrueger/main/models/auth_models"
@@ -12,7 +13,7 @@ import (
 
 type sessionsDAO struct {
 	db *sql.DB
-	DAOBaseQueries[auth_models.SessionsPrimaryKey, model.Sessions]
+	context.DAOBaseQueries[auth_models.SessionsPrimaryKey, model.Sessions]
 }
 
 func NewSessionsDAO(db *sql.DB) *sessionsDAO {
@@ -25,7 +26,7 @@ func NewSessionsDAO(db *sql.DB) *sessionsDAO {
 	return dao
 }
 
-func (dao *sessionsDAO) Table() PostgresTable {
+func (dao *sessionsDAO) Table() context.PostgresTable {
 	return table.Sessions
 }
 

@@ -1,14 +1,15 @@
-package daos
+package dao
 
 import (
 	"time"
 
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/models"
 	"github.com/go-jet/jet/v2/postgres"
 	"github.com/go-jet/jet/v2/qrm"
 )
 
-func index[PK PrimaryKey, R any](DAO DAO[PK, R], params *models.SearchParams, db qrm.Queryable) ([]*R, error) {
+func index[PK context.PrimaryKey, R any](DAO context.DAO[PK, R], params *models.SearchParams, db qrm.Queryable) ([]*R, error) {
 	query := DAO.Table().SELECT(DAO.AllCols())
 	if params != nil {
 		if params.Where != nil {
@@ -31,7 +32,7 @@ func index[PK PrimaryKey, R any](DAO DAO[PK, R], params *models.SearchParams, db
 	return models, nil
 }
 
-func getOne[PK PrimaryKey, R any](DAO DAO[PK, R], pk PK, db qrm.Queryable) (*R, error) {
+func getOne[PK context.PrimaryKey, R any](DAO context.DAO[PK, R], pk PK, db qrm.Queryable) (*R, error) {
 	var model R
 	if err := DAO.Table().
 		SELECT(DAO.AllCols()).
@@ -43,7 +44,7 @@ func getOne[PK PrimaryKey, R any](DAO DAO[PK, R], pk PK, db qrm.Queryable) (*R, 
 	return &model, nil
 }
 
-func getMany[PK PrimaryKey, R any](DAO DAO[PK, R], pk PK, db qrm.Queryable) ([]*R, error) {
+func getMany[PK context.PrimaryKey, R any](DAO context.DAO[PK, R], pk PK, db qrm.Queryable) ([]*R, error) {
 	var models []*R
 	if err := DAO.Table().
 		SELECT(DAO.AllCols()).
@@ -54,7 +55,7 @@ func getMany[PK PrimaryKey, R any](DAO DAO[PK, R], pk PK, db qrm.Queryable) ([]*
 	return models, nil
 }
 
-func insert[PK any, R any](DAO DAO[PK, R], model *R, db qrm.Queryable) error {
+func insert[PK any, R any](DAO context.DAO[PK, R], model *R, db qrm.Queryable) error {
 	return DAO.Table().
 		INSERT(DAO.InsertCols()).
 		MODEL(model).
@@ -62,7 +63,7 @@ func insert[PK any, R any](DAO DAO[PK, R], model *R, db qrm.Queryable) error {
 		Query(db, model)
 }
 
-func insertMany[PK any, R any](DAO DAO[PK, R], models *[]*R, db qrm.Queryable) error {
+func insertMany[PK any, R any](DAO context.DAO[PK, R], models *[]*R, db qrm.Queryable) error {
 	return DAO.Table().
 		INSERT(DAO.InsertCols()).
 		MODELS(models).
@@ -70,7 +71,7 @@ func insertMany[PK any, R any](DAO DAO[PK, R], models *[]*R, db qrm.Queryable) e
 		Query(db, models)
 }
 
-func upsert[PK any, R any](DAO DAO[PK, R], model *R, db qrm.Queryable) error {
+func upsert[PK any, R any](DAO context.DAO[PK, R], model *R, db qrm.Queryable) error {
 	up := DAO.GetUpdatedAt(model)
 	if up != nil {
 		*up = time.Now()
@@ -90,7 +91,7 @@ func upsert[PK any, R any](DAO DAO[PK, R], model *R, db qrm.Queryable) error {
 		Query(db, model)
 }
 
-func upsertMany[PK any, R any](DAO DAO[PK, R], models *[]*R, db qrm.Queryable) error {
+func upsertMany[PK any, R any](DAO context.DAO[PK, R], models *[]*R, db qrm.Queryable) error {
 	for _, v := range *models {
 		up := DAO.GetUpdatedAt(v)
 		if up != nil {
@@ -112,7 +113,7 @@ func upsertMany[PK any, R any](DAO DAO[PK, R], models *[]*R, db qrm.Queryable) e
 		Query(db, models)
 }
 
-func update[PK any, R any](DAO DAO[PK, R], model *R, pk PK, db qrm.Queryable) error {
+func update[PK any, R any](DAO context.DAO[PK, R], model *R, pk PK, db qrm.Queryable) error {
 	up := DAO.GetUpdatedAt(model)
 	if up != nil {
 		*up = time.Now()
@@ -125,7 +126,7 @@ func update[PK any, R any](DAO DAO[PK, R], model *R, pk PK, db qrm.Queryable) er
 		Query(db, model)
 }
 
-func delete[PK any, R any](DAO DAO[PK, R], pk PK, db qrm.Executable) error {
+func delete[PK any, R any](DAO context.DAO[PK, R], pk PK, db qrm.Executable) error {
 	_, err := DAO.Table().
 		DELETE().
 		WHERE(DAO.PKMatch(pk)).
@@ -133,11 +134,11 @@ func delete[PK any, R any](DAO DAO[PK, R], pk PK, db qrm.Executable) error {
 	return err
 }
 
-type baseDAOQueryable[PK PrimaryKey, R any] struct {
-	Dao DAO[PK, R]
+type baseDAOQueryable[PK context.PrimaryKey, R any] struct {
+	Dao context.DAO[PK, R]
 }
 
-func newDAOQueryable[PK PrimaryKey, R any](dao DAO[PK, R]) baseDAOQueryable[PK, R] {
+func newDAOQueryable[PK context.PrimaryKey, R any](dao context.DAO[PK, R]) baseDAOQueryable[PK, R] {
 	return baseDAOQueryable[PK, R]{
 		dao,
 	}

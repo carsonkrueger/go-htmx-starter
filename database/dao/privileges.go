@@ -1,9 +1,10 @@
-package daos
+package dao
 
 import (
 	"database/sql"
 	"time"
 
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
 	"github.com/carsonkrueger/main/models/auth_models"
@@ -12,7 +13,7 @@ import (
 
 type privilegesDAO struct {
 	db *sql.DB
-	DAOBaseQueries[int64, model.Privileges]
+	context.DAOBaseQueries[int64, model.Privileges]
 }
 
 func NewPrivilegesDAO(db *sql.DB) *privilegesDAO {
@@ -25,7 +26,7 @@ func NewPrivilegesDAO(db *sql.DB) *privilegesDAO {
 	return dao
 }
 
-func (dao *privilegesDAO) Table() PostgresTable {
+func (dao *privilegesDAO) Table() context.PostgresTable {
 	return table.Privileges
 }
 

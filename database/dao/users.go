@@ -1,9 +1,10 @@
-package daos
+package dao
 
 import (
 	"database/sql"
 	"time"
 
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
 	"github.com/carsonkrueger/main/models/auth_models"
@@ -12,10 +13,10 @@ import (
 
 type usersDAO struct {
 	db *sql.DB
-	DAOBaseQueries[int64, model.Users]
+	context.DAOBaseQueries[int64, model.Users]
 }
 
-func NewUsersDAO(db *sql.DB) UsersDAO {
+func NewUsersDAO(db *sql.DB) context.UsersDAO {
 	dao := &usersDAO{
 		db:             db,
 		DAOBaseQueries: nil,
@@ -25,7 +26,7 @@ func NewUsersDAO(db *sql.DB) UsersDAO {
 	return dao
 }
 
-func (dao *usersDAO) Table() PostgresTable {
+func (dao *usersDAO) Table() context.PostgresTable {
 	return table.Users
 }
 

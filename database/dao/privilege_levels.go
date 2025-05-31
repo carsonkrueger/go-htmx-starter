@@ -1,9 +1,10 @@
-package daos
+package dao
 
 import (
 	"database/sql"
 	"time"
 
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/gen/go_db/auth/table"
 	"github.com/go-jet/jet/v2/postgres"
@@ -11,7 +12,7 @@ import (
 
 type privilegeLevelsDAO struct {
 	db *sql.DB
-	DAOBaseQueries[int64, model.PrivilegeLevels]
+	context.DAOBaseQueries[int64, model.PrivilegeLevels]
 }
 
 func NewPrivilegeLevelsDAO(db *sql.DB) *privilegeLevelsDAO {
@@ -24,7 +25,7 @@ func NewPrivilegeLevelsDAO(db *sql.DB) *privilegeLevelsDAO {
 	return dao
 }
 
-func (dao *privilegeLevelsDAO) Table() PostgresTable {
+func (dao *privilegeLevelsDAO) Table() context.PostgresTable {
 	return table.PrivilegeLevels
 }
 
