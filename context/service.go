@@ -1,24 +1,12 @@
 package context
 
 import (
-	"database/sql"
 	"net/http"
 
-	"github.com/carsonkrueger/main/database/daos"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
-	"go.uber.org/zap"
 )
-
-type ServiceContext interface {
-	Lgr(name string) *zap.Logger
-	SM() ServiceManager
-	// DB-START
-	DM() daos.DAOManager
-	DB() *sql.DB
-	// DB-END
-}
 
 type ServiceManager interface {
 	// DB-START

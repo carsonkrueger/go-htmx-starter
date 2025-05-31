@@ -52,14 +52,13 @@ func generateService() {
 
 	upperSvcName := tools.ToUpperFirst(*service) + "Service"
 	svcName := tools.ToLowerFirst(*service) + "Service"
+	contextServicePath := fmt.Sprintf("%s/context/service.go", wd)
 	serviceMgrPath := fmt.Sprintf("%s/services/service_manager.go", wd)
 
-	tools.InsertAt(serviceMgrPath, "// INSERT GET SERVICE", true, fmt.Sprintf("\t%s() %s", upperSvcName, upperSvcName))
-	tools.InsertAt(serviceMgrPath, "// INSERT SERVICE", true, fmt.Sprintf("\t%s %s", svcName, upperSvcName))
-	tools.InsertAt(serviceMgrPath, "// INSERT INTERFACE SERVICE", true, fmt.Sprintf(`type %[1]s interface {
-}
-`, upperSvcName))
-	tools.InsertAt(serviceMgrPath, "// INSERT INIT SERVICE", true, fmt.Sprintf(`func (sm *serviceManager) %[1]s() %[1]s {
+	tools.InsertAt(contextServicePath, "// INSERT INTERFACE SERVICE", true, fmt.Sprintf("type %[1]s interface {}\n", upperSvcName))
+	tools.InsertAt(contextServicePath, "// INSERT GET SERVICE", true, fmt.Sprintf("\t%s() %s", upperSvcName, upperSvcName))
+	tools.InsertAt(serviceMgrPath, "// INSERT SERVICE", true, fmt.Sprintf("\t%s context.%s", svcName, upperSvcName))
+	tools.InsertAt(serviceMgrPath, "// INSERT INIT SERVICE", true, fmt.Sprintf(`func (sm *serviceManager) %[1]s() context.%[1]s {
 	if sm.%[2]s == nil {
 		sm.%[2]s = New%[1]s(sm.svcCtx)
 	}
@@ -74,13 +73,15 @@ func ServiceFileContents(name string) string {
 
 	return fmt.Sprintf(`package services
 
+import "github.com/carsonkrueger/main/context"
+
 type %[1]sService struct {
-	ServiceContext
+	context.AppContext
 }
 
-func New%[2]sService(ctx ServiceContext) *%[1]sService {
+func New%[2]sService(ctx context.AppContext) *%[1]sService {
 	return &%[1]sService{
-		ServiceContext: ctx,
+		ctx,
 	}
 }
 `, lower, upper)
