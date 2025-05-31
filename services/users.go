@@ -7,24 +7,18 @@ import (
 	"strings"
 
 	"github.com/carsonkrueger/main/constant"
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/carsonkrueger/main/tools"
 	"go.uber.org/zap"
 )
 
-type UsersService interface {
-	Login(email string, password string, req *http.Request) (*string, error)
-	Logout(id int64, token string) error
-	LogoutRequest(req *http.Request) error
-	GetAuthParts(req *http.Request) (string, int64, error)
-}
-
 type usersService struct {
-	ServiceContext
+	context.ServiceContext
 }
 
-func NewUsersService(ctx ServiceContext) *usersService {
+func NewUsersService(ctx context.ServiceContext) *usersService {
 	return &usersService{
 		ctx,
 	}

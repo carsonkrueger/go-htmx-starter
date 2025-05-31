@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/a-h/templ"
+	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
 	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
@@ -15,10 +16,10 @@ import (
 )
 
 type privilegesService struct {
-	ServiceContext
+	context.AppContext
 }
 
-func NewPrivilegesService(ctx ServiceContext) *privilegesService {
+func NewPrivilegesService(ctx context.AppContext) *privilegesService {
 	return &privilegesService{ctx}
 }
 
