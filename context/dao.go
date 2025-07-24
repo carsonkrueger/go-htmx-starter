@@ -40,7 +40,7 @@ type GetTable interface {
 type DAOBaseQueries[PK PrimaryKey, R any] interface {
 	Index(ctx gctx.Context, params *models.SearchParams) ([]*R, error)
 	GetOne(ctx gctx.Context, pk PK) (*R, error)
-	GetMany(ctx gctx.Context, where postgres.BoolExpression) ([]*R, error)
+	GetMany(ctx gctx.Context, pks []PK) ([]*R, error)
 	Insert(ctx gctx.Context, model *R) error
 	InsertMany(ctx gctx.Context, models *[]*R) error
 	Upsert(ctx gctx.Context, model *R) error

@@ -26,7 +26,7 @@ func index[PK context.PrimaryKey, R any](ctx gctx.Context, DAO context.DAO[PK, R
 			query = query.LIMIT(*params.Limit)
 		}
 	}
-	var models []*R
+	models := []*R{}
 	if err := query.QueryContext(ctx, db, &models); err != nil {
 		return nil, err
 	}
@@ -45,8 +45,15 @@ func getOne[PK context.PrimaryKey, R any](ctx gctx.Context, DAO context.DAO[PK, 
 	return &model, nil
 }
 
-func getMany[PK context.PrimaryKey, R any](ctx gctx.Context, DAO context.DAO[PK, R], where postgres.BoolExpression, db qrm.Queryable) ([]*R, error) {
-	var models []*R
+func getMany[PK context.PrimaryKey, R any](ctx gctx.Context, DAO context.DAO[PK, R], pks []PK, db qrm.Queryable) ([]*R, error) {
+	models := []*R{}
+	if len(pks) == 0 {
+		return models, nil
+	}
+	where := DAO.PKMatch(pks[0])
+	for _, pk := range pks[1:] {
+		where = where.OR(DAO.PKMatch(pk))
+	}
 	if err := DAO.Table().
 		SELECT(DAO.AllCols()).
 		WHERE(where).
@@ -153,8 +160,8 @@ func (q *baseDAOQueryable[PK, R]) GetOne(ctx gctx.Context, pk PK) (*R, error) {
 	return getOne(ctx, q.Dao, pk, context.GetDB(ctx))
 }
 
-func (q *baseDAOQueryable[PK, R]) GetMany(ctx gctx.Context, where postgres.BoolExpression) ([]*R, error) {
-	return getMany(ctx, q.Dao, where, context.GetDB(ctx))
+func (q *baseDAOQueryable[PK, R]) GetMany(ctx gctx.Context, pks []PK) ([]*R, error) {
+	return getMany(ctx, q.Dao, pks, context.GetDB(ctx))
 }
 
 func (q *baseDAOQueryable[PK, R]) Insert(ctx gctx.Context, model *R) error {
