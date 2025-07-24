@@ -47,11 +47,27 @@ func GetDB(ctx gctx.Context) qrm.DB {
 	return ctx.Value(DB_CONNECTION_KEY).(qrm.DB)
 }
 
+// Returns a new context that contains the transaction. Caller must Rollback and Commit manually. The new tx ctx cannot and should NOT be used after a rollback or commit.
+//
+// Suggested usage:
+// ctx, tx, err := BeginTx(ctx)
+//
+//	if err != nil {
+//	    return err
+//	}
+//
+// defer tx.Rollback()
+//
+// // Perform database operations using new ctx
+//
+// tx.Commit()
 func BeginTx(ctx gctx.Context) (gctx.Context, *sql.Tx, error) {
 	switch db := GetDB(ctx).(type) {
 	case *sql.DB:
 		tx, err := db.BeginTx(ctx, nil)
-		ctx = WithDB(ctx, tx)
+		if err == nil {
+			ctx = WithDB(ctx, tx)
+		}
 		return ctx, tx, err
 	case *sql.Tx:
 		return ctx, db, nil
