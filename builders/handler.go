@@ -1,6 +1,7 @@
 package builders
 
 import (
+	gctx "context"
 	"net/http"
 
 	"github.com/carsonkrueger/main/context"
@@ -46,13 +47,13 @@ func (mb *privateHandlerBuilder) SetMiddlewares(middlewares ...func(next http.Ha
 	return mb
 }
 
-func (mb *privateHandlerBuilder) Build() {
+func (mb *privateHandlerBuilder) Build(ctx gctx.Context) {
 	privDAO := mb.appCtx.DM().PrivilegeDAO()
 
 	r := mb.router
 	if mb.permissionName != nil {
 		priv := model.Privileges{Name: *mb.permissionName}
-		privDAO.Upsert(&priv, mb.appCtx.DB())
+		privDAO.Upsert(ctx, &priv, mb.appCtx.DB())
 		r = mb.router.With(middlewares.ApplyPermission(priv.ID, mb.appCtx))
 	}
 	if len(mb.mw) > 0 {

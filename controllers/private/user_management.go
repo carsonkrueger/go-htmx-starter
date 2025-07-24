@@ -1,6 +1,7 @@
 package private
 
 import (
+	gctx "context"
 	"net/http"
 
 	"github.com/carsonkrueger/main/builders"
@@ -37,10 +38,10 @@ func (um userManagement) Path() string {
 	return "/user_management"
 }
 
-func (um *userManagement) PrivateRoute(b *builders.PrivateRouteBuilder) {
+func (um *userManagement) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBuilder) {
 	// b.NewHandle().Register(builders.GET, "/tabs", um.userManagementTabsGet).SetPermissionName(UserManagementTabsGet).Build()
-	b.NewHandler().Register(builders.GET, "/users", um.userManagementUsersGet).SetPermissionName(UserManagementUsersGet).Build()
-	b.NewHandler().Register(builders.GET, "/levels", um.userManagementLevelsGet).SetPermissionName(UserManagementLevelsGet).Build()
+	b.NewHandler().Register(builders.GET, "/users", um.userManagementUsersGet).SetPermissionName(UserManagementUsersGet).Build(ctx)
+	b.NewHandler().Register(builders.GET, "/levels", um.userManagementLevelsGet).SetPermissionName(UserManagementLevelsGet).Build(ctx)
 }
 
 func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *http.Request) {
@@ -60,13 +61,13 @@ func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *h
 		return
 	}
 
-	allLevels, err := um.DM().PrivilegeLevelsDAO().Index(nil, um.DB())
+	allLevels, err := um.DM().PrivilegeLevelsDAO().Index(ctx, nil, um.DB())
 	if err != nil || allLevels == nil {
 		tools.HandleError(req, res, lgr, err, 500, "Error fetching privilege levels")
 		return
 	}
 
-	rows := um.SM().PrivilegesService().UserPrivilegeLevelJoinAsRowData(*users, allLevels)
+	rows := um.SM().PrivilegesService().UserPrivilegeLevelJoinAsRowData(ctx, *users, allLevels)
 	page := pages.UserManagementUsers(rows)
 	render.Tab(req, UserManagementTabModels, 0, page).Render(ctx, res)
 }
@@ -81,7 +82,7 @@ func (um *userManagement) userManagementLevelsGet(res http.ResponseWriter, req *
 		tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return
 	}
-	rows := um.SM().PrivilegesService().JoinedPrivilegesAsRowData(privileges)
+	rows := um.SM().PrivilegesService().JoinedPrivilegesAsRowData(ctx, privileges)
 
 	page := pages.UserManagementLevels(rows)
 	render.Tab(req, UserManagementTabModels, 1, page).Render(ctx, res)

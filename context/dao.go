@@ -1,6 +1,7 @@
 package context
 
 import (
+	gctx "context"
 	"time"
 
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
@@ -38,15 +39,15 @@ type GetTable interface {
 }
 
 type DAOBaseQueries[PK PrimaryKey, R any] interface {
-	Index(params *models.SearchParams, db qrm.Queryable) ([]*R, error)
-	GetOne(pk PK, db qrm.Queryable) (*R, error)
-	GetMany(pk PK, db qrm.Queryable) ([]*R, error)
-	Insert(model *R, db qrm.Queryable) error
-	InsertMany(models *[]*R, db qrm.Queryable) error
-	Upsert(model *R, db qrm.Queryable) error
-	UpsertMany(models *[]*R, db qrm.Queryable) error
-	Update(model *R, pk PK, db qrm.Queryable) error
-	Delete(pk PK, db qrm.Executable) error
+	Index(ctx gctx.Context, params *models.SearchParams, db qrm.Queryable) ([]*R, error)
+	GetOne(ctx gctx.Context, pk PK, db qrm.Queryable) (*R, error)
+	GetMany(ctx gctx.Context, where postgres.BoolExpression, db qrm.Queryable) ([]*R, error)
+	Insert(ctx gctx.Context, model *R, db qrm.Queryable) error
+	InsertMany(ctx gctx.Context, models *[]*R, db qrm.Queryable) error
+	Upsert(ctx gctx.Context, model *R, db qrm.Queryable) error
+	UpsertMany(ctx gctx.Context, models *[]*R, db qrm.Queryable) error
+	Update(ctx gctx.Context, model *R, pk PK, db qrm.Queryable) error
+	Delete(ctx gctx.Context, pk PK, db qrm.Executable) error
 }
 
 type DAO[PK any, R any] interface {

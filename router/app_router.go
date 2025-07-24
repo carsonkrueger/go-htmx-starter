@@ -1,16 +1,17 @@
 package router
 
 import (
+	gctx "context"
+	"errors"
+	"fmt"
+	"net/http"
+
 	"github.com/carsonkrueger/main/builders"
 	"github.com/carsonkrueger/main/cfg"
 	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/controllers/private"
 	"github.com/carsonkrueger/main/controllers/public"
 	"github.com/carsonkrueger/main/middlewares"
-
-	"errors"
-	"fmt"
-	"net/http"
 
 	"github.com/go-chi/chi/v5"
 
@@ -27,31 +28,31 @@ type AppRouter struct {
 	appCtx context.AppContext
 }
 
-func NewAppRouter(ctx context.AppContext) AppRouter {
+func NewAppRouter(appCtx context.AppContext) AppRouter {
 	return AppRouter{
-		appCtx: ctx,
+		appCtx: appCtx,
 		public: []builders.AppPublicRoute{
 			// DB-START
-			public.NewLogin(ctx),
-			public.NewSignUp(ctx),
+			public.NewLogin(appCtx),
+			public.NewSignUp(appCtx),
 			// DB-END
-			public.NewWebPublic(ctx),
-			public.NewHome(ctx),
+			public.NewWebPublic(appCtx),
+			public.NewHome(appCtx),
 			// INSERT PUBLIC
 		},
 		// DB-START
 		private: []builders.AppPrivateRoute{
-			private.NewUserManagement(ctx),
-			private.NewPrivileges(ctx),
-			private.NewPrivilegeLevels(ctx),
-			private.NewPrivilegeLevelsPrivileges(ctx),
+			private.NewUserManagement(appCtx),
+			private.NewPrivileges(appCtx),
+			private.NewPrivilegeLevels(appCtx),
+			private.NewPrivilegeLevelsPrivileges(appCtx),
 			// INSERT PRIVATE
 		},
 		// DB-END
 	}
 }
 
-func (a *AppRouter) BuildRouter() {
+func (a *AppRouter) BuildRouter(ctx gctx.Context) {
 	a.router = chi.NewRouter()
 	lgr := a.appCtx.Lgr("BuildRouter")
 
@@ -68,7 +69,7 @@ func (a *AppRouter) BuildRouter() {
 
 	for _, r := range a.private {
 		builder := builders.NewPrivateRouteBuilder(a.appCtx)
-		r.PrivateRoute(&builder)
+		r.PrivateRoute(ctx, &builder)
 		a.router.Mount(r.Path(), builder.RawRouter())
 		lgr.Info(r.Path())
 	}

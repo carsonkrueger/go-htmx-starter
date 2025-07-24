@@ -63,7 +63,7 @@ func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
 	}
 
 	usersDAO := s.DM().UsersDAO()
-	if err := usersDAO.Insert(&user, s.DB()); err != nil {
+	if err := usersDAO.Insert(ctx, &user, s.DB()); err != nil {
 		lgr.Warn("Could not insert user", zap.Error(err))
 		res.WriteHeader(422)
 		noti := datadisplay.AddTextToast(datadisplay.Warning, "Email taken", 0)
@@ -76,7 +76,7 @@ func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
 		Token:  authToken,
 	}
 	sessionDAO := s.DM().SessionsDAO()
-	if err := sessionDAO.Insert(session, s.DB()); err != nil {
+	if err := sessionDAO.Insert(ctx, session, s.DB()); err != nil {
 		lgr.Error("Could not insert session", zap.Error(err))
 		res.WriteHeader(500)
 		noti := datadisplay.AddTextToast(datadisplay.Error, "Error creating session", 0)

@@ -1,6 +1,7 @@
 package context
 
 import (
+	gctx "context"
 	"net/http"
 
 	"github.com/carsonkrueger/main/gen/go_db/auth/model"
@@ -17,21 +18,21 @@ type ServiceManager interface {
 }
 
 type PrivilegesService interface {
-	CreatePrivilegeAssociation(levelID int64, privID int64) error
-	DeletePrivilegeAssociation(levelID int64, privID int64) error
-	CreateLevel(name string) error
-	HasPermissionByID(levelID int64, permissionID int64) bool
-	SetUserPrivilegeLevel(levelID int64, userID int64) error
-	UserPrivilegeLevelJoinAsRowData(upl []auth_models.UserPrivilegeLevelJoin, allLevels []*model.PrivilegeLevels) []datadisplay.RowData
-	JoinedPrivilegeLevelAsRowData(jpl []auth_models.JoinedPrivilegeLevel) []datadisplay.RowData
-	JoinedPrivilegesAsRowData(jpl []auth_models.JoinedPrivilegesRaw) []datadisplay.RowData
+	CreatePrivilegeAssociation(ctx gctx.Context, levelID int64, privID int64) error
+	DeletePrivilegeAssociation(ctx gctx.Context, levelID int64, privID int64) error
+	CreateLevel(ctx gctx.Context, name string) error
+	HasPermissionByID(ctx gctx.Context, levelID int64, permissionID int64) bool
+	SetUserPrivilegeLevel(ctx gctx.Context, levelID int64, userID int64) error
+	UserPrivilegeLevelJoinAsRowData(ctx gctx.Context, upl []auth_models.UserPrivilegeLevelJoin, allLevels []*model.PrivilegeLevels) []datadisplay.RowData
+	JoinedPrivilegeLevelAsRowData(ctx gctx.Context, jpl []auth_models.JoinedPrivilegeLevel) []datadisplay.RowData
+	JoinedPrivilegesAsRowData(ctx gctx.Context, jpl []auth_models.JoinedPrivilegesRaw) []datadisplay.RowData
 }
 
 type UsersService interface {
-	Login(email string, password string, req *http.Request) (*string, error)
-	Logout(id int64, token string) error
-	LogoutRequest(req *http.Request) error
-	GetAuthParts(req *http.Request) (string, int64, error)
+	Login(ctx gctx.Context, email string, password string, req *http.Request) (*string, error)
+	Logout(ctx gctx.Context, id int64, token string) error
+	LogoutRequest(ctx gctx.Context, req *http.Request) error
+	GetAuthParts(ctx gctx.Context, req *http.Request) (string, int64, error)
 }
 
 // INSERT INTERFACE SERVICE

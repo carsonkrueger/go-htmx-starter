@@ -1,6 +1,7 @@
 package services
 
 import (
+	gctx "context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -24,7 +25,7 @@ func NewUsersService(ctx context.AppContext) *usersService {
 	}
 }
 
-func (us *usersService) Login(email string, password string, req *http.Request) (*string, error) {
+func (us *usersService) Login(ctx gctx.Context, email string, password string, req *http.Request) (*string, error) {
 	lgr := us.Lgr("Login")
 	lgr.Info("Called")
 	dao := us.DM().UsersDAO()
@@ -34,7 +35,7 @@ func (us *usersService) Login(email string, password string, req *http.Request) 
 		return nil, err
 	}
 
-	go us.LogoutRequest(req)
+	go us.LogoutRequest(ctx, req)
 
 	parts := strings.Split(user.Password, "$")
 	hash := tools.HashPassword(password, parts[0])
@@ -51,14 +52,14 @@ func (us *usersService) Login(email string, password string, req *http.Request) 
 		Token:  token,
 	}
 	sesDAO := us.DM().SessionsDAO()
-	if err = sesDAO.Insert(row, us.DB()); err != nil {
+	if err = sesDAO.Insert(ctx, row, us.DB()); err != nil {
 		return nil, err
 	}
 
 	return &fullToken, nil
 }
 
-func (us *usersService) Logout(id int64, token string) error {
+func (us *usersService) Logout(ctx gctx.Context, id int64, token string) error {
 	lgr := us.Lgr("Logout")
 	lgr.Info("Logging out", zap.Int64("user id", id))
 
@@ -67,25 +68,25 @@ func (us *usersService) Logout(id int64, token string) error {
 		AuthToken: token,
 	}
 	sesDAO := us.DM().SessionsDAO()
-	return sesDAO.Delete(key, us.DB())
+	return sesDAO.Delete(ctx, key, us.DB())
 }
 
-func (us *usersService) LogoutRequest(req *http.Request) error {
+func (us *usersService) LogoutRequest(ctx gctx.Context, req *http.Request) error {
 	lgr := us.Lgr("LogoutRequest")
 	lgr.Info("Called")
 
 	if req == nil {
 		return errors.New("missing request")
 	}
-	token, id, err := us.GetAuthParts(req)
+	token, id, err := us.GetAuthParts(ctx, req)
 
 	if err != nil {
 		return err
 	}
-	return us.Logout(id, token)
+	return us.Logout(ctx, id, token)
 }
 
-func (us *usersService) GetAuthParts(req *http.Request) (string, int64, error) {
+func (us *usersService) GetAuthParts(ctx gctx.Context, req *http.Request) (string, int64, error) {
 	// lgr := us.Lgr("GetAuthParts")
 	// lgr.Info("Called")
 

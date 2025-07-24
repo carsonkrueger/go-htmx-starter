@@ -1,6 +1,7 @@
 package private
 
 import (
+	gctx "context"
 	"net/http"
 	"strconv"
 
@@ -29,8 +30,8 @@ func (um privileges) Path() string {
 	return "/privileges"
 }
 
-func (um *privileges) PrivateRoute(b *builders.PrivateRouteBuilder) {
-	b.NewHandler().Register(builders.GET, "/select", um.privilegesSelectGet).SetPermissionName(PrivilegesSelectGet).Build()
+func (um *privileges) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBuilder) {
+	b.NewHandler().Register(builders.GET, "/select", um.privilegesSelectGet).SetPermissionName(PrivilegesSelectGet).Build(ctx)
 }
 
 func (r *privileges) privilegesSelectGet(res http.ResponseWriter, req *http.Request) {
@@ -39,20 +40,18 @@ func (r *privileges) privilegesSelectGet(res http.ResponseWriter, req *http.Requ
 	ctx := req.Context()
 
 	dao := r.DM().PrivilegeDAO()
-	levels, err := dao.Index(nil, r.DB())
+	levels, err := dao.Index(ctx, nil, r.DB())
 	if err != nil {
 		tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return
 	}
 
 	var options []datainput.SelectOptions
-	if levels != nil {
-		for _, lvl := range levels {
-			options = append(options, datainput.SelectOptions{
-				Value: strconv.FormatInt(lvl.ID, 10),
-				Label: lvl.Name,
-			})
-		}
+	for _, lvl := range levels {
+		options = append(options, datainput.SelectOptions{
+			Value: strconv.FormatInt(lvl.ID, 10),
+			Label: lvl.Name,
+		})
 	}
 
 	datainput.Select("privileges-select", "privileges", "", options, nil).Render(ctx, res)

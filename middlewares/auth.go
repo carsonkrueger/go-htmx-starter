@@ -19,14 +19,14 @@ func EnforceAuth(appCtx context.AppContext) func(next http.Handler) http.Handler
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			ctx := req.Context()
 
-			token, id, err := usersService.GetAuthParts(req)
+			token, id, err := usersService.GetAuthParts(ctx, req)
 			if err != nil {
 				tools.HandleError(req, res, lgr, err, 403, "Malformed auth token")
 				res.Header().Set("Hx-Redirect", "/login")
 				return
 			}
 
-			user, err := usersDAO.GetOne(id, appCtx.DB())
+			user, err := usersDAO.GetOne(ctx, id, appCtx.DB())
 			if err != nil {
 				tools.HandleError(req, res, lgr, err, 403, "Malformed auth token")
 				req.Header.Del(constant.AUTH_TOKEN_KEY)
@@ -38,7 +38,7 @@ func EnforceAuth(appCtx context.AppContext) func(next http.Handler) http.Handler
 				UserID:    id,
 				AuthToken: token,
 			}
-			session, err := sessionsDAO.GetOne(key, appCtx.DB())
+			session, err := sessionsDAO.GetOne(ctx, key, appCtx.DB())
 
 			if err != nil {
 				tools.HandleError(req, res, lgr, err, 403, "Malformed auth token")

@@ -16,7 +16,7 @@ func ApplyPermission(privilegeID int64, appCtx context.AppContext) func(next htt
 
 			levelID := context.GetPrivilegeLevelID(ctx)
 			cache := appCtx.SM().PrivilegesService()
-			permitted := cache.HasPermissionByID(levelID, privilegeID)
+			permitted := cache.HasPermissionByID(ctx, levelID, privilegeID)
 			if !permitted {
 				tools.HandleError(req, res, lgr, nil, 403, "Insufficient privileges")
 				return

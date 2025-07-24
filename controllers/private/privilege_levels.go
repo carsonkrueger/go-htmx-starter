@@ -1,6 +1,7 @@
 package private
 
 import (
+	gctx "context"
 	"net/http"
 	"strconv"
 
@@ -31,9 +32,9 @@ func (um privilegeLevels) Path() string {
 	return "/privilege-levels"
 }
 
-func (um *privilegeLevels) PrivateRoute(b *builders.PrivateRouteBuilder) {
-	b.NewHandler().Register(builders.GET, "/select", um.privilegeLevelsSelectGet).SetPermissionName(PrivilegeLevelsSelectGet).Build()
-	b.NewHandler().Register(builders.PUT, "/user/{user}", um.setUserLevelPut).SetPermissionName(SetUserLevelPut).Build()
+func (um *privilegeLevels) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBuilder) {
+	b.NewHandler().Register(builders.GET, "/select", um.privilegeLevelsSelectGet).SetPermissionName(PrivilegeLevelsSelectGet).Build(ctx)
+	b.NewHandler().Register(builders.PUT, "/user/{user}", um.setUserLevelPut).SetPermissionName(SetUserLevelPut).Build(ctx)
 }
 
 func (r *privilegeLevels) privilegeLevelsSelectGet(res http.ResponseWriter, req *http.Request) {
@@ -44,20 +45,18 @@ func (r *privilegeLevels) privilegeLevelsSelectGet(res http.ResponseWriter, req 
 	defaultLevel := req.URL.Query().Get("level")
 
 	dao := r.DM().PrivilegeLevelsDAO()
-	levels, err := dao.Index(nil, r.DB())
+	levels, err := dao.Index(ctx, nil, r.DB())
 	if err != nil {
 		tools.HandleError(req, res, lgr, err, 500, "Error fetching privilege levels")
 		return
 	}
 
 	var options []datainput.SelectOptions
-	if levels != nil {
-		for _, lvl := range levels {
-			options = append(options, datainput.SelectOptions{
-				Value: strconv.FormatInt(lvl.ID, 10),
-				Label: lvl.Name,
-			})
-		}
+	for _, lvl := range levels {
+		options = append(options, datainput.SelectOptions{
+			Value: strconv.FormatInt(lvl.ID, 10),
+			Label: lvl.Name,
+		})
 	}
 
 	datainput.Select("privileges-levels-select", "privilege-levels", defaultLevel, options, nil).Render(ctx, res)
@@ -87,7 +86,7 @@ func (r *privilegeLevels) setUserLevelPut(res http.ResponseWriter, req *http.Req
 		return
 	}
 
-	if err := r.SM().PrivilegesService().SetUserPrivilegeLevel(levelID, userIDInt); err != nil {
+	if err := r.SM().PrivilegesService().SetUserPrivilegeLevel(ctx, levelID, userIDInt); err != nil {
 		tools.HandleError(req, res, lgr, err, 500, "Error setting user privilege level")
 		return
 	}

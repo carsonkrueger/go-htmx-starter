@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	gctx "context"
 	"database/sql"
 
 	"github.com/carsonkrueger/main/cfg"
@@ -14,6 +15,7 @@ import (
 )
 
 func web() {
+	ctx := gctx.Background()
 	cfg := cfg.LoadConfig()
 	lgr := logger.NewLogger(&cfg)
 
@@ -42,7 +44,7 @@ func web() {
 	defer appCtx.CleanUp()
 
 	appRouter := router.NewAppRouter(appCtx)
-	appRouter.BuildRouter()
+	appRouter.BuildRouter(ctx)
 	if err := appRouter.Start(cfg); err != nil {
 		panic(err)
 	}

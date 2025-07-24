@@ -1,6 +1,7 @@
 package private
 
 import (
+	gctx "context"
 	"net/http"
 	"strconv"
 
@@ -32,9 +33,9 @@ func (um privilegeLevelsPrivileges) Path() string {
 	return "/privilege-levels-privileges"
 }
 
-func (um *privilegeLevelsPrivileges) PrivateRoute(b *builders.PrivateRouteBuilder) {
-	b.NewHandler().Register(builders.POST, "/", um.privilegeLevelsPrivilegesPost).SetPermissionName(PrivilegeLevelsPrivilegesPost).Build()
-	b.NewHandler().Register(builders.DELETE, "/level/{level}/privilege/{privilege}", um.privilegeLevelsPrivilegesDelete).SetPermissionName(PrivilegeLevelsPrivilegesDelete).Build()
+func (um *privilegeLevelsPrivileges) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBuilder) {
+	b.NewHandler().Register(builders.POST, "/", um.privilegeLevelsPrivilegesPost).SetPermissionName(PrivilegeLevelsPrivilegesPost).Build(ctx)
+	b.NewHandler().Register(builders.DELETE, "/level/{level}/privilege/{privilege}", um.privilegeLevelsPrivilegesDelete).SetPermissionName(PrivilegeLevelsPrivilegesDelete).Build(ctx)
 }
 
 func (r *privilegeLevelsPrivileges) privilegeLevelsPrivilegesPost(res http.ResponseWriter, req *http.Request) {
@@ -61,24 +62,24 @@ func (r *privilegeLevelsPrivileges) privilegeLevelsPrivilegesPost(res http.Respo
 		return
 	}
 
-	if r.SM().PrivilegesService().HasPermissionByID(levelInt, privilegeInt) {
+	if r.SM().PrivilegesService().HasPermissionByID(ctx, levelInt, privilegeInt) {
 		tools.HandleError(req, res, lgr, err, 400, "Privilege already exists")
 		return
 	}
 
-	priv, err := r.DM().PrivilegeDAO().GetOne(privilegeInt, r.DB())
+	priv, err := r.DM().PrivilegeDAO().GetOne(ctx, privilegeInt, r.DB())
 	if err != nil || priv == nil {
 		tools.HandleError(req, res, lgr, err, 404, "Privilege not found")
 		return
 	}
 
-	lvl, err := r.DM().PrivilegeLevelsDAO().GetOne(levelInt, r.DB())
+	lvl, err := r.DM().PrivilegeLevelsDAO().GetOne(ctx, levelInt, r.DB())
 	if err != nil || lvl == nil {
 		tools.HandleError(req, res, lgr, err, 404, "Privilege level not found")
 		return
 	}
 
-	if err = r.SM().PrivilegesService().CreatePrivilegeAssociation(levelInt, priv.ID); err != nil {
+	if err = r.SM().PrivilegesService().CreatePrivilegeAssociation(ctx, levelInt, priv.ID); err != nil {
 		tools.HandleError(req, res, lgr, err, 500, "Failed to add permission")
 		return
 	}
@@ -93,7 +94,7 @@ func (r *privilegeLevelsPrivileges) privilegeLevelsPrivilegesPost(res http.Respo
 				PrivilegeCreatedAt: priv.CreatedAt,
 			},
 		}
-		rows := r.SM().PrivilegesService().JoinedPrivilegesAsRowData(jpl)
+		rows := r.SM().PrivilegesService().JoinedPrivilegesAsRowData(ctx, jpl)
 		tr := datadisplay.BasicTR(rows[0])
 		toast := datadisplay.AddTextToast(datadisplay.Success, "Added privilege level", 3)
 		templ.Join(tr, toast).Render(ctx, res)
@@ -119,7 +120,7 @@ func (r *privilegeLevelsPrivileges) privilegeLevelsPrivilegesDelete(res http.Res
 		return
 	}
 
-	if err := r.SM().PrivilegesService().DeletePrivilegeAssociation(levelInt, privilegeInt); err != nil {
+	if err := r.SM().PrivilegesService().DeletePrivilegeAssociation(ctx, levelInt, privilegeInt); err != nil {
 		tools.HandleError(req, res, lgr, err, 500, "Failed to remove permission")
 		return
 	}

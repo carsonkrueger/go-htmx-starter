@@ -1,6 +1,7 @@
 package services
 
 import (
+	gctx "context"
 	"errors"
 	"fmt"
 	"strconv"
@@ -23,7 +24,7 @@ func NewPrivilegesService(ctx context.AppContext) *privilegesService {
 	return &privilegesService{ctx}
 }
 
-func (ps *privilegesService) CreatePrivilegeAssociation(levelID int64, privID int64) error {
+func (ps *privilegesService) CreatePrivilegeAssociation(ctx gctx.Context, levelID int64, privID int64) error {
 	lgr := ps.Lgr("AddPermission")
 	lgr.Info("Level:Privilege", zap.String(strconv.FormatInt(levelID, 10), strconv.FormatInt(privID, 10)))
 
@@ -33,7 +34,7 @@ func (ps *privilegesService) CreatePrivilegeAssociation(levelID int64, privID in
 	}
 	levelsPrivsDAO := ps.DM().PrivilegeLevelsPrivilegesDAO()
 
-	if err := levelsPrivsDAO.Upsert(&joinRow, ps.DB()); err != nil {
+	if err := levelsPrivsDAO.Upsert(ctx, &joinRow, ps.DB()); err != nil {
 		lgr.Error("Failed to insert privilege level privileges", zap.Error(err), zap.Any("privilegeLevelPrivileges", joinRow))
 		return err
 	}
@@ -41,7 +42,7 @@ func (ps *privilegesService) CreatePrivilegeAssociation(levelID int64, privID in
 	return nil
 }
 
-func (ps *privilegesService) CreateLevel(name string) error {
+func (ps *privilegesService) CreateLevel(ctx gctx.Context, name string) error {
 	lgr := ps.Lgr("CreateLevel")
 	lgr.Info("Called")
 
@@ -49,23 +50,23 @@ func (ps *privilegesService) CreateLevel(name string) error {
 		Name: name,
 	}
 	levelsDAO := ps.DM().PrivilegeLevelsDAO()
-	if err := levelsDAO.Insert(&row, ps.DB()); err != nil {
+	if err := levelsDAO.Insert(ctx, &row, ps.DB()); err != nil {
 		lgr.Error("Failed to create level", zap.Error(err))
 		return errors.New("Failed to create level")
 	}
 	return nil
 }
 
-func (ps *privilegesService) HasPermissionByID(levelID int64, permissionID int64) bool {
+func (ps *privilegesService) HasPermissionByID(ctx gctx.Context, levelID int64, permissionID int64) bool {
 	pk := auth_models.PrivilegeLevelsPrivilegesPrimaryKey{
 		PrivilegeID:      permissionID,
 		PrivilegeLevelID: levelID,
 	}
-	row, err := ps.DM().PrivilegeLevelsPrivilegesDAO().GetOne(pk, ps.DB())
+	row, err := ps.DM().PrivilegeLevelsPrivilegesDAO().GetOne(ctx, pk, ps.DB())
 	return row != nil && err == nil
 }
 
-func (ps *privilegesService) DeletePrivilegeAssociation(levelID int64, privID int64) error {
+func (ps *privilegesService) DeletePrivilegeAssociation(ctx gctx.Context, levelID int64, privID int64) error {
 	lgr := ps.Lgr("DeletePrivilegeAssociation")
 	lgr.Info("Called")
 
@@ -73,34 +74,34 @@ func (ps *privilegesService) DeletePrivilegeAssociation(levelID int64, privID in
 		PrivilegeID:      privID,
 		PrivilegeLevelID: levelID,
 	}
-	if err := ps.DM().PrivilegeLevelsPrivilegesDAO().Delete(pk, ps.DB()); err != nil {
+	if err := ps.DM().PrivilegeLevelsPrivilegesDAO().Delete(ctx, pk, ps.DB()); err != nil {
 		return nil
 	}
 
 	return nil
 }
 
-func (us *privilegesService) SetUserPrivilegeLevel(levelID int64, userID int64) error {
+func (us *privilegesService) SetUserPrivilegeLevel(ctx gctx.Context, levelID int64, userID int64) error {
 	lgr := us.Lgr("SetUserPrivilegeLevel")
 	lgr.Info("Called")
 
 	db := us.DB()
 	levelDAO := us.DM().PrivilegeLevelsDAO()
-	level, err := levelDAO.GetOne(levelID, db)
+	level, err := levelDAO.GetOne(ctx, levelID, db)
 	if err != nil {
 		lgr.Error("Error fetching privilege level", zap.Error(err))
 		return err
 	}
 
 	userDAO := us.DM().UsersDAO()
-	user, err := userDAO.GetOne(userID, db)
+	user, err := userDAO.GetOne(ctx, userID, db)
 	if err != nil {
 		lgr.Error("Error fetching user", zap.Error(err))
 		return err
 	}
 
 	user.PrivilegeLevelID = level.ID
-	if err := userDAO.Update(user, user.ID, db); err != nil {
+	if err := userDAO.Update(ctx, user, user.ID, db); err != nil {
 		lgr.Error("Error updating user", zap.Error(err))
 		return err
 	}
@@ -108,7 +109,7 @@ func (us *privilegesService) SetUserPrivilegeLevel(levelID int64, userID int64) 
 	return nil
 }
 
-func (us *privilegesService) UserPrivilegeLevelJoinAsRowData(upl []auth_models.UserPrivilegeLevelJoin, allLevels []*model.PrivilegeLevels) []datadisplay.RowData {
+func (us *privilegesService) UserPrivilegeLevelJoinAsRowData(ctx gctx.Context, upl []auth_models.UserPrivilegeLevelJoin, allLevels []*model.PrivilegeLevels) []datadisplay.RowData {
 	levelOptions := make([]datainput.SelectOptions, len(allLevels))
 	for i, level := range allLevels {
 		levelOptions[i].Label = level.Name
@@ -156,7 +157,7 @@ func (us *privilegesService) UserPrivilegeLevelJoinAsRowData(upl []auth_models.U
 	return rows
 }
 
-func (us *privilegesService) JoinedPrivilegeLevelAsRowData(jpl []auth_models.JoinedPrivilegeLevel) []datadisplay.RowData {
+func (us *privilegesService) JoinedPrivilegeLevelAsRowData(ctx gctx.Context, jpl []auth_models.JoinedPrivilegeLevel) []datadisplay.RowData {
 	rows := make([]datadisplay.RowData, len(jpl))
 	for i, j := range jpl {
 		rows[i] = datadisplay.RowData{
@@ -183,7 +184,7 @@ func (us *privilegesService) JoinedPrivilegeLevelAsRowData(jpl []auth_models.Joi
 	return rows
 }
 
-func (us *privilegesService) JoinedPrivilegesAsRowData(jpl []auth_models.JoinedPrivilegesRaw) []datadisplay.RowData {
+func (us *privilegesService) JoinedPrivilegesAsRowData(ctx gctx.Context, jpl []auth_models.JoinedPrivilegesRaw) []datadisplay.RowData {
 	rows := make([]datadisplay.RowData, len(jpl))
 	for i, p := range jpl {
 		ca := p.PrivilegeCreatedAt

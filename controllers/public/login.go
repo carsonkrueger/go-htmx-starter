@@ -61,7 +61,7 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	password := form.Get("password")
 
 	usersService := l.SM().UsersService()
-	authToken, err := usersService.Login(email, password, req)
+	authToken, err := usersService.Login(ctx, email, password, req)
 	if err != nil {
 		lgr.Warn("Could not login")
 		res.WriteHeader(422)
@@ -86,13 +86,13 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		allLevels, err := l.DM().PrivilegeLevelsDAO().Index(nil, l.DB())
+		allLevels, err := l.DM().PrivilegeLevelsDAO().Index(ctx, nil, l.DB())
 		if err != nil || allLevels == nil {
 			tools.HandleError(req, res, lgr, err, 500, "Error fetching privilege levels")
 			return
 		}
 
-		rows := l.SM().PrivilegesService().UserPrivilegeLevelJoinAsRowData(*users, allLevels)
+		rows := l.SM().PrivilegesService().UserPrivilegeLevelJoinAsRowData(ctx, *users, allLevels)
 		page := pages.UserManagementUsers(rows)
 		render.Tab(req, private.UserManagementTabModels, 0, page).Render(ctx, res)
 	}

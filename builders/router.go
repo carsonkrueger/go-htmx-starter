@@ -1,6 +1,7 @@
 package builders
 
 import (
+	gctx "context"
 	"net/http"
 
 	"github.com/carsonkrueger/main/context"
@@ -34,7 +35,7 @@ func NewPrivateRouteBuilder(appCtx context.AppContext) PrivateRouteBuilder {
 }
 
 type PrivateRoute interface {
-	PrivateRoute(b *PrivateRouteBuilder)
+	PrivateRoute(ctx gctx.Context, b *PrivateRouteBuilder)
 }
 
 type AppPrivateRoute interface {
