@@ -39,27 +39,23 @@ func GetPrivilegeLevelID(ctx gctx.Context) int64 {
 
 var DB_CONNECTION_KEY = "DB_CONNECTION"
 
-func WithDB(ctx gctx.Context, db *sql.DB) gctx.Context {
+func WithDB(ctx gctx.Context, db qrm.DB) gctx.Context {
 	return gctx.WithValue(ctx, DB_CONNECTION_KEY, db)
 }
 
 func GetDB(ctx gctx.Context) qrm.DB {
-	db := ctx.Value(DB_CONNECTION_KEY)
-	switch sdb := db.(type) {
-	case qrm.DB:
-		return sdb
-	default:
-		return nil
-	}
+	return ctx.Value(DB_CONNECTION_KEY).(qrm.DB)
 }
 
-func BeginTx(ctx gctx.Context) (*sql.Tx, error) {
+func BeginTx(ctx gctx.Context) (gctx.Context, *sql.Tx, error) {
 	switch db := GetDB(ctx).(type) {
 	case *sql.DB:
-		return db.BeginTx(ctx, nil)
+		tx, err := db.BeginTx(ctx, nil)
+		ctx = WithDB(ctx, tx)
+		return ctx, tx, err
 	case *sql.Tx:
-		return db, nil
+		return ctx, db, nil
 	default:
-		return nil, errors.New("unsupported database type")
+		return ctx, nil, errors.New("unsupported database type")
 	}
 }
