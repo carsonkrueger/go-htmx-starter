@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"database/sql"
+	gctx "context"
 	"time"
 
 	"github.com/carsonkrueger/main/context"
@@ -12,13 +12,11 @@ import (
 )
 
 type privilegesDAO struct {
-	db *sql.DB
 	context.DAOBaseQueries[int64, model.Privileges]
 }
 
-func NewPrivilegesDAO(db *sql.DB) *privilegesDAO {
+func NewPrivilegesDAO() *privilegesDAO {
 	dao := &privilegesDAO{
-		db:             db,
 		DAOBaseQueries: nil,
 	}
 	queries := newDAOQueryable[int64, model.Privileges](dao)
@@ -67,7 +65,7 @@ func (dao *privilegesDAO) GetUpdatedAt(row *model.Privileges) *time.Time {
 	return row.UpdatedAt
 }
 
-func (dao *privilegesDAO) GetAllJoined() ([]auth_models.JoinedPrivilegesRaw, error) {
+func (dao *privilegesDAO) GetAllJoined(ctx gctx.Context) ([]auth_models.JoinedPrivilegesRaw, error) {
 	var res []auth_models.JoinedPrivilegesRaw
 
 	err := table.PrivilegeLevels.
@@ -84,7 +82,7 @@ func (dao *privilegesDAO) GetAllJoined() ([]auth_models.JoinedPrivilegesRaw, err
 				LEFT_JOIN(table.Privileges, table.Privileges.ID.EQ(table.PrivilegeLevelsPrivileges.PrivilegeID)),
 		).
 		ORDER_BY(table.PrivilegeLevels.Name.ASC(), table.Privileges.Name.ASC()).
-		Query(dao.db, &res)
+		Query(context.GetDB(ctx), &res)
 
 	if err != nil {
 		return nil, err
@@ -93,7 +91,7 @@ func (dao *privilegesDAO) GetAllJoined() ([]auth_models.JoinedPrivilegesRaw, err
 	return res, nil
 }
 
-func (dao *privilegesDAO) GetPrivilegesByLevelID(levelID int64) ([]model.PrivilegeLevels, error) {
+func (dao *privilegesDAO) GetPrivilegesByLevelID(ctx gctx.Context, levelID int64) ([]model.PrivilegeLevels, error) {
 	var privileges []model.PrivilegeLevels
 	err := table.PrivilegeLevelsPrivileges.
 		SELECT(
@@ -105,7 +103,7 @@ func (dao *privilegesDAO) GetPrivilegesByLevelID(levelID int64) ([]model.Privile
 			table.PrivilegeLevelsPrivileges.
 				LEFT_JOIN(table.Privileges, table.Privileges.ID.EQ(table.PrivilegeLevelsPrivileges.PrivilegeLevelID)),
 		).
-		Query(dao.db, &privileges)
+		Query(context.GetDB(ctx), &privileges)
 	if err != nil {
 		return privileges, err
 	}

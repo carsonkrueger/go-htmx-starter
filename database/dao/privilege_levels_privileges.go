@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/carsonkrueger/main/context"
@@ -12,13 +11,11 @@ import (
 )
 
 type privilegeLevelsPrivilegesDAO struct {
-	db *sql.DB
 	context.DAOBaseQueries[auth_models.PrivilegeLevelsPrivilegesPrimaryKey, model.PrivilegeLevelsPrivileges]
 }
 
-func NewPrivilegeLevelsPrivilegesDAO(db *sql.DB) *privilegeLevelsPrivilegesDAO {
+func NewPrivilegeLevelsPrivilegesDAO() *privilegeLevelsPrivilegesDAO {
 	dao := &privilegeLevelsPrivilegesDAO{
-		db:             db,
 		DAOBaseQueries: nil,
 	}
 	queries := newDAOQueryable[auth_models.PrivilegeLevelsPrivilegesPrimaryKey, model.PrivilegeLevelsPrivileges](dao)

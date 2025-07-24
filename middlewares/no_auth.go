@@ -12,7 +12,7 @@ func NoAuth(appCtx context.AppContext) func(next http.Handler) http.Handler {
 			ctx := req.Context()
 			db := appCtx.DB()
 			ctx = context.WithDB(ctx, db)
-			req.WithContext(ctx)
+			req = req.WithContext(ctx)
 			next.ServeHTTP(res, req)
 		})
 	}

@@ -30,7 +30,7 @@ func web() {
 	}
 	ctx = context.WithDB(ctx, db)
 
-	dm := dao.NewDAOManager(db)
+	dm := dao.NewDAOManager()
 	// DB-END
 	sm := services.NewServiceManager(nil)
 	appCtx := context.NewAppContext(

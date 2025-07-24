@@ -37,6 +37,8 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	lgr := l.Lgr("postLogin")
 	lgr.Info("Called")
 	ctx := req.Context()
+	db := context.GetDB(ctx)
+	db.Query("select 1;")
 
 	if err := req.ParseForm(); err != nil {
 		lgr.Error("Could not parse form", zap.Error(err))
@@ -75,7 +77,7 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	hxRequest := tools.IsHxRequest(req)
 	if hxRequest {
 		dao := l.DM().UsersDAO()
-		users, err := dao.GetUserPrivilegeJoinAll()
+		users, err := dao.GetUserPrivilegeJoinAll(ctx)
 		if err != nil || users == nil {
 			tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 			return

@@ -50,7 +50,7 @@ func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *h
 	ctx := req.Context()
 
 	dao := um.DM().UsersDAO()
-	users, err := dao.GetUserPrivilegeJoinAll()
+	users, err := dao.GetUserPrivilegeJoinAll(ctx)
 	if err != nil || users == nil {
 		tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return
@@ -77,7 +77,7 @@ func (um *userManagement) userManagementLevelsGet(res http.ResponseWriter, req *
 	lgr.Info("Called")
 	ctx := req.Context()
 
-	privileges, err := um.DM().PrivilegeDAO().GetAllJoined()
+	privileges, err := um.DM().PrivilegeDAO().GetAllJoined(ctx)
 	if err != nil {
 		tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return

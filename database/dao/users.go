@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"database/sql"
+	gctx "context"
 	"time"
 
 	"github.com/carsonkrueger/main/context"
@@ -12,13 +12,11 @@ import (
 )
 
 type usersDAO struct {
-	db *sql.DB
 	context.DAOBaseQueries[int64, model.Users]
 }
 
-func NewUsersDAO(db *sql.DB) context.UsersDAO {
+func NewUsersDAO() context.UsersDAO {
 	dao := &usersDAO{
-		db:             db,
 		DAOBaseQueries: nil,
 	}
 	queries := newDAOQueryable[int64, model.Users](dao)
@@ -65,14 +63,14 @@ func (dao *usersDAO) GetUpdatedAt(row *model.Users) *time.Time {
 	return row.UpdatedAt
 }
 
-func (dao *usersDAO) GetByEmail(email string) (*model.Users, error) {
+func (dao *usersDAO) GetByEmail(ctx gctx.Context, email string) (*model.Users, error) {
 	var user model.Users
 	err := table.Users.
 		SELECT(table.Users.AllColumns).
 		FROM(table.Users).
 		WHERE(table.Users.Email.EQ(postgres.String(email))).
 		LIMIT(1).
-		Query(dao.db, &user)
+		Query(context.GetDB(ctx), &user)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +81,7 @@ type PrivilegeLevelIDResponse struct {
 	PrivilegeID int64
 }
 
-func (dao *usersDAO) GetPrivilegeLevelID(userID int64) (*int64, error) {
+func (dao *usersDAO) GetPrivilegeLevelID(ctx gctx.Context, userID int64) (*int64, error) {
 	var res PrivilegeLevelIDResponse
 
 	err := table.Users.
@@ -91,7 +89,7 @@ func (dao *usersDAO) GetPrivilegeLevelID(userID int64) (*int64, error) {
 		FROM(table.Users).
 		WHERE(table.Users.ID.EQ(postgres.Int(userID))).
 		LIMIT(1).
-		Query(dao.db, &res)
+		Query(context.GetDB(ctx), &res)
 
 	if err != nil {
 		return nil, err
@@ -99,12 +97,12 @@ func (dao *usersDAO) GetPrivilegeLevelID(userID int64) (*int64, error) {
 	return &res.PrivilegeID, nil
 }
 
-func (dao *usersDAO) GetUserPrivilegeJoinAll() (*[]auth_models.UserPrivilegeLevelJoin, error) {
+func (dao *usersDAO) GetUserPrivilegeJoinAll(ctx gctx.Context) (*[]auth_models.UserPrivilegeLevelJoin, error) {
 	var rows []auth_models.UserPrivilegeLevelJoin
 	err := table.Users.
 		LEFT_JOIN(table.PrivilegeLevels, table.Users.PrivilegeLevelID.EQ(table.PrivilegeLevels.ID)).
 		SELECT(table.Users.AllColumns, table.PrivilegeLevels.Name).
-		Query(dao.db, &rows)
+		Query(context.GetDB(ctx), &rows)
 	if err != nil {
 		return nil, err
 	}

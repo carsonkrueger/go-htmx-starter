@@ -44,9 +44,10 @@ func WithDB(ctx gctx.Context, db *sql.DB) gctx.Context {
 }
 
 func GetDB(ctx gctx.Context) qrm.DB {
-	switch db := ctx.Value(DB_CONNECTION_KEY).(type) {
+	db := ctx.Value(DB_CONNECTION_KEY)
+	switch sdb := db.(type) {
 	case qrm.DB:
-		return db
+		return sdb
 	default:
 		return nil
 	}

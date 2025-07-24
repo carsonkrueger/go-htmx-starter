@@ -1,7 +1,6 @@
 package dao
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/carsonkrueger/main/context"
@@ -12,13 +11,11 @@ import (
 )
 
 type sessionsDAO struct {
-	db *sql.DB
 	context.DAOBaseQueries[auth_models.SessionsPrimaryKey, model.Sessions]
 }
 
-func NewSessionsDAO(db *sql.DB) *sessionsDAO {
+func NewSessionsDAO() *sessionsDAO {
 	dao := &sessionsDAO{
-		db:             db,
 		DAOBaseQueries: nil,
 	}
 	queries := newDAOQueryable[auth_models.SessionsPrimaryKey, model.Sessions](dao)

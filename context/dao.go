@@ -68,15 +68,15 @@ type DAOManager interface {
 
 type UsersDAO interface {
 	DAO[int64, model.Users]
-	GetByEmail(email string) (*model.Users, error)
-	GetPrivilegeLevelID(id int64) (*int64, error)
-	GetUserPrivilegeJoinAll() (*[]auth_models.UserPrivilegeLevelJoin, error)
+	GetByEmail(ctx gctx.Context, email string) (*model.Users, error)
+	GetPrivilegeLevelID(ctx gctx.Context, id int64) (*int64, error)
+	GetUserPrivilegeJoinAll(ctx gctx.Context) (*[]auth_models.UserPrivilegeLevelJoin, error)
 }
 
 type PrivilegeDAO interface {
 	DAO[int64, model.Privileges]
-	GetAllJoined() ([]auth_models.JoinedPrivilegesRaw, error)
-	GetPrivilegesByLevelID(levelID int64) ([]model.PrivilegeLevels, error)
+	GetAllJoined(ctx gctx.Context) ([]auth_models.JoinedPrivilegesRaw, error)
+	GetPrivilegesByLevelID(ctx gctx.Context, levelID int64) ([]model.PrivilegeLevels, error)
 }
 
 type SessionsDAO interface {

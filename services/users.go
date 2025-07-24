@@ -30,7 +30,7 @@ func (us *usersService) Login(ctx gctx.Context, email string, password string, r
 	lgr.Info("Called")
 	dao := us.DM().UsersDAO()
 
-	user, err := dao.GetByEmail(email)
+	user, err := dao.GetByEmail(ctx, email)
 	if err != nil {
 		return nil, err
 	}
