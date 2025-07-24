@@ -53,7 +53,7 @@ func (mb *privateHandlerBuilder) Build(ctx gctx.Context) {
 	r := mb.router
 	if mb.permissionName != nil {
 		priv := model.Privileges{Name: *mb.permissionName}
-		privDAO.Upsert(ctx, &priv, mb.appCtx.DB())
+		privDAO.Upsert(ctx, &priv)
 		r = mb.router.With(middlewares.ApplyPermission(priv.ID, mb.appCtx))
 	}
 	if len(mb.mw) > 0 {

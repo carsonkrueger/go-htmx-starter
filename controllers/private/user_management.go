@@ -61,7 +61,7 @@ func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *h
 		return
 	}
 
-	allLevels, err := um.DM().PrivilegeLevelsDAO().Index(ctx, nil, um.DB())
+	allLevels, err := um.DM().PrivilegeLevelsDAO().Index(ctx, nil)
 	if err != nil || allLevels == nil {
 		tools.HandleError(req, res, lgr, err, 500, "Error fetching privilege levels")
 		return

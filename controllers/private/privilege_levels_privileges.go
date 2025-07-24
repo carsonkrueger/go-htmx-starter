@@ -67,13 +67,13 @@ func (r *privilegeLevelsPrivileges) privilegeLevelsPrivilegesPost(res http.Respo
 		return
 	}
 
-	priv, err := r.DM().PrivilegeDAO().GetOne(ctx, privilegeInt, r.DB())
+	priv, err := r.DM().PrivilegeDAO().GetOne(ctx, privilegeInt)
 	if err != nil || priv == nil {
 		tools.HandleError(req, res, lgr, err, 404, "Privilege not found")
 		return
 	}
 
-	lvl, err := r.DM().PrivilegeLevelsDAO().GetOne(ctx, levelInt, r.DB())
+	lvl, err := r.DM().PrivilegeLevelsDAO().GetOne(ctx, levelInt)
 	if err != nil || lvl == nil {
 		tools.HandleError(req, res, lgr, err, 404, "Privilege level not found")
 		return

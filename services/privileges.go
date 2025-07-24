@@ -34,7 +34,7 @@ func (ps *privilegesService) CreatePrivilegeAssociation(ctx gctx.Context, levelI
 	}
 	levelsPrivsDAO := ps.DM().PrivilegeLevelsPrivilegesDAO()
 
-	if err := levelsPrivsDAO.Upsert(ctx, &joinRow, ps.DB()); err != nil {
+	if err := levelsPrivsDAO.Upsert(ctx, &joinRow); err != nil {
 		lgr.Error("Failed to insert privilege level privileges", zap.Error(err), zap.Any("privilegeLevelPrivileges", joinRow))
 		return err
 	}
@@ -50,7 +50,7 @@ func (ps *privilegesService) CreateLevel(ctx gctx.Context, name string) error {
 		Name: name,
 	}
 	levelsDAO := ps.DM().PrivilegeLevelsDAO()
-	if err := levelsDAO.Insert(ctx, &row, ps.DB()); err != nil {
+	if err := levelsDAO.Insert(ctx, &row); err != nil {
 		lgr.Error("Failed to create level", zap.Error(err))
 		return errors.New("Failed to create level")
 	}
@@ -62,7 +62,7 @@ func (ps *privilegesService) HasPermissionByID(ctx gctx.Context, levelID int64, 
 		PrivilegeID:      permissionID,
 		PrivilegeLevelID: levelID,
 	}
-	row, err := ps.DM().PrivilegeLevelsPrivilegesDAO().GetOne(ctx, pk, ps.DB())
+	row, err := ps.DM().PrivilegeLevelsPrivilegesDAO().GetOne(ctx, pk)
 	return row != nil && err == nil
 }
 
@@ -74,7 +74,7 @@ func (ps *privilegesService) DeletePrivilegeAssociation(ctx gctx.Context, levelI
 		PrivilegeID:      privID,
 		PrivilegeLevelID: levelID,
 	}
-	if err := ps.DM().PrivilegeLevelsPrivilegesDAO().Delete(ctx, pk, ps.DB()); err != nil {
+	if err := ps.DM().PrivilegeLevelsPrivilegesDAO().Delete(ctx, pk); err != nil {
 		return nil
 	}
 
@@ -85,23 +85,22 @@ func (us *privilegesService) SetUserPrivilegeLevel(ctx gctx.Context, levelID int
 	lgr := us.Lgr("SetUserPrivilegeLevel")
 	lgr.Info("Called")
 
-	db := us.DB()
 	levelDAO := us.DM().PrivilegeLevelsDAO()
-	level, err := levelDAO.GetOne(ctx, levelID, db)
+	level, err := levelDAO.GetOne(ctx, levelID)
 	if err != nil {
 		lgr.Error("Error fetching privilege level", zap.Error(err))
 		return err
 	}
 
 	userDAO := us.DM().UsersDAO()
-	user, err := userDAO.GetOne(ctx, userID, db)
+	user, err := userDAO.GetOne(ctx, userID)
 	if err != nil {
 		lgr.Error("Error fetching user", zap.Error(err))
 		return err
 	}
 
 	user.PrivilegeLevelID = level.ID
-	if err := userDAO.Update(ctx, user, user.ID, db); err != nil {
+	if err := userDAO.Update(ctx, user, user.ID); err != nil {
 		lgr.Error("Error updating user", zap.Error(err))
 		return err
 	}

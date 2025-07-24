@@ -145,38 +145,38 @@ func newDAOQueryable[PK context.PrimaryKey, R any](dao context.DAO[PK, R]) baseD
 	}
 }
 
-func (q *baseDAOQueryable[PK, R]) Index(ctx gctx.Context, params *models.SearchParams, db qrm.Queryable) ([]*R, error) {
-	return index(ctx, q.Dao, params, db)
+func (q *baseDAOQueryable[PK, R]) Index(ctx gctx.Context, params *models.SearchParams) ([]*R, error) {
+	return index(ctx, q.Dao, params, context.GetDB(ctx))
 }
 
-func (q *baseDAOQueryable[PK, R]) GetOne(ctx gctx.Context, pk PK, db qrm.Queryable) (*R, error) {
-	return getOne(ctx, q.Dao, pk, db)
+func (q *baseDAOQueryable[PK, R]) GetOne(ctx gctx.Context, pk PK) (*R, error) {
+	return getOne(ctx, q.Dao, pk, context.GetDB(ctx))
 }
 
-func (q *baseDAOQueryable[PK, R]) GetMany(ctx gctx.Context, where postgres.BoolExpression, db qrm.Queryable) ([]*R, error) {
-	return getMany(ctx, q.Dao, where, db)
+func (q *baseDAOQueryable[PK, R]) GetMany(ctx gctx.Context, where postgres.BoolExpression) ([]*R, error) {
+	return getMany(ctx, q.Dao, where, context.GetDB(ctx))
 }
 
-func (q *baseDAOQueryable[PK, R]) Insert(ctx gctx.Context, model *R, db qrm.Queryable) error {
-	return insert(ctx, q.Dao, model, db)
+func (q *baseDAOQueryable[PK, R]) Insert(ctx gctx.Context, model *R) error {
+	return insert(ctx, q.Dao, model, context.GetDB(ctx))
 }
 
-func (q *baseDAOQueryable[PK, R]) InsertMany(ctx gctx.Context, models *[]*R, db qrm.Queryable) error {
-	return insertMany(ctx, q.Dao, models, db)
+func (q *baseDAOQueryable[PK, R]) InsertMany(ctx gctx.Context, models *[]*R) error {
+	return insertMany(ctx, q.Dao, models, context.GetDB(ctx))
 }
 
-func (q *baseDAOQueryable[PK, R]) Upsert(ctx gctx.Context, model *R, db qrm.Queryable) error {
-	return upsert(ctx, q.Dao, model, db)
+func (q *baseDAOQueryable[PK, R]) Upsert(ctx gctx.Context, model *R) error {
+	return upsert(ctx, q.Dao, model, context.GetDB(ctx))
 }
 
-func (q *baseDAOQueryable[PK, R]) UpsertMany(ctx gctx.Context, models *[]*R, db qrm.Queryable) error {
-	return upsertMany(ctx, q.Dao, models, db)
+func (q *baseDAOQueryable[PK, R]) UpsertMany(ctx gctx.Context, models *[]*R) error {
+	return upsertMany(ctx, q.Dao, models, context.GetDB(ctx))
 }
 
-func (q *baseDAOQueryable[PK, R]) Update(ctx gctx.Context, model *R, pk PK, db qrm.Queryable) error {
-	return update(ctx, q.Dao, model, pk, db)
+func (q *baseDAOQueryable[PK, R]) Update(ctx gctx.Context, model *R, pk PK) error {
+	return update(ctx, q.Dao, model, pk, context.GetDB(ctx))
 }
 
-func (q *baseDAOQueryable[PK, R]) Delete(ctx gctx.Context, pk PK, db qrm.Executable) error {
-	return delete(ctx, q.Dao, pk, db)
+func (q *baseDAOQueryable[PK, R]) Delete(ctx gctx.Context, pk PK) error {
+	return delete(ctx, q.Dao, pk, context.GetDB(ctx))
 }

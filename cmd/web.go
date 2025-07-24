@@ -21,13 +21,14 @@ func web() {
 
 	// DB-START
 	db, err := sql.Open("postgres", cfg.DbUrl())
-	defer db.Close()
 	if err != nil {
 		panic(err)
 	}
+	defer db.Close()
 	if db == nil {
 		panic("Database connection is nil")
 	}
+	ctx = context.WithDB(ctx, db)
 
 	dm := dao.NewDAOManager(db)
 	// DB-END

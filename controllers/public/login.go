@@ -86,7 +86,7 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		allLevels, err := l.DM().PrivilegeLevelsDAO().Index(ctx, nil, l.DB())
+		allLevels, err := l.DM().PrivilegeLevelsDAO().Index(ctx, nil)
 		if err != nil || allLevels == nil {
 			tools.HandleError(req, res, lgr, err, 500, "Error fetching privilege levels")
 			return

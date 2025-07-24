@@ -52,7 +52,7 @@ func (us *usersService) Login(ctx gctx.Context, email string, password string, r
 		Token:  token,
 	}
 	sesDAO := us.DM().SessionsDAO()
-	if err = sesDAO.Insert(ctx, row, us.DB()); err != nil {
+	if err = sesDAO.Insert(ctx, row); err != nil {
 		return nil, err
 	}
 
@@ -68,7 +68,7 @@ func (us *usersService) Logout(ctx gctx.Context, id int64, token string) error {
 		AuthToken: token,
 	}
 	sesDAO := us.DM().SessionsDAO()
-	return sesDAO.Delete(ctx, key, us.DB())
+	return sesDAO.Delete(ctx, key)
 }
 
 func (us *usersService) LogoutRequest(ctx gctx.Context, req *http.Request) error {

@@ -8,7 +8,6 @@ import (
 	"github.com/carsonkrueger/main/models"
 	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/go-jet/jet/v2/postgres"
-	"github.com/go-jet/jet/v2/qrm"
 )
 
 type PostgresTable interface {
@@ -39,15 +38,15 @@ type GetTable interface {
 }
 
 type DAOBaseQueries[PK PrimaryKey, R any] interface {
-	Index(ctx gctx.Context, params *models.SearchParams, db qrm.Queryable) ([]*R, error)
-	GetOne(ctx gctx.Context, pk PK, db qrm.Queryable) (*R, error)
-	GetMany(ctx gctx.Context, where postgres.BoolExpression, db qrm.Queryable) ([]*R, error)
-	Insert(ctx gctx.Context, model *R, db qrm.Queryable) error
-	InsertMany(ctx gctx.Context, models *[]*R, db qrm.Queryable) error
-	Upsert(ctx gctx.Context, model *R, db qrm.Queryable) error
-	UpsertMany(ctx gctx.Context, models *[]*R, db qrm.Queryable) error
-	Update(ctx gctx.Context, model *R, pk PK, db qrm.Queryable) error
-	Delete(ctx gctx.Context, pk PK, db qrm.Executable) error
+	Index(ctx gctx.Context, params *models.SearchParams) ([]*R, error)
+	GetOne(ctx gctx.Context, pk PK) (*R, error)
+	GetMany(ctx gctx.Context, where postgres.BoolExpression) ([]*R, error)
+	Insert(ctx gctx.Context, model *R) error
+	InsertMany(ctx gctx.Context, models *[]*R) error
+	Upsert(ctx gctx.Context, model *R) error
+	UpsertMany(ctx gctx.Context, models *[]*R) error
+	Update(ctx gctx.Context, model *R, pk PK) error
+	Delete(ctx gctx.Context, pk PK) error
 }
 
 type DAO[PK any, R any] interface {

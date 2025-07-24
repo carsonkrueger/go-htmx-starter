@@ -53,8 +53,9 @@ func NewAppRouter(appCtx context.AppContext) AppRouter {
 }
 
 func (a *AppRouter) BuildRouter(ctx gctx.Context) {
-	a.router = chi.NewRouter()
 	lgr := a.appCtx.Lgr("BuildRouter")
+	a.router = chi.NewRouter()
+	a.router = a.router.With(middlewares.NoAuth(a.appCtx))
 
 	for _, r := range a.public {
 		router := chi.NewRouter()

@@ -40,7 +40,7 @@ func (r *privileges) privilegesSelectGet(res http.ResponseWriter, req *http.Requ
 	ctx := req.Context()
 
 	dao := r.DM().PrivilegeDAO()
-	levels, err := dao.Index(ctx, nil, r.DB())
+	levels, err := dao.Index(ctx, nil)
 	if err != nil {
 		tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return
