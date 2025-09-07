@@ -79,7 +79,7 @@ func (a *AppRouter) BuildRouter(ctx gctx.Context) {
 
 func (a *AppRouter) Start(cfg cfg.Config) error {
 	if a.router == nil {
-		return errors.New("AppRouter has no router. Did you forget to call BuildRouter().")
+		return errors.New("AppRouter has no router. Did you forget to call BuildRouter?")
 	}
 
 	a.addr = fmt.Sprintf("%v:%v", cfg.Host, cfg.Port)

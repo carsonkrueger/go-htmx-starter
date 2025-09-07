@@ -84,6 +84,7 @@ To run the application locally, follow these steps:
 Run `make remove-db-files` to remove all files and source related to the database.
 This uses markers to define areas in the source code that are database specific.
 You will still need to remove all the imports that are no longer needed/existing.
+If you'd like the imports resolved automatically, you can install and run the `goimports` cli tool.
 
 # Don't like the 'DB-START' markers in your source code?
 

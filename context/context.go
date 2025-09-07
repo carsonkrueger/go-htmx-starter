@@ -9,6 +9,11 @@ import (
 	"github.com/go-jet/jet/v2/qrm"
 )
 
+var (
+	ErrTransactionAlreadyStarted = errors.New("context transaction has already started")
+	ErrUnsupportedDatabase       = errors.New("unsupported context database")
+)
+
 func WithToken(ctx gctx.Context, token string) gctx.Context {
 	return gctx.WithValue(ctx, constant.AUTH_TOKEN_KEY, token)
 }
@@ -70,8 +75,8 @@ func BeginTx(ctx gctx.Context) (gctx.Context, *sql.Tx, error) {
 		}
 		return ctx, tx, err
 	case *sql.Tx:
-		return ctx, db, nil
+		return ctx, db, ErrTransactionAlreadyStarted
 	default:
-		return ctx, nil, errors.New("unsupported database type")
+		return ctx, nil, ErrUnsupportedDatabase
 	}
 }
