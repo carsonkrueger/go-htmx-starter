@@ -1,8 +1,9 @@
 package page_layouts
 
-import "fmt"
-
-const TabContentID = "tab-content"
+import (
+	"fmt"
+	"github.com/carsonkrueger/main/templates/constants"
+)
 
 type TabModel struct {
 	Title   string
@@ -14,19 +15,19 @@ templ Tabs(tabs []TabModel, selectedTabIndex int) {
 	<div class="flex text-lg shadow-md">
 		for i, tab := range tabs {
 			{{
-					class := "border-b-transparent"
-					selected := i == selectedTabIndex
-					if selected {
-						class = "border-b-secondary"
-					}
-					id := fmt.Sprintf("tab-%s", tab.HxGet)
+				class := "border-b-transparent"
+				selected := i == selectedTabIndex
+				if selected {
+					class = "border-b-secondary"
+				}
+				id := fmt.Sprintf("tab-%s", tab.HxGet)
 			}}
 			<div>
 				<label
 					for={ id }
 					class={ "tab cursor-pointer p-3 min-w-56 flex justify-center items-center border-b-[2px] " + class }
 					hx-get={ tab.HxGet }
-					hx-target={ "#" + TabContentID }
+					hx-target={ "#" + constants.TabContentID }
 					if tabs[i].PushUrl {
 						hx-push-url="true"
 					}
@@ -55,12 +56,12 @@ templ Tabs(tabs []TabModel, selectedTabIndex int) {
 		}
 	</div>
 	<div
-		id={ TabContentID }
+		id={ constants.TabContentID }
 		class="flex flex-col grow"
 	>
 		<div
 			hx-trigger="load"
-			hx-target={ "#" + TabContentID }
+			hx-target={ "#" + constants.TabContentID }
 			hx-swap="innerHTML"
 			if selectedTabIndex < len(tabs) && selectedTabIndex >= 0 {
 				hx-get={ tabs[selectedTabIndex].HxGet }

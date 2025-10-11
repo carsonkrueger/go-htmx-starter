@@ -3,27 +3,26 @@ package auth_models
 import (
 	"time"
 
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
+	"github.com/carsonkrueger/main/gen/go_starter_db/auth/model"
 )
 
 type PermissionCache map[int64][]model.Privileges
-type LevelNameCache map[string][]int64
 
-type PrivilegeLevelsPrivilegesPrimaryKey struct {
-	PrivilegeID      int64
-	PrivilegeLevelID int64
+type RolesPrivilegesPrimaryKey struct {
+	PrivilegeID int64
+	RoleID      int16
 }
 
 type JoinedPrivilegesRaw struct {
-	LevelID            int64
-	LevelName          string
+	RoleID             int16
+	RoleName           string
 	PrivilegeID        int64
 	PrivilegeName      string
 	PrivilegeCreatedAt *time.Time
 }
 
-type JoinedPrivilegeLevel struct {
-	LevelID    int64
-	LevelName  string
+type JoinedRole struct {
+	RoleID     int16
+	RoleName   string
 	Privileges []model.Privileges
 }

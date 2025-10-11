@@ -4,12 +4,13 @@ import (
 	"net/http"
 
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
+	"github.com/carsonkrueger/main/gen/go_starter_db/auth/model"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/page_layouts"
 	"github.com/carsonkrueger/main/templates/pages"
-	"github.com/carsonkrueger/main/tools"
-	"github.com/carsonkrueger/main/tools/validate"
+	"github.com/carsonkrueger/main/util"
+	"github.com/carsonkrueger/main/util/slice"
+	"github.com/carsonkrueger/main/util/validate"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )
@@ -37,7 +38,7 @@ func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 
 	if err := req.ParseForm(); err != nil {
-		tools.HandleError(req, res, lgr, err, 403, "Invalid Form")
+		util.HandleError(req, res, lgr, err, 403, "Invalid Form")
 		return
 	}
 
@@ -46,28 +47,26 @@ func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
 	if len(errs) > 0 {
 		lgr.Warn("Validation errors", zap.Errors("Signup Form", errs))
 		res.WriteHeader(422)
-		noti := datadisplay.AddToastErrors(0, errs...)
-		noti.Render(ctx, res)
+		datadisplay.AddToastErrors(slice.Map(errs, error.Error)...).Render(ctx, res)
 		return
 	}
 
-	salt, _ := tools.GenerateSalt()
-	authToken, _ := tools.GenerateSalt()
-	hash := tools.HashPassword(form.Get("password"), salt)
+	salt, _ := util.GenerateSalt()
+	authToken, _ := util.GenerateSalt()
+	hash := util.HashPassword(form.Get("password"), salt)
 	user := model.Users{
-		FirstName:        form.Get("first_name"),
-		LastName:         form.Get("last_name"),
-		Email:            form.Get("email"),
-		Password:         hash,
-		PrivilegeLevelID: 1000,
+		FirstName: form.Get("first_name"),
+		LastName:  form.Get("last_name"),
+		Email:     form.Get("email"),
+		Password:  hash,
+		RoleID:    1,
 	}
 
 	usersDAO := s.DM().UsersDAO()
 	if err := usersDAO.Insert(ctx, &user); err != nil {
 		lgr.Warn("Could not insert user", zap.Error(err))
 		res.WriteHeader(422)
-		noti := datadisplay.AddTextToast(datadisplay.Warning, "Email taken", 0)
-		noti.Render(ctx, res)
+		datadisplay.AddToastErrors("Email taken").Render(ctx, res)
 		return
 	}
 
@@ -79,14 +78,13 @@ func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
 	if err := sessionDAO.Insert(ctx, session); err != nil {
 		lgr.Error("Could not insert session", zap.Error(err))
 		res.WriteHeader(500)
-		noti := datadisplay.AddTextToast(datadisplay.Error, "Error creating session", 0)
-		noti.Render(ctx, res)
+		datadisplay.AddToastErrors("Error creating session").Render(ctx, res)
 		return
 	}
 
-	tools.SetAuthCookie(res, &authToken)
+	util.SetAuthCookie(res, &authToken)
 
-	hxRequest := tools.IsHxRequest(req)
+	hxRequest := util.IsHxRequest(req)
 	page := pages.Login()
 	// If not hx request then user just arrived. Give them the index.html
 	if !hxRequest {
@@ -99,7 +97,7 @@ func (s *signUp) getSignup(res http.ResponseWriter, req *http.Request) {
 	lgr := s.Lgr("getSignup")
 	lgr.Info("Called")
 	ctx := req.Context()
-	hxRequest := tools.IsHxRequest(req)
+	hxRequest := util.IsHxRequest(req)
 	page := pages.Signup()
 	// If not hx request then user just arrived. Give them the index.html
 	if !hxRequest {

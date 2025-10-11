@@ -29,17 +29,19 @@ func WithUserId(ctx gctx.Context, id int64) gctx.Context {
 }
 
 func GetUserId(ctx gctx.Context) int64 {
-	return ctx.Value(USER_ID_KEY).(int64)
+	id, _ := ctx.Value(USER_ID_KEY).(int64)
+	return id
 }
 
-var PRIVILEGE_LEVEL_ID_KEY = "PRIVILEGE_LEVEL_ID"
+var ROLE_ID_KEY = "ROLE_ID"
 
-func WithPrivilegeLevelID(ctx gctx.Context, id int64) gctx.Context {
-	return gctx.WithValue(ctx, PRIVILEGE_LEVEL_ID_KEY, id)
+func WithRoleID(ctx gctx.Context, id int16) gctx.Context {
+	return gctx.WithValue(ctx, ROLE_ID_KEY, id)
 }
 
-func GetPrivilegeLevelID(ctx gctx.Context) int64 {
-	return ctx.Value(PRIVILEGE_LEVEL_ID_KEY).(int64)
+func GetRoleID(ctx gctx.Context) int16 {
+	id, _ := ctx.Value(ROLE_ID_KEY).(int16)
+	return id
 }
 
 var DB_CONNECTION_KEY = "DB_CONNECTION"

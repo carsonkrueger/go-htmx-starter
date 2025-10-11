@@ -9,9 +9,9 @@ import (
 
 	"github.com/carsonkrueger/main/constant"
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
+	"github.com/carsonkrueger/main/gen/go_starter_db/auth/model"
 	"github.com/carsonkrueger/main/models/auth_models"
-	"github.com/carsonkrueger/main/tools"
+	"github.com/carsonkrueger/main/util"
 	"go.uber.org/zap"
 )
 
@@ -38,13 +38,13 @@ func (us *usersService) Login(ctx gctx.Context, email string, password string, r
 	go us.LogoutRequest(ctx, req)
 
 	parts := strings.Split(user.Password, "$")
-	hash := tools.HashPassword(password, parts[0])
+	hash := util.HashPassword(password, parts[0])
 
 	if user.Password != hash {
 		return nil, errors.New("Invalid password")
 	}
 
-	token, _ := tools.GenerateToken(32)
+	token, _ := util.GenerateToken(32)
 	fullToken := fmt.Sprintf("%s$%d", token, user.ID)
 
 	row := &model.Sessions{
@@ -90,12 +90,12 @@ func (us *usersService) GetAuthParts(ctx gctx.Context, req *http.Request) (strin
 	// lgr := us.Lgr("GetAuthParts")
 	// lgr.Info("Called")
 
-	cookie, err := tools.GetAuthCookie(req)
+	cookie, err := util.GetAuthCookie(req)
 	if err != nil {
 		return "", 0, err
 	}
 
-	token, id, err := tools.GetAuthParts(cookie)
+	token, id, err := util.GetAuthParts(cookie)
 	if err != nil {
 		req.Header.Del(constant.AUTH_TOKEN_KEY)
 		return "", 0, err

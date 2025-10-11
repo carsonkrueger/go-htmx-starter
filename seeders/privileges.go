@@ -2,27 +2,30 @@ package seeders
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/carsonkrueger/main/constant"
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
-	"github.com/carsonkrueger/main/gen/go_db/auth/table"
+	"github.com/carsonkrueger/main/gen/go_starter_db/auth/model"
+	"github.com/carsonkrueger/main/gen/go_starter_db/auth/table"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
 func SeedPermissions(db *sql.DB) error {
-	allPrivilegeLevelNames := []string{
-		constant.ADMIN_LEVEL_NAME,
-		constant.BASIC_LEVEL_NAME,
+	allRoleNames := []string{
+		constant.ADMIN_ROLE_NAME,
+		constant.BASIC_ROLE_NAME,
 	}
-	adminLevelName := constant.ADMIN_LEVEL_NAME
+	adminRoleName := constant.ADMIN_ROLE_NAME
 
-	newPrivileges := make([]model.PrivilegeLevels, len(allPrivilegeLevelNames))
-	for i, name := range allPrivilegeLevelNames {
-		newPrivileges[i] = model.PrivilegeLevels{Name: name}
+	newPrivileges := make([]model.Roles, len(allRoleNames))
+	for i, name := range allRoleNames {
+		newPrivileges[i] = model.Roles{Name: name}
 	}
 
-	_, err := table.PrivilegeLevels.
-		INSERT(table.PrivilegeLevels.Name).
+	fmt.Println("new privs", newPrivileges)
+
+	_, err := table.Roles.
+		INSERT(table.Roles.Name).
 		MODELS(newPrivileges).
 		ON_CONFLICT().
 		DO_NOTHING().
@@ -31,36 +34,42 @@ func SeedPermissions(db *sql.DB) error {
 		return err
 	}
 
-	var allLevels []model.PrivilegeLevels
-	if err = table.PrivilegeLevels.SELECT(table.PrivilegeLevels.AllColumns).Query(db, &allLevels); err != nil {
-		return err
-	}
-
 	var allPrivileges []model.Privileges
 	if err = table.Privileges.SELECT(table.Privileges.AllColumns).Query(db, &allPrivileges); err != nil {
 		return err
 	}
 
-	var adminLevel model.PrivilegeLevels
-	err = table.PrivilegeLevels.
-		SELECT(table.PrivilegeLevels.AllColumns).
-		WHERE(table.PrivilegeLevels.Name.EQ(postgres.String(adminLevelName))).
-		Query(db, &adminLevel)
+	if len(allPrivileges) == 0 {
+		fmt.Println("No privileges found to seed, try running make live first.")
+		return nil
+	}
+
+	var adminRole model.Roles
+	err = table.Roles.
+		SELECT(table.Roles.AllColumns).
+		WHERE(table.Roles.Name.EQ(postgres.String(adminRoleName))).
+		Query(db, &adminRole)
 	if err != nil {
 		return err
 	}
 
-	privilegeLevelPrivileges := make([]model.PrivilegeLevelsPrivileges, len(allPrivileges))
+	rolesPrivileges := make([]model.RolesPrivileges, len(allPrivileges))
 	for i, p := range allPrivileges {
-		privilegeLevelPrivileges[i] = model.PrivilegeLevelsPrivileges{
-			PrivilegeLevelID: adminLevel.ID,
-			PrivilegeID:      p.ID,
+		rolesPrivileges[i] = model.RolesPrivileges{
+			RoleID:      adminRole.ID,
+			PrivilegeID: p.ID,
 		}
 	}
 
-	_, err = table.PrivilegeLevelsPrivileges.
-		INSERT(table.PrivilegeLevelsPrivileges.PrivilegeLevelID, table.PrivilegeLevelsPrivileges.PrivilegeID).
-		MODELS(privilegeLevelPrivileges).
+	fmt.Println("Seeding privileges for admin role", rolesPrivileges)
+	if len(rolesPrivileges) == 0 {
+		fmt.Println("No roles-privileges found to seed, try running make live first.")
+		return nil
+	}
+
+	_, err = table.RolesPrivileges.
+		INSERT(table.RolesPrivileges.RoleID, table.RolesPrivileges.PrivilegeID).
+		MODELS(rolesPrivileges).
 		ON_CONFLICT().
 		DO_NOTHING().
 		Exec(db)
@@ -86,7 +95,7 @@ func UndoPermissions(db *sql.DB) error {
 		return err
 	}
 
-	_, err = table.PrivilegeLevelsPrivileges.DELETE().
+	_, err = table.RolesPrivileges.DELETE().
 		WHERE(postgres.Bool(true)).
 		Exec(db)
 	if err != nil {
@@ -100,7 +109,7 @@ func UndoPermissions(db *sql.DB) error {
 		return err
 	}
 
-	_, err = table.PrivilegeLevels.DELETE().
+	_, err = table.Roles.DELETE().
 		WHERE(postgres.Bool(true)).
 		Exec(db)
 	if err != nil {

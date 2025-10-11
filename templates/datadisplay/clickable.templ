@@ -1,0 +1,9 @@
+package datadisplay
+
+templ Clickable(attrs templ.Attributes, child templ.Component) {
+	<a class="group relative inline-block flex flex-col items-center justify-center cursor-pointer" { attrs... }>
+		@child
+		{ children... }
+		<div class="invisible group-hover:visible mt-[1px] h-[1px] bg-white rounded-full w-full"></div>
+	</a>
+}

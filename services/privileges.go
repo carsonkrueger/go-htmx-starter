@@ -8,7 +8,7 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
+	"github.com/carsonkrueger/main/gen/go_starter_db/auth/model"
 	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/datainput"
@@ -24,71 +24,74 @@ func NewPrivilegesService(ctx context.AppContext) *privilegesService {
 	return &privilegesService{ctx}
 }
 
-func (ps *privilegesService) CreatePrivilegeAssociation(ctx gctx.Context, levelID int64, privID int64) error {
+func (ps *privilegesService) CreatePrivilegeAssociation(ctx gctx.Context, roleID int16, privID int64) error {
 	lgr := ps.Lgr("AddPermission")
-	lgr.Info("Level:Privilege", zap.String(strconv.FormatInt(levelID, 10), strconv.FormatInt(privID, 10)))
+	lgr.Info("Role:Privilege", zap.String(strconv.FormatInt(int64(roleID), 10), strconv.FormatInt(int64(privID), 10)))
 
-	joinRow := model.PrivilegeLevelsPrivileges{
-		PrivilegeLevelID: levelID,
-		PrivilegeID:      privID,
+	joinRow := model.RolesPrivileges{
+		RoleID:      roleID,
+		PrivilegeID: privID,
 	}
-	levelsPrivsDAO := ps.DM().PrivilegeLevelsPrivilegesDAO()
+	rolesPrivsDAO := ps.DM().RolesPrivilegesDAO()
 
-	if err := levelsPrivsDAO.Upsert(ctx, &joinRow); err != nil {
-		lgr.Error("Failed to insert privilege level privileges", zap.Error(err), zap.Any("privilegeLevelPrivileges", joinRow))
+	if err := rolesPrivsDAO.Upsert(ctx, &joinRow); err != nil {
+		lgr.Error("Failed to insert roles privileges", zap.Error(err), zap.Any("rolesPrivileges", joinRow))
 		return err
 	}
 
 	return nil
 }
 
-func (ps *privilegesService) CreateLevel(ctx gctx.Context, name string) error {
-	lgr := ps.Lgr("CreateLevel")
+func (ps *privilegesService) CreateRole(ctx gctx.Context, name string) error {
+	lgr := ps.Lgr("CreateRole")
 	lgr.Info("Called")
 
-	row := model.PrivilegeLevels{
+	row := model.Roles{
 		Name: name,
 	}
-	levelsDAO := ps.DM().PrivilegeLevelsDAO()
-	if err := levelsDAO.Insert(ctx, &row); err != nil {
-		lgr.Error("Failed to create level", zap.Error(err))
-		return errors.New("Failed to create level")
+	rolesDAO := ps.DM().RolesDAO()
+	if err := rolesDAO.Insert(ctx, &row); err != nil {
+		lgr.Error("Failed to create role", zap.Error(err))
+		return errors.New("Failed to create role")
 	}
 	return nil
 }
 
-func (ps *privilegesService) HasPermissionByID(ctx gctx.Context, levelID int64, permissionID int64) bool {
-	pk := auth_models.PrivilegeLevelsPrivilegesPrimaryKey{
-		PrivilegeID:      permissionID,
-		PrivilegeLevelID: levelID,
+func (ps *privilegesService) HasPermissionsByIDS(ctx gctx.Context, roleID int16, privIDs []int64) bool {
+	pks := make([]auth_models.RolesPrivilegesPrimaryKey, len(privIDs))
+	for i, privID := range privIDs {
+		pks[i] = auth_models.RolesPrivilegesPrimaryKey{
+			PrivilegeID: privID,
+			RoleID:      roleID,
+		}
 	}
-	row, err := ps.DM().PrivilegeLevelsPrivilegesDAO().GetOne(ctx, pk)
-	return row != nil && err == nil
+	rows, err := ps.DM().RolesPrivilegesDAO().GetMany(ctx, pks)
+	return len(rows) > 0 && err == nil
 }
 
-func (ps *privilegesService) DeletePrivilegeAssociation(ctx gctx.Context, levelID int64, privID int64) error {
+func (ps *privilegesService) DeletePrivilegeAssociation(ctx gctx.Context, roleID int16, privID int64) error {
 	lgr := ps.Lgr("DeletePrivilegeAssociation")
 	lgr.Info("Called")
 
-	pk := auth_models.PrivilegeLevelsPrivilegesPrimaryKey{
-		PrivilegeID:      privID,
-		PrivilegeLevelID: levelID,
+	pk := auth_models.RolesPrivilegesPrimaryKey{
+		PrivilegeID: privID,
+		RoleID:      roleID,
 	}
-	if err := ps.DM().PrivilegeLevelsPrivilegesDAO().Delete(ctx, pk); err != nil {
+	if err := ps.DM().RolesPrivilegesDAO().Delete(ctx, pk); err != nil {
 		return nil
 	}
 
 	return nil
 }
 
-func (us *privilegesService) SetUserPrivilegeLevel(ctx gctx.Context, levelID int64, userID int64) error {
-	lgr := us.Lgr("SetUserPrivilegeLevel")
+func (us *privilegesService) SetUserRole(ctx gctx.Context, roleID int16, userID int64) error {
+	lgr := us.Lgr("SetUserRole")
 	lgr.Info("Called")
 
-	levelDAO := us.DM().PrivilegeLevelsDAO()
-	level, err := levelDAO.GetOne(ctx, levelID)
+	roleDAO := us.DM().RolesDAO()
+	role, err := roleDAO.GetOne(ctx, roleID)
 	if err != nil {
-		lgr.Error("Error fetching privilege level", zap.Error(err))
+		lgr.Error("Error fetching role", zap.Error(err))
 		return err
 	}
 
@@ -99,8 +102,8 @@ func (us *privilegesService) SetUserPrivilegeLevel(ctx gctx.Context, levelID int
 		return err
 	}
 
-	user.PrivilegeLevelID = level.ID
-	if err := userDAO.Update(ctx, user, user.ID); err != nil {
+	user.RoleID = role.ID
+	if err := userDAO.Update(ctx, &user, user.ID); err != nil {
 		lgr.Error("Error updating user", zap.Error(err))
 		return err
 	}
@@ -108,11 +111,11 @@ func (us *privilegesService) SetUserPrivilegeLevel(ctx gctx.Context, levelID int
 	return nil
 }
 
-func (us *privilegesService) UserPrivilegeLevelJoinAsRowData(ctx gctx.Context, upl []auth_models.UserPrivilegeLevelJoin, allLevels []*model.PrivilegeLevels) []datadisplay.RowData {
-	levelOptions := make([]datainput.SelectOptions, len(allLevels))
-	for i, level := range allLevels {
-		levelOptions[i].Label = level.Name
-		levelOptions[i].Value = strconv.FormatInt(level.ID, 10)
+func (us *privilegesService) UserRoleJoinAsRowData(ctx gctx.Context, upl []auth_models.UserRoleJoin, allRoles []model.Roles) []datadisplay.RowData {
+	roleOptions := make([]datainput.SelectOptions, len(allRoles))
+	for i, role := range allRoles {
+		roleOptions[i].Label = role.Name
+		roleOptions[i].Value = strconv.FormatInt(int64(role.ID), 10)
 	}
 
 	rows := make([]datadisplay.RowData, len(upl))
@@ -120,9 +123,9 @@ func (us *privilegesService) UserPrivilegeLevelJoinAsRowData(ctx gctx.Context, u
 		selectAttrs := templ.Attributes{
 			"_": "on input trigger submit on closest <form/>",
 		}
-		selectBox := datainput.Select(fmt.Sprintf("%d-lvl-select", j.Users.ID), "privilege-level", strconv.FormatInt(j.PrivilegeLevelID, 10), levelOptions, selectAttrs)
+		selectBox := datainput.Select(fmt.Sprintf("%d-role-select", j.Users.ID), "role", strconv.FormatInt(int64(j.RoleID), 10), roleOptions, selectAttrs)
 		formAttrs := templ.Attributes{
-			"hx-put":     fmt.Sprintf("/privilege-levels/user/%d", j.Users.ID),
+			"hx-put":     fmt.Sprintf("/roles/user/%d", j.Users.ID),
 			"hx-trigger": "submit",
 			"hx-swap":    "none",
 		}
@@ -156,7 +159,7 @@ func (us *privilegesService) UserPrivilegeLevelJoinAsRowData(ctx gctx.Context, u
 	return rows
 }
 
-func (us *privilegesService) JoinedPrivilegeLevelAsRowData(ctx gctx.Context, jpl []auth_models.JoinedPrivilegeLevel) []datadisplay.RowData {
+func (us *privilegesService) JoinedRoleAsRowData(ctx gctx.Context, jpl []auth_models.JoinedRole) []datadisplay.RowData {
 	rows := make([]datadisplay.RowData, len(jpl))
 	for i, j := range jpl {
 		rows[i] = datadisplay.RowData{
@@ -165,12 +168,12 @@ func (us *privilegesService) JoinedPrivilegeLevelAsRowData(ctx gctx.Context, jpl
 				{
 					ID:    "n-" + strconv.Itoa(i),
 					Width: 1,
-					Body:  datadisplay.Text(j.LevelName, datadisplay.MD),
+					Body:  datadisplay.Text(j.RoleName, datadisplay.MD),
 				},
 				{
 					ID:    "pr-" + strconv.Itoa(i),
 					Width: 1,
-					Body:  datadisplay.Text(strconv.FormatInt(j.LevelID, 10), datadisplay.MD),
+					Body:  datadisplay.Text(strconv.FormatInt(int64(j.RoleID), 10), datadisplay.MD),
 				},
 				{
 					ID:    "ca-" + strconv.Itoa(i),
@@ -193,7 +196,7 @@ func (us *privilegesService) JoinedPrivilegesAsRowData(ctx gctx.Context, jpl []a
 		}
 		xAttrs := templ.Attributes{
 			"class":      "fill-red-400 size-6 p-1 rounded-xs mx-auto cursor-pointer hover:bg-[#FFFFFF44]",
-			"hx-delete":  fmt.Sprintf("/privilege-levels-privileges/level/%d/privilege/%d", p.LevelID, p.PrivilegeID),
+			"hx-delete":  fmt.Sprintf("/roles-privileges/role/%d/privilege/%d", p.RoleID, p.PrivilegeID),
 			"hx-trigger": "click",
 			"hx-swap":    "none",
 			"_":          "on htmx:beforeRequest remove closest <tr/>",
@@ -201,9 +204,9 @@ func (us *privilegesService) JoinedPrivilegesAsRowData(ctx gctx.Context, jpl []a
 		rows[i].ID = "row-" + strconv.Itoa(i)
 		rows[i].Data = []datadisplay.CellData{
 			{
-				ID:    "lvl-" + strconv.Itoa(i),
+				ID:    "role-" + strconv.Itoa(i),
 				Width: 1,
-				Body:  datadisplay.Text(p.LevelName, datadisplay.SM),
+				Body:  datadisplay.Text(p.RoleName, datadisplay.SM),
 			},
 			{
 				ID:    "pr-" + strconv.Itoa(i),

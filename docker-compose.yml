@@ -1,7 +1,6 @@
 services:
-# DB-START
-    db:
-        container_name: go_db
+    go_starter_db:
+        container_name: go_starter_db
         image: postgres
         environment:
             POSTGRES_USER: ${DB_USER}
@@ -10,20 +9,17 @@ services:
         ports:
             - "${DB_EXTERNAL_PORT}:${DB_PORT}"
         volumes:
-            - ./volumes/postgres_data:/var/lib/postgresql/data
+            - pgdata:/var/lib/postgresql/data
         healthcheck:
             test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}"]
             interval: 3s
             retries: 5
-# DB-END
 
-    go_backend:
-        container_name: go_backend
-# DB-START
+    go_starter_backend:
+        container_name: go_starter_backend
         depends_on:
-            db:
+            go_starter_db:
                 condition: service_healthy
-# DB-END
         build:
             dockerfile: ./Dockerfile
             context: .
@@ -31,5 +27,6 @@ services:
             - "${EXTERNAL_PORT}:${PORT}"
         env_file:
             - .env
-        dns:
-            - 8.8.8.8
+
+volumes:
+    pgdata:

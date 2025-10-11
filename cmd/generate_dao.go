@@ -9,7 +9,7 @@ import (
 
 	"github.com/carsonkrueger/main/cfg"
 	"github.com/carsonkrueger/main/logger"
-	"github.com/carsonkrueger/main/tools"
+	"github.com/carsonkrueger/main/util"
 	"go.uber.org/zap"
 )
 
@@ -19,7 +19,7 @@ func generateDAO() {
 	flag.Parse()
 
 	// lower first letter of table name
-	table = tools.Ptr(tools.ToLowerFirst(*table))
+	table = util.Ptr(util.ToLowerFirst(*table))
 
 	cfg := cfg.LoadConfig()
 	lgr := logger.NewLogger(&cfg).Named("generateDAO")
@@ -39,7 +39,7 @@ func generateDAO() {
 		os.Exit(1)
 	}
 
-	snakeCaseTable := tools.ToSnakeCase(*table)
+	snakeCaseTable := util.ToSnakeCase(*table)
 
 	daoMgrFilePath := fmt.Sprintf("%s/database/dao/dao_manager.go", wd)
 	daoFilePath := fmt.Sprintf("%s/database/dao/%s.go", wd, snakeCaseTable)
@@ -61,19 +61,19 @@ func generateDAO() {
 	io.WriteString(file, contents)
 	file.Close()
 
-	upper := tools.ToUpperFirst(*table)
+	upper := util.ToUpperFirst(*table)
 
 	daoContextFilePath := fmt.Sprintf("%s/context/dao.go", wd)
 	upperDAOName := upper + "DAO"
 	daoName := *table + "DAO"
 
-	tools.InsertAt(daoContextFilePath, "// INSERT GET DAO", true, fmt.Sprintf("\t%s() %s", upperDAOName, upperDAOName))
-	tools.InsertAt(daoContextFilePath, "// INSERT INTERFACE DAO", true, fmt.Sprintf(`type %[1]s interface {
+	util.InsertAt(daoContextFilePath, "// INSERT GET DAO", true, fmt.Sprintf("\t%s() %s", upperDAOName, upperDAOName))
+	util.InsertAt(daoContextFilePath, "// INSERT INTERFACE DAO", true, fmt.Sprintf(`type %[1]s interface {
 	DAO[int64, model.%[2]s]
 }
 `, upperDAOName, upper))
-	tools.InsertAt(daoMgrFilePath, "// INSERT DAO", true, fmt.Sprintf("\t%s context.%s", daoName, upperDAOName))
-	tools.InsertAt(daoMgrFilePath, "// INSERT INIT DAO", true, fmt.Sprintf(`func (dm *daoManager) %[1]s() context.%[1]s {
+	util.InsertAt(daoMgrFilePath, "// INSERT DAO", true, fmt.Sprintf("\t%s context.%s", daoName, upperDAOName))
+	util.InsertAt(daoMgrFilePath, "// INSERT INIT DAO", true, fmt.Sprintf(`func (dm *daoManager) %[1]s() context.%[1]s {
 	if dm.%[2]s == nil {
 		dm.%[2]s = New%[1]s(dm.db)
 	}
@@ -83,8 +83,8 @@ func generateDAO() {
 }
 
 func daoFileContents(dbName, schema, table string) string {
-	// upperSchema := tools.ToUpperFirst(schema)
-	upperTable := tools.ToUpperFirst(table)
+	// upperSchema := util.ToUpperFirst(schema)
+	upperTable := util.ToUpperFirst(table)
 
 	return fmt.Sprintf(`package dao
 

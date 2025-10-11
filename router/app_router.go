@@ -19,62 +19,61 @@ import (
 )
 
 type AppRouter struct {
-	public []builders.AppPublicRoute
-	// DB-START
+	public  []builders.AppPublicRoute
 	private []builders.AppPrivateRoute
-	// DB-END
-	addr   string
-	router chi.Router
-	appCtx context.AppContext
+	addr    string
+	router  chi.Router
+	appCtx  context.AppContext
 }
 
 func NewAppRouter(appCtx context.AppContext) AppRouter {
 	return AppRouter{
 		appCtx: appCtx,
 		public: []builders.AppPublicRoute{
-			// DB-START
 			public.NewLogin(appCtx),
 			public.NewSignUp(appCtx),
-			// DB-END
 			public.NewWebPublic(appCtx),
 			public.NewHome(appCtx),
+			public.NewCart(appCtx),
 			// INSERT PUBLIC
 		},
-		// DB-START
 		private: []builders.AppPrivateRoute{
 			private.NewUserManagement(appCtx),
 			private.NewPrivileges(appCtx),
-			private.NewPrivilegeLevels(appCtx),
-			private.NewPrivilegeLevelsPrivileges(appCtx),
+			private.NewRoles(appCtx),
+			private.NewRolesPrivileges(appCtx),
+			private.NewProducts(appCtx),
 			// INSERT PRIVATE
 		},
-		// DB-END
 	}
 }
 
 func (a *AppRouter) BuildRouter(ctx gctx.Context) {
 	lgr := a.appCtx.Lgr("BuildRouter")
 	a.router = chi.NewRouter()
-	a.router = a.router.With(middlewares.NoAuth(a.appCtx))
+	a.router = a.router.With(middlewares.Recover(a.appCtx))
 
-	for _, r := range a.public {
-		router := chi.NewRouter()
-		r.PublicRoute(router)
-		a.router.Mount(r.Path(), router)
-		lgr.Info(r.Path())
-	}
+	a.router = a.router.Group(func(g chi.Router) {
+		// do not enforce auth
+		g.Use(middlewares.Auth(a.appCtx, false))
+		for _, r := range a.public {
+			router := chi.NewRouter()
+			r.PublicRoute(router)
+			g.Mount(r.Path(), router)
+			lgr.Info(r.Path())
+		}
+	})
 
-	// DB-START
-	// enforce authentication middleware
-	a.router = a.router.With(middlewares.EnforceAuth(a.appCtx))
-
-	for _, r := range a.private {
-		builder := builders.NewPrivateRouteBuilder(a.appCtx)
-		r.PrivateRoute(ctx, &builder)
-		a.router.Mount(r.Path(), builder.RawRouter())
-		lgr.Info(r.Path())
-	}
-	// DB-END
+	a.router = a.router.Group(func(g chi.Router) {
+		// enforce auth middleware
+		g.Use(middlewares.Auth(a.appCtx, true))
+		for _, r := range a.private {
+			builder := builders.NewPrivateRouteBuilder(a.appCtx)
+			r.PrivateRoute(ctx, &builder)
+			g.Mount(r.Path(), builder.RawRouter())
+			lgr.Info(r.Path())
+		}
+	})
 }
 
 func (a *AppRouter) Start(cfg cfg.Config) error {

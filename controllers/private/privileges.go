@@ -8,7 +8,7 @@ import (
 	"github.com/carsonkrueger/main/builders"
 	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/templates/datainput"
-	"github.com/carsonkrueger/main/tools"
+	"github.com/carsonkrueger/main/util"
 )
 
 const (
@@ -31,7 +31,7 @@ func (um privileges) Path() string {
 }
 
 func (um *privileges) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBuilder) {
-	b.NewHandler().Register(builders.GET, "/select", um.privilegesSelectGet).SetPermissionName(PrivilegesSelectGet).Build(ctx)
+	b.NewHandler().Register(builders.GET, "/select", um.privilegesSelectGet).SetRequiredPrivileges([]string{PrivilegesSelectGet}).Build(ctx)
 }
 
 func (r *privileges) privilegesSelectGet(res http.ResponseWriter, req *http.Request) {
@@ -40,17 +40,17 @@ func (r *privileges) privilegesSelectGet(res http.ResponseWriter, req *http.Requ
 	ctx := req.Context()
 
 	dao := r.DM().PrivilegeDAO()
-	levels, err := dao.Index(ctx, nil)
+	privileges, err := dao.GetAll(ctx)
 	if err != nil {
-		tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
+		util.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return
 	}
 
 	var options []datainput.SelectOptions
-	for _, lvl := range levels {
+	for _, p := range privileges {
 		options = append(options, datainput.SelectOptions{
-			Value: strconv.FormatInt(lvl.ID, 10),
-			Label: lvl.Name,
+			Value: strconv.FormatInt(p.ID, 10),
+			Label: p.Name,
 		})
 	}
 

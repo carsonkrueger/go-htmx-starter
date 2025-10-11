@@ -1,68 +1,30 @@
 package datadisplay
 
 import (
-	"fmt"
-
-	"github.com/carsonkrueger/main/templates/page_layouts"
+	// "github.com/carsonkrueger/main/templates/constants"
+	templtoast "github.com/carsonkrueger/main/templui/toast"
 )
 
-templ AddToast(variant NotificationVariant, template templ.Component, durationSeconds int) {
-	@toast(variant, durationSeconds) {
-		@template
+templ AddTextToast(variant NotificationVariant, title, desc string) {
+	@toast(title, desc)
+}
+
+templ AddToastErrors(msgs ...string) {
+	for _, m := range msgs {
+		@toast("An Error Occurred", m)
 	}
 }
 
-templ AddTextToast(variant NotificationVariant, text string, durationSeconds int) {
-	@toast(variant, durationSeconds) {
-		{ text }
-	}
-}
-
-templ AddToastErrors(durationSeconds int, errs ...error) {
-	for _, e := range errs {
-		@toast(Error, durationSeconds) {
-			{ e.Error() }
-		}
-	}
-}
-
-templ toast(variant NotificationVariant, durationSeconds int) {
-	{{
-		class := ""
-		switch variant {
-		case Success:
-			class = "bg-green-400"
-			break
-		case Error:
-			class = "bg-red-400"
-			break
-		case Warning:
-			class = "bg-yellow-400"
-			break
-		case Info:
-			class = "bg-blue-400"
-			break
-		}
-
-		durationHyperscript := ""
-		if durationSeconds > 0 {
-			durationHyperscript = fmt.Sprintf("on load wait %ds then remove me then ", durationSeconds)
-		}
-	}}
-	<div
-		hx-swap-oob={ "beforeend:#" + page_layouts.GlobalToastID }
-	>
-		<div
-			class={ "relative p-3 pr-7 text-sm text-white rounded-sm shadow-sm flex items-center cursor-default w-fit " + class }
-			_={ durationHyperscript + " on click remove me" }
-		>
-			{ children... }
-			<button
-				type="button"
-				class="cursor-pointer absolute right-2 self-center"
-			>
-				@Icon(XIcon, SM, White)
-			</button>
-		</div>
-	</div>
+templ toast(title, desc string) {
+	// <div
+	// 	hx-swap-oob={ "beforeend:#" + constants.GlobalToastID }
+	// >
+		@templtoast.Toast(templtoast.Props{
+			Title:       title,
+			Description: desc,
+			BodyClass: "shadow-md bg-secondary text-tertiary",
+			Dismissible: true,
+			Duration: 6000,
+		})
+	// </div>
 }

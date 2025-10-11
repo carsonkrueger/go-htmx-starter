@@ -5,9 +5,9 @@ tmp_dir = "tmp"
 [build]
 args_bin = ["web"]
 bin = "./tmp/main"
-cmd = "go build -o ./tmp/main"
+cmd = "go build -buildvcs=false -o ./tmp/main"
 delay = 0
-exclude_dir = ["tmp", "vendor", "testdata", "node_modules", "volumes"]
+exclude_dir = ["tmp", "vendor", "testdata", "node_modules", "_volumes"]
 exclude_file = []
 exclude_regex = ["_test.go", "_templ.go"]
 exclude_unchanged = false
@@ -29,7 +29,7 @@ pre_cmd = [
     "make tw",
 ]
 rerun = false
-rerun_delay = 500
+rerun_delay = 100
 send_interrupt = false
 stop_on_error = false
 
@@ -46,7 +46,7 @@ silent = false
 time = false
 
 [misc]
-clean_on_exit = false
+clean_on_exit = true
 
 [proxy]
 app_port = 0

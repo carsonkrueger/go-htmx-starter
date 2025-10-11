@@ -1,0 +1,39 @@
+package datadisplay
+
+templ ResponsiveHide(hideOn Size, child templ.Component) {
+	<span
+		if hideOn == XS {
+			class="xs:hidden contents"
+		} else if hideOn == SM {
+			class="sm:hidden contents"
+		} else if hideOn == MD {
+			class="md:hidden contents"
+		} else if hideOn == LG {
+			class="lg:hidden contents"
+		} else if hideOn == XL {
+			class="xl:hidden contents"
+		}
+	>
+		{ children... }
+		@child
+	</span>
+}
+
+templ ResponsiveShow(showOn Size, child templ.Component) {
+	<span
+		if showOn == XS {
+			class="xs:contents hidden"
+		} else if showOn == SM {
+			class="sm:contents hidden"
+		} else if showOn == MD {
+			class="md:contents hidden"
+		} else if showOn == LG {
+			class="lg:contents hidden"
+		} else if showOn == XL {
+			class="xl:contents hidden"
+		}
+	>
+		{ children... }
+		@child
+	</span>
+}

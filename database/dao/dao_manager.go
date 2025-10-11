@@ -5,11 +5,11 @@ import (
 )
 
 type daoManager struct {
-	usersDAO                      context.UsersDAO
-	privilegesDAO                 context.PrivilegeDAO
-	privilegesLevelsDAO           context.PrivilegeLevelsDAO
-	sessionsDAO                   context.SessionsDAO
-	privilegesLevelsPrivilegesDAO context.PrivilegeLevelsPrivilegesDAO
+	usersDAO           context.UsersDAO
+	privilegesDAO      context.PrivilegeDAO
+	rolesDAO           context.RolesDAO
+	sessionsDAO        context.SessionsDAO
+	rolesPrivilegesDAO context.RolesPrivilegesDAO
 	// INSERT DAO
 }
 
@@ -38,18 +38,18 @@ func (dm *daoManager) SessionsDAO() context.SessionsDAO {
 	return dm.sessionsDAO
 }
 
-func (dm *daoManager) PrivilegeLevelsDAO() context.PrivilegeLevelsDAO {
-	if dm.privilegesLevelsDAO == nil {
-		dm.privilegesLevelsDAO = NewPrivilegeLevelsDAO()
+func (dm *daoManager) RolesDAO() context.RolesDAO {
+	if dm.rolesDAO == nil {
+		dm.rolesDAO = NewRolesDAO()
 	}
-	return dm.privilegesLevelsDAO
+	return dm.rolesDAO
 }
 
-func (dm *daoManager) PrivilegeLevelsPrivilegesDAO() context.PrivilegeLevelsPrivilegesDAO {
-	if dm.privilegesLevelsPrivilegesDAO == nil {
-		dm.privilegesLevelsPrivilegesDAO = NewPrivilegeLevelsPrivilegesDAO()
+func (dm *daoManager) RolesPrivilegesDAO() context.RolesPrivilegesDAO {
+	if dm.rolesPrivilegesDAO == nil {
+		dm.rolesPrivilegesDAO = NewRolesPrivilegesDAO()
 	}
-	return dm.privilegesLevelsPrivilegesDAO
+	return dm.rolesPrivilegesDAO
 }
 
 // INSERT INIT DAO

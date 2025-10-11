@@ -1,87 +1,73 @@
 package pages
 
+import (
+	"github.com/carsonkrueger/main/templates/datadisplay"
+	"github.com/carsonkrueger/main/templates/partials/productcard"
+)
+
 templ Home() {
-	<!-- Hero Section -->
-	<section class="py-32">
-		<div class="max-w-5xl mx-auto text-center px-6">
-			<h2 class="text-4xl font-bold mb-4">Build Fast, Modern Web Servers</h2>
-			<p class="text-lg text-gray-600 mb-8">
-				A powerful starter kit combining Go, HTMX, TailwindCSS, PostgreSQL, and more for rapid web server development.
-			</p>
-			<a href="#quick" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition">
-				Get Started
-			</a>
-		</div>
-	</section>
-	<!-- Features -->
-	<section class="py-32 bg-[#FFFFFF11]" id="features">
-		<div class="max-w-7xl mx-auto px-6">
-			<h3 class="text-3xl font-bold text-center mb-12">Features</h3>
-			<div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-				<div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
-					<h4 class="text-2xl font-semibold mb-4">Go</h4>
-					<p>Statically typed, efficient, and easy to learn. Perfect for building scalable web applications.</p>
-				</div>
-				<div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
-					<h4 class="text-2xl font-semibold mb-4">HTMX, Templ, Hyperscript & Tailwind</h4>
-					<p>Dynamic frontends without heavy JavaScript. Use powerful HTML attributes, templates, and utility-first styling.</p>
-				</div>
-				<div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
-					<h4 class="text-2xl font-semibold mb-4">Auth & Privileges</h4>
-					<p>Session-based authentication and fine-grained privilege controls with automatic database seeding.</p>
-				</div>
-				<div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
-					<h4 class="text-2xl font-semibold mb-4">PostgreSQL</h4>
-					<p>Robust, open-source database integration for storing and querying data reliably and securely.</p>
-				</div>
-				<div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
-					<h4 class="text-2xl font-semibold mb-4">Jet Query Builder</h4>
-					<p>Type-safe SQL queries, generated directly from your schema, ensuring high reliability in database operations and a great developer experience.</p>
-				</div>
-				<div class="bg-primary p-6 rounded-lg shadow hover:shadow-lg transition">
-					<h4 class="text-2xl font-semibold mb-4">Docker & Live Reload</h4>
-					<p>Containerized deployments and instant feedback during development with Docker and Air live reload.</p>
-				</div>
+	<div class="flex flex-col lg:gap-16 lg:pt-16 pt-8 pb-6 gap-6 items-center">
+		<section id="hero" class="flex flex-col items-center lg:gap-12 gap-6 text-secondary min-h-[60vh]">
+			<div id="tree" class="bg-[url(/public/tree.svg)] bg-center bg-contain bg-no-repeat text-center lg:h-130 h-100 flex flex-col justify-center items-center text-white font-[naervik]">
+				<h1 class="lg:text-[3rem] text-[2rem] font-black" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);">Unlock Your Potential Naturally</h1>
+				<h3 class="lg:text-[1.8rem] text-[1.1rem] font-black" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);">Premium Peptides for Study</h3>
+				<h3 class="lg:text-[1.8rem] text-[1.1rem] font-black" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);">Potent. Proven. Powerful.</h3>
 			</div>
-		</div>
-	</section>
-	<!-- Dependencies -->
-	<section class="py-32" id="dependencies">
-		<div class="max-w-5xl mx-auto px-6">
-			<h3 class="text-3xl font-bold text-center mb-12">Dependencies</h3>
-			<ul class="grid gap-4 text-lg list-disc list-inside">
-				<li>Go</li>
-				<li>Docker & Docker-Compose</li>
-				<li>Postgres</li>
-				<li>Templ</li>
-				<li>NPM (for TailwindCSS)</li>
-				<li>Air (Live Reload)</li>
-				<li>Migrate (DB Migrations)</li>
-				<li>Jet (Query Builder)</li>
-			</ul>
-		</div>
-	</section>
-	<!-- Quick Start -->
-	<section class="py-32 bg-[#FFFFFF11]" id="quick">
-		<div class="max-w-5xl mx-auto px-6">
-			<h3 class="text-3xl font-bold text-center mb-12">Quick Start</h3>
-			<ol class="space-y-4 text-lg list-decimal list-inside">
-				<li>
-					Run <span class="rounded-sm p-1 bg-gray-700">make generateDAO</span> and follow the CLI instructions to generate a Database Access Object for a new database model.
-				</li>
-				<li>
-					Run <span class="rounded-sm p-1 bg-gray-700">make generate-private-controller</span> to generate a private controller for a new API endpoint.
-				</li>
-				<li>
-					Run <span class="rounded-sm p-1 bg-gray-700">make generate-service</span> to generate a new service to handle your business logic.
-				</li>
-			</ol>
-		</div>
-	</section>
-	<!-- Footer -->
-	<footer class="bg-primary text-white py-6">
-		<div class="max-w-7xl mx-auto text-center text-sm">
-			Built with ❤️ using Go, HTMX, and TailwindCSS
-		</div>
-	</footer>
+
+			<div id="attributes" class="flex items-center justify-center lg:gap-12 gap-6 text-secondary">
+				<icon-group class="flex flex-col gap-2 justify-center items-center">
+					@datadisplay.CircleOutline(datadisplay.Secondary, datadisplay.XL11, nil) {
+						@datadisplay.Icon(datadisplay.AntioxidantIcon, datadisplay.XL4, datadisplay.Secondary)
+					}
+					<p>Antioxidant</p>
+				</icon-group>
+				<icon-group class="flex flex-col gap-2 justify-center items-center">
+					@datadisplay.CircleOutline(datadisplay.Secondary, datadisplay.XL11, nil) {
+						@datadisplay.Icon(datadisplay.LeafIcon, datadisplay.XL4, datadisplay.Secondary)
+					}
+					<p>Anti Aging</p>
+				</icon-group>
+				<icon-group class="flex flex-col gap-2 justify-center items-center">
+					@datadisplay.CircleOutline(datadisplay.SecondaryLo, datadisplay.XL11, nil) {
+						@datadisplay.Icon(datadisplay.FlexIcon, datadisplay.XL4, datadisplay.SecondaryLo)
+					}
+					<p>Vitality</p>
+				</icon-group>
+			</div>
+		</section>
+
+
+		<section id="products" class="flex flex-col gap-4 w-full py-8 px-4 text-secondary">
+			<section-header class="text-xl text-center">Featured Products</section-header>
+			<div class="flex items-center justify-center flex-wrap lg:gap-10 gap-4">
+			@productcard.ProductCard(productcard.Props{
+				Title: "Vitality Boost",
+				Desc: "Supports Energy & Focus",
+				Img: productcard.ImgProps {
+					Src: "/public/peptide.webp",
+					Alt: "Peptide",
+				},
+				BtnText: "Add to Cart",
+			})
+			@productcard.ProductCard(productcard.Props{
+				Title: "Vitality Boost",
+				Desc: "Supports Energy & Focus",
+				Img: productcard.ImgProps {
+					Src: "/public/peptide.webp",
+					Alt: "Peptide",
+				},
+				BtnText: "Add to Cart",
+			})
+			@productcard.ProductCard(productcard.Props{
+				Title: "Vitality Boost",
+				Desc: "Supports Energy & Focus",
+				Img: productcard.ImgProps {
+					Src: "/public/peptide.webp",
+					Alt: "Peptide",
+				},
+				BtnText: "Add to Cart",
+			})
+			</div>
+		</section>
+	</div>
 }

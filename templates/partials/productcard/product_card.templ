@@ -1,0 +1,60 @@
+package productcard
+
+import (
+	"github.com/carsonkrueger/main/templui/card"
+	"github.com/carsonkrueger/main/templui/button"
+	"github.com/carsonkrueger/main/templui/aspectratio"
+)
+
+type Props struct {
+	card.Props
+	Img ImgProps
+	Title string
+	Desc string
+	BtnText string
+}
+
+type ImgProps struct {
+	Src string
+	Alt string
+}
+
+templ ProductCard(props ...Props) {
+	{{
+		var p Props
+		if len(props) > 0 {
+			p = props[0]
+		}
+		p.Class = "max-w-md overflow-hidden " + p.Class
+	}}
+	@card.Card(p.Props) {
+		@aspectratio.AspectRatio(aspectratio.Props{
+			Ratio: aspectratio.RatioVideo,
+			Class: "h-full w-full",
+		}) {
+			<img
+				src={ p.Img.Src }
+				alt={ p.Img.Alt }
+				loading="lazy"
+				class="h-full w-full object-cover"
+			/>
+		}
+		@card.Content() {
+			@card.Title() {
+				{ p.Title }
+			}
+			@card.Description() {
+				{ p.Desc }
+			}
+		}
+		if p.BtnText != "" {
+			@card.Footer() {
+				@button.Button(button.Props{
+					Class: "text-quaternary",
+				}) {
+					{ p.BtnText }
+				}
+			}
+		}
+	}
+}

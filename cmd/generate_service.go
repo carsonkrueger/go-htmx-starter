@@ -9,7 +9,7 @@ import (
 
 	"github.com/carsonkrueger/main/cfg"
 	"github.com/carsonkrueger/main/logger"
-	"github.com/carsonkrueger/main/tools"
+	"github.com/carsonkrueger/main/util"
 	"go.uber.org/zap"
 )
 
@@ -18,7 +18,7 @@ func generateService() {
 	flag.Parse()
 
 	// lower first letter of table name
-	service = tools.Ptr(tools.ToLowerFirst(*service))
+	service = util.Ptr(util.ToLowerFirst(*service))
 
 	cfg := cfg.LoadConfig()
 	lgr := logger.NewLogger(&cfg).Named("generateService")
@@ -29,7 +29,7 @@ func generateService() {
 		os.Exit(1)
 	}
 
-	snakeCaseService := tools.ToSnakeCase(*service)
+	snakeCaseService := util.ToSnakeCase(*service)
 
 	filePath := fmt.Sprintf("%s/services/%s.go", wd, snakeCaseService)
 	if err := os.MkdirAll(path.Dir(filePath), 0755); err != nil {
@@ -50,15 +50,15 @@ func generateService() {
 	io.WriteString(file, contents)
 	file.Close()
 
-	upperSvcName := tools.ToUpperFirst(*service) + "Service"
-	svcName := tools.ToLowerFirst(*service) + "Service"
+	upperSvcName := util.ToUpperFirst(*service) + "Service"
+	svcName := util.ToLowerFirst(*service) + "Service"
 	contextServicePath := fmt.Sprintf("%s/context/service.go", wd)
 	serviceMgrPath := fmt.Sprintf("%s/services/service_manager.go", wd)
 
-	tools.InsertAt(contextServicePath, "// INSERT INTERFACE SERVICE", true, fmt.Sprintf("type %[1]s interface {}\n", upperSvcName))
-	tools.InsertAt(contextServicePath, "// INSERT GET SERVICE", true, fmt.Sprintf("\t%s() %s", upperSvcName, upperSvcName))
-	tools.InsertAt(serviceMgrPath, "// INSERT SERVICE", true, fmt.Sprintf("\t%s context.%s", svcName, upperSvcName))
-	tools.InsertAt(serviceMgrPath, "// INSERT INIT SERVICE", true, fmt.Sprintf(`func (sm *serviceManager) %[1]s() context.%[1]s {
+	util.InsertAt(contextServicePath, "// INSERT INTERFACE SERVICE", true, fmt.Sprintf("type %[1]s interface {}\n", upperSvcName))
+	util.InsertAt(contextServicePath, "// INSERT GET SERVICE", true, fmt.Sprintf("\t%s() %s", upperSvcName, upperSvcName))
+	util.InsertAt(serviceMgrPath, "// INSERT SERVICE", true, fmt.Sprintf("\t%s context.%s", svcName, upperSvcName))
+	util.InsertAt(serviceMgrPath, "// INSERT INIT SERVICE", true, fmt.Sprintf(`func (sm *serviceManager) %[1]s() context.%[1]s {
 	if sm.%[2]s == nil {
 		sm.%[2]s = New%[1]s(sm.svcCtx)
 	}
@@ -68,8 +68,8 @@ func generateService() {
 }
 
 func ServiceFileContents(name string) string {
-	upper := tools.ToUpperFirst(name)
-	lower := tools.ToLowerFirst(name)
+	upper := util.ToUpperFirst(name)
+	lower := util.ToLowerFirst(name)
 
 	return fmt.Sprintf(`package services
 

@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
-	"github.com/carsonkrueger/main/gen/go_db/auth/table"
+	"github.com/carsonkrueger/main/gen/go_starter_db/auth/model"
+	"github.com/carsonkrueger/main/gen/go_starter_db/auth/table"
 	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/go-jet/jet/v2/postgres"
 )

@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
-	"github.com/carsonkrueger/main/gen/go_db/auth/table"
+	"github.com/carsonkrueger/main/gen/go_starter_db/auth/model"
+	"github.com/carsonkrueger/main/gen/go_starter_db/auth/table"
 	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/go-jet/jet/v2/postgres"
 )
@@ -77,15 +77,15 @@ func (dao *usersDAO) GetByEmail(ctx gctx.Context, email string) (*model.Users, e
 	return &user, nil
 }
 
-type PrivilegeLevelIDResponse struct {
+type RoleIDResponse struct {
 	PrivilegeID int64
 }
 
-func (dao *usersDAO) GetPrivilegeLevelID(ctx gctx.Context, userID int64) (*int64, error) {
-	var res PrivilegeLevelIDResponse
+func (dao *usersDAO) GetRoleID(ctx gctx.Context, userID int64) (*int64, error) {
+	var res RoleIDResponse
 
 	err := table.Users.
-		SELECT(table.Users.PrivilegeLevelID.AS("PrivilegeLevelIDResponse.PrivilegeID")).
+		SELECT(table.Users.RoleID.AS("RoleIDResponse.PrivilegeID")).
 		FROM(table.Users).
 		WHERE(table.Users.ID.EQ(postgres.Int(userID))).
 		LIMIT(1).
@@ -97,11 +97,11 @@ func (dao *usersDAO) GetPrivilegeLevelID(ctx gctx.Context, userID int64) (*int64
 	return &res.PrivilegeID, nil
 }
 
-func (dao *usersDAO) GetUserPrivilegeJoinAll(ctx gctx.Context) (*[]auth_models.UserPrivilegeLevelJoin, error) {
-	var rows []auth_models.UserPrivilegeLevelJoin
+func (dao *usersDAO) GetUserPrivilegeJoinAll(ctx gctx.Context) (*[]auth_models.UserRoleJoin, error) {
+	var rows []auth_models.UserRoleJoin
 	err := table.Users.
-		LEFT_JOIN(table.PrivilegeLevels, table.Users.PrivilegeLevelID.EQ(table.PrivilegeLevels.ID)).
-		SELECT(table.Users.AllColumns, table.PrivilegeLevels.Name).
+		LEFT_JOIN(table.Roles, table.Users.RoleID.EQ(table.Roles.ID)).
+		SELECT(table.Users.AllColumns, table.Roles.Name).
 		Query(context.GetDB(ctx), &rows)
 	if err != nil {
 		return nil, err

@@ -1,17 +1,18 @@
 package page_layouts
 
-const PageLayoutID = "page-layout"
-const MainContentID = "main-content"
+import (
+	"github.com/carsonkrueger/main/templates/constants"
+)
 
 // All page layouts should extend this layout
 templ BasePageLayout() {
-	<div id={ PageLayoutID } class="flex flex-col grow">
+	<div id={ constants.PageLayoutID } class="flex flex-col grow relative">
 		{ children... }
 	</div>
 }
 
 templ MainContent() {
-	<main id={ MainContentID } class="flex flex-col grow">
+	<main id={ constants.MainContentID } class="flex flex-col grow">
 		{ children... }
 	</main>
 }

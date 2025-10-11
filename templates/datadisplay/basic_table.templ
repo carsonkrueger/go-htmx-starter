@@ -1,5 +1,9 @@
 package datadisplay
 
+import (
+	"github.com/carsonkrueger/main/templui/table"
+)
+
 type CellData struct {
 	ID string
     Width int
@@ -12,70 +16,38 @@ type RowData struct {
 }
 
 templ BasicTable(id string, head RowData, data []RowData) {
-	<table id={ id } class="w-full text-main">
-		<thead id={ id+"-thead" }>
-			<tr id={head.ID}>
+	@table.Table(table.Props{
+		ID: id,
+	}) {
+		@table.Header() {
+			@table.Row() {
 				for _, h := range head.Data {
-					@BasicTH(h)
+					@table.Head() {
+						if h.Body != nil {
+							@h.Body
+						}
+					}
 				}
-			</tr>
-		</thead>
-		<tbody id={ id+"-tbody" }>
-			for _, d := range data {
-				@BasicTR(d)
 			}
-		</tbody>
-	</table>
-}
-
-templ BasicTH(data CellData) {
-	@basicTH(data.ID) {
-		if data.Body != nil {
-			@data.Body
+		}
+		@table.Body() {
+			for _, d := range data {
+				@table.Row() {
+					@BasicTR(d)
+				}
+			}
 		}
 	}
-}
-
-templ basicTH(id string) {
-	<th class="text-center" id={id}>
-		{ children... }
-	</th>
-
 }
 
 templ BasicTR(data RowData) {
-	@basicTR(data.ID) {
+	@table.Row() {
 		for _, td := range data.Data {
-			@BasicTD(td)
+			@table.Cell() {
+				if td.Body != nil {
+					@td.Body
+				}
+			}
 		}
 	}
-}
-
-templ basicTR(id string) {
-	<tr
-		class="text-center odd:bg-[#FFFFFF11] hover:bg-[#FFFFFF33] rounded-sm"
-	>
-		{ children... }
-	</tr>
-}
-
-
-templ BasicTD(data CellData) {
-	@basicTD(data.ID) {
-		if data.Body != nil {
-			@data.Body
-		}
-	}
-}
-
-templ basicTD (id string) {
-	<td
-		id={id}
-	>
-		<div
-			class="px-2 py-1"
-		>
-			{ children... }
-		</div>
-	</td>
 }

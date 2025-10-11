@@ -4,27 +4,25 @@ import (
 	gctx "context"
 	"net/http"
 
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
+	"github.com/carsonkrueger/main/gen/go_starter_db/auth/model"
 	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 )
 
 type ServiceManager interface {
-	// DB-START
 	UsersService() UsersService
 	PrivilegesService() PrivilegesService
-	// DB-END
 	// INSERT GET SERVICE
 }
 
 type PrivilegesService interface {
-	CreatePrivilegeAssociation(ctx gctx.Context, levelID int64, privID int64) error
-	DeletePrivilegeAssociation(ctx gctx.Context, levelID int64, privID int64) error
-	CreateLevel(ctx gctx.Context, name string) error
-	HasPermissionByID(ctx gctx.Context, levelID int64, permissionID int64) bool
-	SetUserPrivilegeLevel(ctx gctx.Context, levelID int64, userID int64) error
-	UserPrivilegeLevelJoinAsRowData(ctx gctx.Context, upl []auth_models.UserPrivilegeLevelJoin, allLevels []*model.PrivilegeLevels) []datadisplay.RowData
-	JoinedPrivilegeLevelAsRowData(ctx gctx.Context, jpl []auth_models.JoinedPrivilegeLevel) []datadisplay.RowData
+	CreatePrivilegeAssociation(ctx gctx.Context, role int16, privID int64) error
+	DeletePrivilegeAssociation(ctx gctx.Context, role int16, privID int64) error
+	CreateRole(ctx gctx.Context, name string) error
+	HasPermissionsByIDS(ctx gctx.Context, role int16, privileges []int64) bool
+	SetUserRole(ctx gctx.Context, role int16, userID int64) error
+	UserRoleJoinAsRowData(ctx gctx.Context, upl []auth_models.UserRoleJoin, roles []model.Roles) []datadisplay.RowData
+	JoinedRoleAsRowData(ctx gctx.Context, jpl []auth_models.JoinedRole) []datadisplay.RowData
 	JoinedPrivilegesAsRowData(ctx gctx.Context, jpl []auth_models.JoinedPrivilegesRaw) []datadisplay.RowData
 }
 

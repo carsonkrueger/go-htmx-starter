@@ -6,22 +6,21 @@ import (
 
 	"github.com/carsonkrueger/main/builders"
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/page_layouts"
 	"github.com/carsonkrueger/main/templates/pages"
-	"github.com/carsonkrueger/main/tools"
-	"github.com/carsonkrueger/main/tools/render"
+	"github.com/carsonkrueger/main/util"
+	"github.com/carsonkrueger/main/util/render"
 )
 
 const (
-	UserManagementTabsGet   = "UserManagementTabsGet"
-	UserManagementUsersGet  = "UserManagementUsersGet"
-	UserManagementLevelsGet = "UserManagementLevelsGet"
+	UserManagementTabsGet  = "UserManagementTabsGet"
+	UserManagementUsersGet = "UserManagementUsersGet"
+	UserManagementRolesGet = "UserManagementRolesGet"
 )
 
 var UserManagementTabModels = []page_layouts.TabModel{
 	{Title: "Users", PushUrl: true, HxGet: "/user_management/users"},
-	{Title: "Privilege Levels", PushUrl: true, HxGet: "/user_management/levels"},
+	{Title: "Roles", PushUrl: true, HxGet: "/user_management/roles"},
 }
 
 type userManagement struct {
@@ -40,8 +39,8 @@ func (um userManagement) Path() string {
 
 func (um *userManagement) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBuilder) {
 	// b.NewHandle().Register(builders.GET, "/tabs", um.userManagementTabsGet).SetPermissionName(UserManagementTabsGet).Build()
-	b.NewHandler().Register(builders.GET, "/users", um.userManagementUsersGet).SetPermissionName(UserManagementUsersGet).Build(ctx)
-	b.NewHandler().Register(builders.GET, "/levels", um.userManagementLevelsGet).SetPermissionName(UserManagementLevelsGet).Build(ctx)
+	b.NewHandler().Register(builders.GET, "/users", um.userManagementUsersGet).SetRequiredPrivileges([]string{UserManagementUsersGet}).Build(ctx)
+	b.NewHandler().Register(builders.GET, "/roles", um.userManagementRolesGet).SetRequiredPrivileges([]string{UserManagementRolesGet}).Build(ctx)
 }
 
 func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *http.Request) {
@@ -52,38 +51,37 @@ func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *h
 	dao := um.DM().UsersDAO()
 	users, err := dao.GetUserPrivilegeJoinAll(ctx)
 	if err != nil || users == nil {
-		tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
+		util.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return
 	}
 
 	if len(*users) == 0 {
-		datadisplay.AddTextToast(datadisplay.Warning, "No Users Found", 5).Render(ctx, res)
 		return
 	}
 
-	allLevels, err := um.DM().PrivilegeLevelsDAO().Index(ctx, nil)
-	if err != nil || allLevels == nil {
-		tools.HandleError(req, res, lgr, err, 500, "Error fetching privilege levels")
+	allRoles, err := um.DM().RolesDAO().GetAll(ctx)
+	if err != nil {
+		util.HandleError(req, res, lgr, err, 500, "Error fetching roles")
 		return
 	}
 
-	rows := um.SM().PrivilegesService().UserPrivilegeLevelJoinAsRowData(ctx, *users, allLevels)
+	rows := um.SM().PrivilegesService().UserRoleJoinAsRowData(ctx, *users, allRoles)
 	page := pages.UserManagementUsers(rows)
 	render.Tab(req, UserManagementTabModels, 0, page).Render(ctx, res)
 }
 
-func (um *userManagement) userManagementLevelsGet(res http.ResponseWriter, req *http.Request) {
-	lgr := um.Lgr("userManagementLevelsGet")
+func (um *userManagement) userManagementRolesGet(res http.ResponseWriter, req *http.Request) {
+	lgr := um.Lgr("userManagementRolesGet")
 	lgr.Info("Called")
 	ctx := req.Context()
 
 	privileges, err := um.DM().PrivilegeDAO().GetAllJoined(ctx)
 	if err != nil {
-		tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
+		util.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return
 	}
 	rows := um.SM().PrivilegesService().JoinedPrivilegesAsRowData(ctx, privileges)
 
-	page := pages.UserManagementLevels(rows)
+	page := pages.UserManagementRoles(rows)
 	render.Tab(req, UserManagementTabModels, 1, page).Render(ctx, res)
 }

@@ -21,7 +21,6 @@ type AppPublicRoute interface {
 	PublicRoute
 }
 
-// DB-START
 type PrivateRouteBuilder struct {
 	router chi.Router
 	appCtx context.AppContext
@@ -80,4 +79,3 @@ func (rb *PrivateRouteBuilder) RawRouter() chi.Router {
 	return rb.router
 }
 
-// DB-END

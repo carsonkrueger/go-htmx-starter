@@ -7,9 +7,10 @@ import (
 	"github.com/carsonkrueger/main/controllers/private"
 	"github.com/carsonkrueger/main/templates/datadisplay"
 	"github.com/carsonkrueger/main/templates/pages"
-	"github.com/carsonkrueger/main/tools"
-	"github.com/carsonkrueger/main/tools/render"
-	"github.com/carsonkrueger/main/tools/validate"
+	"github.com/carsonkrueger/main/util"
+	"github.com/carsonkrueger/main/util/render"
+	"github.com/carsonkrueger/main/util/slice"
+	"github.com/carsonkrueger/main/util/validate"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )
@@ -41,10 +42,10 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	db.Query("select 1;")
 
 	if err := req.ParseForm(); err != nil {
-		lgr.Error("Could not parse form", zap.Error(err))
-		res.WriteHeader(422)
-		noti := datadisplay.AddTextToast(datadisplay.Error, "Error parsing form", 0)
-		noti.Render(ctx, res)
+		// lgr.Error("Could not parse form", zap.Error(err))
+		// res.WriteHeader(422)
+		// datadisplay.AddToastErrors("Error parsing form").Render(ctx, res)
+		util.HandleError(req, res, lgr, nil, 400, "Error parsing form")
 		return
 	}
 
@@ -54,8 +55,7 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	if len(errs) > 0 {
 		lgr.Warn("Validation errors", zap.Errors("Login Form", errs))
 		res.WriteHeader(422)
-		noti := datadisplay.AddToastErrors(0, errs...)
-		noti.Render(ctx, res)
+		datadisplay.AddToastErrors(slice.Map(errs, error.Error)...).Render(ctx, res)
 		return
 	}
 
@@ -65,36 +65,32 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	usersService := l.SM().UsersService()
 	authToken, err := usersService.Login(ctx, email, password, req)
 	if err != nil {
-		lgr.Warn("Could not login")
-		res.WriteHeader(422)
-		noti := datadisplay.AddTextToast(datadisplay.Error, "Invalid username or password", 5)
-		noti.Render(ctx, res)
+		util.HandleError(req, res, lgr, err, 401, "Invalid username or password")
 		return
 	}
 
-	tools.SetAuthCookie(res, authToken)
+	util.SetAuthCookie(res, authToken)
 
-	hxRequest := tools.IsHxRequest(req)
+	hxRequest := util.IsHxRequest(req)
 	if hxRequest {
 		dao := l.DM().UsersDAO()
 		users, err := dao.GetUserPrivilegeJoinAll(ctx)
 		if err != nil || users == nil {
-			tools.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
+			util.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 			return
 		}
 
 		if len(*users) == 0 {
-			datadisplay.AddTextToast(datadisplay.Warning, "No Users Found", 5).Render(ctx, res)
 			return
 		}
 
-		allLevels, err := l.DM().PrivilegeLevelsDAO().Index(ctx, nil)
-		if err != nil || allLevels == nil {
-			tools.HandleError(req, res, lgr, err, 500, "Error fetching privilege levels")
+		allRoles, err := l.DM().RolesDAO().GetAll(ctx)
+		if err != nil || allRoles == nil {
+			datadisplay.AddToastErrors("Error fetching roles").Render(ctx, res)
 			return
 		}
 
-		rows := l.SM().PrivilegesService().UserPrivilegeLevelJoinAsRowData(ctx, *users, allLevels)
+		rows := l.SM().PrivilegesService().UserRoleJoinAsRowData(ctx, *users, allRoles)
 		page := pages.UserManagementUsers(rows)
 		render.Tab(req, private.UserManagementTabModels, 0, page).Render(ctx, res)
 	}

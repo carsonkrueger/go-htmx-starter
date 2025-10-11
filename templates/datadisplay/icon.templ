@@ -4,23 +4,6 @@ import (
 	"strings"
 )
 
-var sizeClassMap map[Size]string = map[Size]string{
-	XS: "size-3",
-	SM: "size-4",
-	MD: "size-5",
-	LG: "size-6",
-	XL: "size-7",
-}
-
-var fillClassMap map[Color]string = map[Color]string{
-	White: "fill-white",
-	Black: "fill-black",
-	Gray:  "fill-gray-500",
-	Blue:  "fill-blue-500",
-	Red:   "fill-red-500",
-	Yellow:"fill-yellow-500",
-}
-
 templ Icon(iconType IconType, size Size, color Color) {
 	{{
 		var template templ.Component
@@ -32,9 +15,12 @@ templ Icon(iconType IconType, size Size, color Color) {
 			"class": strings.Join(classes, " "),
 		}
 		switch iconType {
-		case XIcon:
-			template = X(attrs)
-			break
+		case LeafIcon:
+			template = Leaf(attrs)
+		case FlexIcon:
+			template = Flex(attrs)
+		case AntioxidantIcon:
+			template = Antioxidant(attrs)
 		}
 	}}
 	@template

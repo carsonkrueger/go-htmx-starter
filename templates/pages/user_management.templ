@@ -1,6 +1,9 @@
 package pages
 
-import "github.com/carsonkrueger/main/templates/datadisplay"
+import (
+	"github.com/carsonkrueger/main/templates/datadisplay"
+	"github.com/carsonkrueger/main/templui/button"
+)
 
 templ UserManagement() {
 	<div>
@@ -26,7 +29,7 @@ templ UserManagementUsers(rows []datadisplay.RowData) {
 				{
 					ID:    "h-pr",
 					Width: 1,
-					Body:  datadisplay.Text("Privilege Level", datadisplay.LG),
+					Body:  datadisplay.Text("Role", datadisplay.LG),
 				},
 				{
 					ID:    "h-ca",
@@ -39,15 +42,15 @@ templ UserManagementUsers(rows []datadisplay.RowData) {
 	@datadisplay.BasicTable("users", header, rows)
 }
 
-templ UserManagementLevels(data []datadisplay.RowData) {
+templ UserManagementRoles(data []datadisplay.RowData) {
 	{{
 		header := datadisplay.RowData{
 			ID: "header",
 			Data: []datadisplay.CellData{
 				{
-					ID:    "h-lvl-name",
+					ID:    "h-role-name",
 					Width: 1,
-					Body:  datadisplay.Text("Privilege Level", datadisplay.LG),
+					Body:  datadisplay.Text("Role", datadisplay.LG),
 				},
 				{
 					ID:    "h-pr",
@@ -68,16 +71,16 @@ templ UserManagementLevels(data []datadisplay.RowData) {
 		}
 	}}
 	<div class="flex flex-col grow justify-between">
-		@datadisplay.BasicTable("privilege-levels", header, data)
+		@datadisplay.BasicTable("roles", header, data)
 		<form
 			class="flex gap-4 py-4 items-center justify-center"
-			hx-post="/privilege-levels-privileges"
-			hx-target="#privilege-levels-tbody"
+			hx-post="/roles-privileges"
+			hx-target="#roles-tbody"
 			hx-swap="beforeend"
 			hx-disable-elt="this"
 		>
 			<div
-				hx-get="/privilege-levels/select"
+				hx-get="/roles/select"
 				hx-target="this"
 				hx-swap="outerHTML"
 				hx-trigger="load"
@@ -88,12 +91,12 @@ templ UserManagementLevels(data []datadisplay.RowData) {
 				hx-swap="outerHTML"
 				hx-trigger="load"
 			></div>
-			<button
-				type="submit"
-				class="bg-primary px-4 py-2 text-white rounded-sm cursor-pointer"
-			>
+			@button.Button(button.Props{
+				Type: "submit",
+				Class: "bg-secondary hover:bg-secondary-hi",
+			}) {
 				Add Privilege
-			</button>
+			}
 		</form>
 	</div>
 }

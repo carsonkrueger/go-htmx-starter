@@ -4,8 +4,7 @@ import (
 	gctx "context"
 	"time"
 
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
-	"github.com/carsonkrueger/main/models"
+	"github.com/carsonkrueger/main/gen/go_starter_db/auth/model"
 	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/go-jet/jet/v2/postgres"
 )
@@ -38,13 +37,13 @@ type GetTable interface {
 }
 
 type DAOBaseQueries[PK PrimaryKey, R any] interface {
-	Index(ctx gctx.Context, params *models.SearchParams) ([]*R, error)
-	GetOne(ctx gctx.Context, pk PK) (*R, error)
-	GetMany(ctx gctx.Context, pks []PK) ([]*R, error)
+	GetAll(ctx gctx.Context) ([]R, error)
+	GetOne(ctx gctx.Context, pk PK) (R, error)
+	GetMany(ctx gctx.Context, pks []PK) ([]R, error)
 	Insert(ctx gctx.Context, model *R) error
-	InsertMany(ctx gctx.Context, models *[]*R) error
+	InsertMany(ctx gctx.Context, models []R) error
 	Upsert(ctx gctx.Context, model *R) error
-	UpsertMany(ctx gctx.Context, models *[]*R) error
+	UpsertMany(ctx gctx.Context, models []R) error
 	Update(ctx gctx.Context, model *R, pk PK) error
 	Delete(ctx gctx.Context, pk PK) error
 }
@@ -60,35 +59,36 @@ type DAO[PK any, R any] interface {
 type DAOManager interface {
 	UsersDAO() UsersDAO
 	PrivilegeDAO() PrivilegeDAO
-	PrivilegeLevelsDAO() PrivilegeLevelsDAO
+	RolesDAO() RolesDAO
 	SessionsDAO() SessionsDAO
-	PrivilegeLevelsPrivilegesDAO() PrivilegeLevelsPrivilegesDAO
+	RolesPrivilegesDAO() RolesPrivilegesDAO
 	// INSERT GET DAO
 }
 
 type UsersDAO interface {
 	DAO[int64, model.Users]
 	GetByEmail(ctx gctx.Context, email string) (*model.Users, error)
-	GetPrivilegeLevelID(ctx gctx.Context, id int64) (*int64, error)
-	GetUserPrivilegeJoinAll(ctx gctx.Context) (*[]auth_models.UserPrivilegeLevelJoin, error)
+	GetRoleID(ctx gctx.Context, id int64) (*int64, error)
+	GetUserPrivilegeJoinAll(ctx gctx.Context) (*[]auth_models.UserRoleJoin, error)
 }
 
 type PrivilegeDAO interface {
 	DAO[int64, model.Privileges]
 	GetAllJoined(ctx gctx.Context) ([]auth_models.JoinedPrivilegesRaw, error)
-	GetPrivilegesByLevelID(ctx gctx.Context, levelID int64) ([]model.PrivilegeLevels, error)
+	GetPrivilegesByRoleID(ctx gctx.Context, roleID int64) ([]model.Roles, error)
+	GetManyByName(ctx gctx.Context, names []string) ([]model.Privileges, error)
 }
 
 type SessionsDAO interface {
 	DAO[auth_models.SessionsPrimaryKey, model.Sessions]
 }
 
-type PrivilegeLevelsDAO interface {
-	DAO[int64, model.PrivilegeLevels]
+type RolesDAO interface {
+	DAO[int16, model.Roles]
 }
 
-type PrivilegeLevelsPrivilegesDAO interface {
-	DAO[auth_models.PrivilegeLevelsPrivilegesPrimaryKey, model.PrivilegeLevelsPrivileges]
+type RolesPrivilegesDAO interface {
+	DAO[auth_models.RolesPrivilegesPrimaryKey, model.RolesPrivileges]
 }
 
 // INSERT INTERFACE DAO

@@ -5,7 +5,7 @@ import (
 
 	"github.com/carsonkrueger/main/context"
 	"github.com/carsonkrueger/main/templates/pages"
-	"github.com/carsonkrueger/main/tools/render"
+	"github.com/carsonkrueger/main/util/render"
 	"github.com/go-chi/chi/v5"
 )
 

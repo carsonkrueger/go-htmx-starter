@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
-	"github.com/carsonkrueger/main/gen/go_db/auth/table"
+	"github.com/carsonkrueger/main/gen/go_starter_db/auth/model"
+	"github.com/carsonkrueger/main/gen/go_starter_db/auth/table"
 	"github.com/carsonkrueger/main/models/auth_models"
 	"github.com/go-jet/jet/v2/postgres"
 )
@@ -68,20 +68,20 @@ func (dao *privilegesDAO) GetUpdatedAt(row *model.Privileges) *time.Time {
 func (dao *privilegesDAO) GetAllJoined(ctx gctx.Context) ([]auth_models.JoinedPrivilegesRaw, error) {
 	var res []auth_models.JoinedPrivilegesRaw
 
-	err := table.PrivilegeLevels.
+	err := table.Roles.
 		SELECT(
-			table.PrivilegeLevelsPrivileges.PrivilegeLevelID.AS("JoinedPrivilegesRaw.LevelID"),
-			table.PrivilegeLevels.Name.AS("JoinedPrivilegesRaw.LevelName"),
-			table.PrivilegeLevelsPrivileges.PrivilegeID.AS("JoinedPrivilegesRaw.PrivilegeID"),
+			table.RolesPrivileges.RoleID.AS("JoinedPrivilegesRaw.RoleID"),
+			table.Roles.Name.AS("JoinedPrivilegesRaw.RoleName"),
+			table.RolesPrivileges.PrivilegeID.AS("JoinedPrivilegesRaw.PrivilegeID"),
 			table.Privileges.Name.AS("JoinedPrivilegesRaw.PrivilegeName"),
 			table.Privileges.CreatedAt.AS("JoinedPrivilegesRaw.PrivilegeCreatedAt"),
 		).
 		FROM(
-			table.PrivilegeLevelsPrivileges.
-				LEFT_JOIN(table.PrivilegeLevels, table.PrivilegeLevels.ID.EQ(table.PrivilegeLevelsPrivileges.PrivilegeLevelID)).
-				LEFT_JOIN(table.Privileges, table.Privileges.ID.EQ(table.PrivilegeLevelsPrivileges.PrivilegeID)),
+			table.RolesPrivileges.
+				LEFT_JOIN(table.Roles, table.Roles.ID.EQ(table.RolesPrivileges.RoleID)).
+				LEFT_JOIN(table.Privileges, table.Privileges.ID.EQ(table.RolesPrivileges.PrivilegeID)),
 		).
-		ORDER_BY(table.PrivilegeLevels.Name.ASC(), table.Privileges.Name.ASC()).
+		ORDER_BY(table.Roles.Name.ASC(), table.Privileges.Name.ASC()).
 		Query(context.GetDB(ctx), &res)
 
 	if err != nil {
@@ -91,21 +91,45 @@ func (dao *privilegesDAO) GetAllJoined(ctx gctx.Context) ([]auth_models.JoinedPr
 	return res, nil
 }
 
-func (dao *privilegesDAO) GetPrivilegesByLevelID(ctx gctx.Context, levelID int64) ([]model.PrivilegeLevels, error) {
-	var privileges []model.PrivilegeLevels
-	err := table.PrivilegeLevelsPrivileges.
+func (dao *privilegesDAO) GetPrivilegesByRoleID(ctx gctx.Context, roleID int64) ([]model.Roles, error) {
+	var privileges []model.Roles
+	err := table.RolesPrivileges.
 		SELECT(
-			table.PrivilegeLevelsPrivileges.PrivilegeLevelID,
-			table.PrivilegeLevelsPrivileges.PrivilegeID,
+			table.RolesPrivileges.RoleID,
+			table.RolesPrivileges.PrivilegeID,
 			table.Privileges.AllColumns,
 		).
 		FROM(
-			table.PrivilegeLevelsPrivileges.
-				LEFT_JOIN(table.Privileges, table.Privileges.ID.EQ(table.PrivilegeLevelsPrivileges.PrivilegeLevelID)),
+			table.RolesPrivileges.
+				LEFT_JOIN(table.Privileges, table.Privileges.ID.EQ(table.RolesPrivileges.RoleID)),
 		).
 		Query(context.GetDB(ctx), &privileges)
 	if err != nil {
 		return privileges, err
 	}
+	return privileges, nil
+}
+
+func (dao *privilegesDAO) GetManyByName(ctx gctx.Context, names []string) ([]model.Privileges, error) {
+	var privileges []model.Privileges
+
+	// Handle empty slice case
+	if len(names) == 0 {
+		return privileges, nil
+	}
+
+	exprs := make([]postgres.Expression, len(names))
+	for i, name := range names {
+		exprs[i] = postgres.String(name)
+	}
+
+	err := table.Privileges.
+		SELECT(table.Privileges.AllColumns).
+		WHERE(table.Privileges.Name.IN(exprs...)).
+		QueryContext(ctx, context.GetDB(ctx), &privileges)
+	if err != nil {
+		return nil, err
+	}
+
 	return privileges, nil
 }

@@ -1,0 +1,21 @@
+package datadisplay
+
+import (
+	"strings"
+)
+
+templ CircleOutline(color Color, size Size, child templ.Component) {
+	{{
+		classes := []string{
+			"rounded-full border border-[2px] flex items-center justify-center",
+			borderClassMap[color],
+			sizeClassMap[size],
+		}
+	}}
+	<div class={ strings.Join(classes, " ") }>
+		if child != nil {
+			@child
+		}
+		{ children... }
+	</div>
+}

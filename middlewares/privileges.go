@@ -4,21 +4,23 @@ import (
 	"net/http"
 
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/tools"
+	"github.com/carsonkrueger/main/util"
 )
 
-func ApplyPermission(privilegeID int64, appCtx context.AppContext) func(next http.Handler) http.Handler {
+func ApplyPermission(privileges []int64, appCtx context.AppContext) func(next http.Handler) http.Handler {
 	lgr := appCtx.Lgr("MW ApplyPermission")
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			ctx := req.Context()
 
-			levelID := context.GetPrivilegeLevelID(ctx)
-			cache := appCtx.SM().PrivilegesService()
-			permitted := cache.HasPermissionByID(ctx, levelID, privilegeID)
+			lgr.Debug("applying permissions")
+
+			roleID := context.GetRoleID(ctx)
+			privelegeService := appCtx.SM().PrivilegesService()
+			permitted := privelegeService.HasPermissionsByIDS(ctx, roleID, privileges)
 			if !permitted {
-				tools.HandleError(req, res, lgr, nil, 403, "Insufficient privileges")
+				util.HandleError(req, res, lgr, nil, 403, "Insufficient privileges")
 				return
 			}
 

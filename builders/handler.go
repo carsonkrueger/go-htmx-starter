@@ -3,11 +3,14 @@ package builders
 import (
 	gctx "context"
 	"net/http"
+	"slices"
 
 	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/gen/go_db/auth/model"
+	"github.com/carsonkrueger/main/gen/go_starter_db/auth/model"
 	"github.com/carsonkrueger/main/middlewares"
+	"github.com/carsonkrueger/main/util/slice"
 	"github.com/go-chi/chi/v5"
+	"go.uber.org/zap"
 )
 
 type RouteMethod string
@@ -21,13 +24,13 @@ const (
 )
 
 type privateHandlerBuilder struct {
-	appCtx         context.AppContext
-	router         chi.Router
-	mw             []func(next http.Handler) http.Handler
-	method         RouteMethod
-	pattern        string
-	handle         http.HandlerFunc
-	permissionName *string
+	appCtx     context.AppContext
+	router     chi.Router
+	mw         []func(next http.Handler) http.Handler
+	method     RouteMethod
+	pattern    string
+	handle     http.HandlerFunc
+	privileges []string // privileges required to access private endpoint
 }
 
 func (mb *privateHandlerBuilder) Register(method RouteMethod, pattern string, handle http.HandlerFunc) *privateHandlerBuilder {
@@ -37,8 +40,9 @@ func (mb *privateHandlerBuilder) Register(method RouteMethod, pattern string, ha
 	return mb
 }
 
-func (mb *privateHandlerBuilder) SetPermissionName(name string) *privateHandlerBuilder {
-	mb.permissionName = &name
+// privileges required to access private endpoint
+func (mb *privateHandlerBuilder) SetRequiredPrivileges(privileges []string) *privateHandlerBuilder {
+	mb.privileges = privileges
 	return mb
 }
 
@@ -48,13 +52,36 @@ func (mb *privateHandlerBuilder) SetMiddlewares(middlewares ...func(next http.Ha
 }
 
 func (mb *privateHandlerBuilder) Build(ctx gctx.Context) {
+	lgr := mb.appCtx.Lgr("privateHandlerBuilder.Build.")
 	privDAO := mb.appCtx.DM().PrivilegeDAO()
 
 	r := mb.router
-	if mb.permissionName != nil {
-		priv := model.Privileges{Name: *mb.permissionName}
-		privDAO.Upsert(ctx, &priv)
-		r = mb.router.With(middlewares.ApplyPermission(priv.ID, mb.appCtx))
+	if len(mb.privileges) > 0 {
+		privs, err := privDAO.GetManyByName(ctx, mb.privileges)
+		if err != nil {
+			lgr.Error("get many privileges by name", zap.Error(err))
+			return
+		}
+
+		newPrivNames := slices.DeleteFunc(mb.privileges, func(privName string) bool {
+			return slices.ContainsFunc(privs, func(priv model.Privileges) bool {
+				return priv.Name == privName
+			})
+		})
+
+		newPrivs := make([]model.Privileges, len(newPrivNames))
+		for i, np := range newPrivNames {
+			newPrivs[i] = model.Privileges{Name: np}
+		}
+
+		if err := privDAO.UpsertMany(ctx, newPrivs); err != nil {
+			lgr.Error("upserting many privileges", zap.Error(err))
+			return
+		}
+		privIDs := slice.MapIdx(privs, func(priv model.Privileges, _ int) int64 {
+			return priv.ID
+		})
+		r = mb.router.With(middlewares.ApplyPermission(privIDs, mb.appCtx))
 	}
 	if len(mb.mw) > 0 {
 		r = r.With(mb.mw...)
