@@ -7,9 +7,9 @@ import (
 	"os"
 	"path"
 
-	"github.com/carsonkrueger/main/cfg"
-	"github.com/carsonkrueger/main/logger"
-	"github.com/carsonkrueger/main/util"
+	"github.com/carsonkrueger/main/internal/cfg"
+	"github.com/carsonkrueger/main/internal/logger"
+	"github.com/carsonkrueger/main/pkg/util"
 	"go.uber.org/zap"
 )
 
@@ -73,7 +73,7 @@ func ServiceFileContents(name string) string {
 
 	return fmt.Sprintf(`package services
 
-import "github.com/carsonkrueger/main/context"
+import "github.com/carsonkrueger/main/internal/context"
 
 type %[1]sService struct {
 	context.AppContext

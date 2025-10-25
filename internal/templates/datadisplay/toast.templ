@@ -1,0 +1,29 @@
+package datadisplay
+
+import (
+	templtoast "github.com/carsonkrueger/main/pkg/templui/toast"
+)
+
+templ AddTextToast(variant NotificationVariant, title, desc string) {
+	@toast(title, desc)
+}
+
+templ AddToastErrors(msgs ...string) {
+	for _, m := range msgs {
+		@toast("An Error Occurred", m)
+	}
+}
+
+templ toast(title, desc string) {
+	// <div
+	// 	hx-swap-oob={ "beforeend:#" + constants.GlobalToastID }
+	// >
+		@templtoast.Toast(templtoast.Props{
+			Title:       title,
+			Description: desc,
+			BodyClass: "shadow-md bg-secondary text-tertiary",
+			Dismissible: true,
+			Duration: 6000,
+		})
+	// </div>
+}

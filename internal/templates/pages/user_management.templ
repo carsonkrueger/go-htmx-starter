@@ -1,0 +1,102 @@
+package pages
+
+import (
+	"github.com/carsonkrueger/main/internal/templates/datadisplay"
+	"github.com/carsonkrueger/main/pkg/templui/button"
+)
+
+templ UserManagement() {
+	<div>
+		User Management
+	</div>
+}
+
+templ UserManagementUsers(rows []datadisplay.RowData) {
+	{{
+		header := datadisplay.RowData{
+			ID: "header",
+			Data: []datadisplay.CellData{
+				{
+					ID:    "h-name",
+					Width: 1,
+					Body:  datadisplay.Text("Name", datadisplay.LG),
+				},
+				{
+					ID:    "h-email",
+					Width: 1,
+					Body:  datadisplay.Text("Email", datadisplay.LG),
+				},
+				{
+					ID:    "h-pr",
+					Width: 1,
+					Body:  datadisplay.Text("Role", datadisplay.LG),
+				},
+				{
+					ID:    "h-ca",
+					Width: 1,
+					Body:  datadisplay.Text("Created At", datadisplay.LG),
+				},
+			},
+		}
+	}}
+	@datadisplay.BasicTable("users", header, rows)
+}
+
+templ UserManagementRoles(data []datadisplay.RowData) {
+	{{
+		header := datadisplay.RowData{
+			ID: "header",
+			Data: []datadisplay.CellData{
+				{
+					ID:    "h-role-name",
+					Width: 1,
+					Body:  datadisplay.Text("Role", datadisplay.LG),
+				},
+				{
+					ID:    "h-pr",
+					Width: 1,
+					Body:  datadisplay.Text("Privilege", datadisplay.LG),
+				},
+				{
+					ID:    "h-ca",
+					Width: 1,
+					Body:  datadisplay.Text("Created At", datadisplay.LG),
+				},
+				{
+					ID:    "h-del",
+					Width: 1,
+					Body:  nil,
+				},
+			},
+		}
+	}}
+	<div class="flex flex-col grow justify-between">
+		@datadisplay.BasicTable("roles", header, data)
+		<form
+			class="flex gap-4 py-4 items-center justify-center"
+			hx-post="/roles-privileges"
+			hx-target="#roles-tbody"
+			hx-swap="beforeend"
+			hx-disable-elt="this"
+		>
+			<div
+				hx-get="/roles/select"
+				hx-target="this"
+				hx-swap="outerHTML"
+				hx-trigger="load"
+			></div>
+			<div
+				hx-get="/privileges/select"
+				hx-target="this"
+				hx-swap="outerHTML"
+				hx-trigger="load"
+			></div>
+			@button.Button(button.Props{
+				Type: "submit",
+				Class: "bg-secondary hover:bg-secondary-hi",
+			}) {
+				Add Privilege
+			}
+		</form>
+	</div>
+}

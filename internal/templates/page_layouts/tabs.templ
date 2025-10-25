@@ -1,0 +1,71 @@
+package page_layouts
+
+import (
+	"fmt"
+	"github.com/carsonkrueger/main/internal/templates/constants"
+)
+
+type TabModel struct {
+	Title   string
+	HxGet   string
+	PushUrl bool
+}
+
+templ Tabs(tabs []TabModel, selectedTabIndex int) {
+	<div class="flex text-lg shadow-md">
+		for i, tab := range tabs {
+			{{
+				class := "border-b-transparent"
+				selected := i == selectedTabIndex
+				if selected {
+					class = "border-b-secondary"
+				}
+				id := fmt.Sprintf("tab-%s", tab.HxGet)
+			}}
+			<div>
+				<label
+					for={ id }
+					class={ "tab cursor-pointer p-3 min-w-56 flex justify-center items-center border-b-[2px] " + class }
+					hx-get={ tab.HxGet }
+					hx-target={ "#" + constants.TabContentID }
+					if tabs[i].PushUrl {
+						hx-push-url="true"
+					}
+					hx-trigger="click"
+					hx-swap="innerHTML"
+				>
+					{ tab.Title }
+				</label>
+				<input
+					id={ id }
+					type="radio"
+					class="hidden"
+					if selected {
+						checked
+					}
+					_="
+						on click
+							remove .border-b-secondary from .tab then
+							add .border-b-transparent to .tab then
+							add .border-b-secondary to previous <label/> then
+							remove .border-b-transparent from previous <label/>
+						end
+						"
+				/>
+			</div>
+		}
+	</div>
+	<div
+		id={ constants.TabContentID }
+		class="flex flex-col grow"
+	>
+		<div
+			hx-trigger="load"
+			hx-target={ "#" + constants.TabContentID }
+			hx-swap="innerHTML"
+			if selectedTabIndex < len(tabs) && selectedTabIndex >= 0 {
+				hx-get={ tabs[selectedTabIndex].HxGet }
+			}
+		></div>
+	</div>
+}

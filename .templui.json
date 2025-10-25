@@ -1,6 +1,6 @@
 {
-    "componentsDir": "templui",
-    "utilsDir": "templui/utils",
+    "componentsDir": "pkg/templui",
+    "utilsDir": "pkg/templui/utils",
     "moduleName": "github.com/carsonkrueger/main",
     "jsDir": "public",
     "jsPublicPath": "public"

@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"flag"
 
-	"github.com/carsonkrueger/main/cfg"
-	"github.com/carsonkrueger/main/logger"
-	"github.com/carsonkrueger/main/seeders"
+	"github.com/carsonkrueger/main/internal/cfg"
+	"github.com/carsonkrueger/main/internal/logger"
+	"github.com/carsonkrueger/main/internal/seeders"
 	_ "github.com/lib/pq"
 )
 

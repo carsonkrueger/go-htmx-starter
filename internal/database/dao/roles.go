@@ -1,0 +1,64 @@
+package dao
+
+import (
+	"time"
+
+	"github.com/carsonkrueger/main/internal/context"
+	"github.com/carsonkrueger/main/internal/gen/go_starter_db/auth/table"
+	"github.com/carsonkrueger/main/pkg/model/db/auth"
+	"github.com/go-jet/jet/v2/postgres"
+)
+
+type RolesDAO struct {
+	context.DAOBaseQueries[int16, auth.Roles]
+}
+
+func NewRolesDAO() *RolesDAO {
+	dao := &RolesDAO{
+		DAOBaseQueries: nil,
+	}
+	queries := newDAOQueryable[int16, auth.Roles](dao)
+	dao.DAOBaseQueries = &queries
+	return dao
+}
+
+func (dao *RolesDAO) Table() context.PostgresTable {
+	return table.Roles
+}
+
+func (dao *RolesDAO) InsertCols() postgres.ColumnList {
+	return table.Roles.AllColumns.Except(
+		table.Roles.ID,
+		table.Roles.CreatedAt,
+		table.Roles.UpdatedAt,
+	)
+}
+
+func (dao *RolesDAO) UpdateCols() postgres.ColumnList {
+	return table.Roles.AllColumns.Except(
+		table.Roles.ID,
+		table.Roles.CreatedAt,
+	)
+}
+
+func (dao *RolesDAO) AllCols() postgres.ColumnList {
+	return table.Roles.AllColumns
+}
+
+func (dao *RolesDAO) OnConflictCols() postgres.ColumnList {
+	return []postgres.Column{table.Roles.Name}
+}
+
+func (dao *RolesDAO) UpdateOnConflictCols() []postgres.ColumnAssigment {
+	return []postgres.ColumnAssigment{
+		table.Roles.Name.SET(table.Roles.EXCLUDED.Name),
+	}
+}
+
+func (dao *RolesDAO) PKMatch(pk int16) postgres.BoolExpression {
+	return table.Roles.ID.EQ(postgres.Int16(pk))
+}
+
+func (dao *RolesDAO) GetUpdatedAt(row *auth.Roles) *time.Time {
+	return row.UpdatedAt
+}

@@ -1,0 +1,118 @@
+package pages
+
+import (
+	"github.com/carsonkrueger/main/internal/templates/partial_layouts"
+	"github.com/carsonkrueger/main/internal/templates/constants"
+	"github.com/carsonkrueger/main/pkg/templui/form"
+	"github.com/carsonkrueger/main/pkg/templui/input"
+	"github.com/carsonkrueger/main/pkg/templui/button"
+)
+
+templ Signup() {
+	@partial_layouts.CenteredLayout() {
+		<div class="p-4 max-w-96 w-full">
+			<h2 class="text-2xl text-center mb-10">Sign Up</h2>
+			<form hx-post="/signup">
+				@form.Item(form.ItemProps{
+					Class: "flex flex-col gap-2",
+				}) {
+					<div>
+						@form.Label(form.LabelProps{
+							For: "email",
+						}) {
+							Email
+						}
+						@input.Input(input.Props{
+							ID:          "email",
+							Name: 		 "email",
+							Type:        input.TypeEmail,
+							Placeholder: "m@example.com",
+							HasError:    false,
+							Required:    true,
+							Attributes: templ.Attributes {
+								"pattern": "/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/",
+							},
+						})
+					</div>
+					<div>
+						@form.Label(form.LabelProps{
+							For: "first_name",
+						}) {
+							First Name
+						}
+						@input.Input(input.Props{
+							ID:          "first_name",
+							Name:        "first_name",
+							Type:        input.TypeText,
+							Placeholder: "Pete",
+							HasError:    false,
+							Required:    true,
+						})
+					</div>
+					<div>
+						@form.Label(form.LabelProps{
+							For: "last_name",
+						}) {
+							Last Name
+						}
+						@input.Input(input.Props{
+							ID:          "last_name",
+							Name:        "last_name",
+							Type:        input.TypeText,
+							Placeholder: "Peptide",
+							HasError:    false,
+							Required:    true,
+						})
+					</div>
+					<div>
+						@form.Label(form.LabelProps{
+							For: "password",
+						}) {
+							Password
+						}
+						@input.Input(input.Props{
+							ID:          "password",
+							Name:        "password",
+							Type:        input.TypePassword,
+							Placeholder: "Password",
+							HasError:    false,
+							Required:    true,
+						})
+					</div>
+					<div>
+						@form.Label(form.LabelProps{
+							For: "password_confirm",
+						}) {
+							Confirm Password
+						}
+						@input.Input(input.Props{
+							ID:          "password_confirm",
+							Name:        "password_confirm",
+							Type:        input.TypePassword,
+							Placeholder: "Confirm Password",
+							HasError:    false,
+							Required:    true,
+						})
+					</div>
+
+					<div class="flex justify-between items-end">
+						<div class="flex gap-1 text-sm">
+							<p>Already have an account?</p>
+							<p hx-get="/login" hx-push-url="true" hx-target={ "#"+constants.MainContentID } class="underline cursor-pointer">Login</p>
+						</div>
+						@button.Button(button.Props{
+							Class: "self-end bg-secondary text-tertiary",
+							Attributes: templ.Attributes{
+								"hx-post": "/signup",
+								"hx-target": "#"+constants.MainContentID,
+							},
+						}) {
+							Sign Up
+						}
+					</div>
+				}
+			</form>
+			<div id="response" class="mt-4 text-center text-sm font-medium"></div>
+		</div>
+	}
+}

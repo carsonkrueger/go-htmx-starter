@@ -7,9 +7,9 @@ import (
 	"os"
 	"path"
 
-	"github.com/carsonkrueger/main/cfg"
-	"github.com/carsonkrueger/main/logger"
-	"github.com/carsonkrueger/main/util"
+	"github.com/carsonkrueger/main/internal/cfg"
+	"github.com/carsonkrueger/main/internal/logger"
+	"github.com/carsonkrueger/main/pkg/util"
 	"go.uber.org/zap"
 )
 
@@ -92,7 +92,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/carsonkrueger/main/context"
+	"github.com/carsonkrueger/main/internal/context"
 	"github.com/carsonkrueger/main/gen/%[1]s/%[2]s/model"
 	"github.com/carsonkrueger/main/gen/%[1]s/%[2]s/table"
 	"github.com/go-jet/jet/v2/postgres"

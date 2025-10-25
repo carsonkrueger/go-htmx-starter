@@ -11,6 +11,7 @@ MIGRATE_CMD := ${GO_BIN_PATH}/migrate
 JET_CMD := ${GO_BIN_PATH}/jet
 DB_URL_EXTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_EXTERNAL_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable"
 DB_URL_INTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
+JET_MODEL_PATH := ../../../../pkg/model/db
 
 live:
 	make docker-postgres
@@ -79,7 +80,7 @@ generate-public-controller:
 	read controller; \
 	go run . -name="$$controller" -private=false genController
 
-seed:
+# seed:
 	go run . seed
 
 seed-undo:
@@ -91,7 +92,7 @@ jet-all:
 	echo "Schemas found: $$SCHEMAS"; \
 	for SCHEMA in $$SCHEMAS; do \
 	    echo "------ Generating models for schema: $$SCHEMA ------"; \
-		${JET_CMD} -dsn=${DB_URL_EXTERNAL} -schema=$$SCHEMA -path=./gen; \
+		${JET_CMD} -dsn=${DB_URL_EXTERNAL} -schema=$$SCHEMA -rel-model-path=${JET_MODEL_PATH}/$$SCHEMA -path=./internal/gen; \
 	done
 
 jet-all-internal:
@@ -100,8 +101,5 @@ jet-all-internal:
 	echo "Schemas found: $$SCHEMAS"; \
 	for SCHEMA in $$SCHEMAS; do \
 	    echo "------ Generating models for schema: $$SCHEMA ------"; \
-		${JET_CMD} -dsn=${DB_URL_INTERNAL} -schema=$$SCHEMA -path=./gen; \
+		${JET_CMD} -dsn=${DB_URL_INTERNAL} -schema=$$SCHEMA -rel-model-path=${JET_MODEL_PATH}/$$SCHEMA -path=./internal/gen; \
 	done
-
-jet:
-	${JET_CMD} -dsn=${DB_URL_EXTERNAL} -schema=$(schema) -path=./gen;

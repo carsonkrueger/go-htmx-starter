@@ -7,11 +7,11 @@ require github.com/go-chi/chi/v5 v5.2.1
 require (
 	github.com/Oudwins/tailwind-merge-go v0.2.1
 	github.com/a-h/templ v0.3.943
-	github.com/go-jet/jet/v2 v2.12.0
+	github.com/go-jet/jet/v2 v2.13.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	go.uber.org/zap v1.27.0
-	golang.org/x/crypto v0.20.0
+	golang.org/x/crypto v0.31.0
 )
 
 require (

@@ -2,21 +2,21 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 )
 
+var cmds = map[string]func(){
+	"web":           web,
+	"seed":          seed,
+	"genDAO":        generateDAO,
+	"genController": generateController,
+	"genService":    generateService,
+}
+
 func Execute(cmd string) {
-	switch cmd {
-	case "web":
-		web()
-	case "seed":
-		seed()
-	case "genDAO":
-		generateDAO()
-	case "genController":
-		generateController()
-	case "genService":
-		generateService()
-	default:
-		panic(fmt.Sprintf("Invalid cmd: %s", cmd))
+	if f, ok := cmds[cmd]; ok {
+		f()
+		os.Exit(0)
 	}
+	panic(fmt.Sprintf("Invalid cmd: %s", cmd))
 }

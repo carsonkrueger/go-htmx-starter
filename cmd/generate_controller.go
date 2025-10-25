@@ -7,9 +7,9 @@ import (
 	"os"
 	"path"
 
-	"github.com/carsonkrueger/main/cfg"
-	"github.com/carsonkrueger/main/logger"
-	"github.com/carsonkrueger/main/util"
+	"github.com/carsonkrueger/main/internal/cfg"
+	"github.com/carsonkrueger/main/internal/logger"
+	"github.com/carsonkrueger/main/pkg/util"
 	"go.uber.org/zap"
 )
 
@@ -86,8 +86,8 @@ func privateControllerFileContents(name string) string {
 import (
 	"net/http"
 
-	"github.com/carsonkrueger/main/builders"
-	"github.com/carsonkrueger/main/context"
+	"github.com/carsonkrueger/main/internal/builders"
+	"github.com/carsonkrueger/main/internal/context"
 )
 
 const (
@@ -156,7 +156,7 @@ func publicControllerFileContents(name string) string {
 import (
 	"net/http"
 
-	"github.com/carsonkrueger/main/context"
+	"github.com/carsonkrueger/main/internal/context"
 	"github.com/go-chi/chi/v5"
 )
 

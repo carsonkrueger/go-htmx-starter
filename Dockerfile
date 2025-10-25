@@ -1,4 +1,4 @@
-FROM golang:1.24.0-alpine
+FROM golang:1.25-alpine
 
 WORKDIR /app
 
@@ -6,7 +6,6 @@ COPY go.mod go.sum ./
 RUN go mod download
 RUN go install github.com/a-h/templ/cmd/templ@latest
 RUN go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
-RUN go install github.com/go-jet/jet/v2/cmd/jet@latest
 RUN apk add postgresql-client
 
 RUN apk add npm make
@@ -15,7 +14,8 @@ RUN npm install
 
 COPY . .
 
+RUN make build
+
 EXPOSE 8080
 
 CMD ["/bin/sh", "./entrypoint.sh"]
-# ENTRYPOINT ./entrypoint.sh

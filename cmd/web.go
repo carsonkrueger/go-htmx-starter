@@ -4,12 +4,12 @@ import (
 	gctx "context"
 	"database/sql"
 
-	"github.com/carsonkrueger/main/cfg"
-	"github.com/carsonkrueger/main/context"
-	"github.com/carsonkrueger/main/database/dao"
-	"github.com/carsonkrueger/main/logger"
-	"github.com/carsonkrueger/main/router"
-	"github.com/carsonkrueger/main/services"
+	"github.com/carsonkrueger/main/internal/cfg"
+	"github.com/carsonkrueger/main/internal/context"
+	"github.com/carsonkrueger/main/internal/database/dao"
+	"github.com/carsonkrueger/main/internal/logger"
+	"github.com/carsonkrueger/main/internal/router"
+	"github.com/carsonkrueger/main/internal/services"
 
 	_ "github.com/lib/pq"
 )
