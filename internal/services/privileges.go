@@ -17,10 +17,10 @@ import (
 )
 
 type privilegesService struct {
-	context.AppContext
+	*context.AppContext
 }
 
-func NewPrivilegesService(ctx context.AppContext) *privilegesService {
+func NewPrivilegesService(ctx *context.AppContext) *privilegesService {
 	return &privilegesService{ctx}
 }
 

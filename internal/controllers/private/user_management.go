@@ -5,17 +5,12 @@ import (
 	"net/http"
 
 	"github.com/carsonkrueger/main/internal/builders"
+	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/carsonkrueger/main/internal/context"
 	"github.com/carsonkrueger/main/internal/templates/page_layouts"
 	"github.com/carsonkrueger/main/internal/templates/pages"
 	"github.com/carsonkrueger/main/pkg/util"
 	"github.com/carsonkrueger/main/pkg/util/render"
-)
-
-const (
-	UserManagementTabsGet  = "UserManagementTabsGet"
-	UserManagementUsersGet = "UserManagementUsersGet"
-	UserManagementRolesGet = "UserManagementRolesGet"
 )
 
 var UserManagementTabModels = []page_layouts.TabModel{
@@ -24,10 +19,10 @@ var UserManagementTabModels = []page_layouts.TabModel{
 }
 
 type userManagement struct {
-	context.AppContext
+	*context.AppContext
 }
 
-func NewUserManagement(ctx context.AppContext) *userManagement {
+func NewUserManagement(ctx *context.AppContext) *userManagement {
 	return &userManagement{
 		AppContext: ctx,
 	}
@@ -38,9 +33,8 @@ func (um userManagement) Path() string {
 }
 
 func (um *userManagement) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBuilder) {
-	// b.NewHandle().Register(builders.GET, "/tabs", um.userManagementTabsGet).SetPermissionName(UserManagementTabsGet).Build()
-	b.NewHandler().Register(http.MethodGet, "/users", um.userManagementUsersGet).SetRequiredPrivileges([]string{UserManagementUsersGet}).Build(ctx)
-	b.NewHandler().Register(http.MethodGet, "/roles", um.userManagementRolesGet).SetRequiredPrivileges([]string{UserManagementRolesGet}).Build(ctx)
+	b.NewHandler().Register(http.MethodGet, "/users", um.userManagementUsersGet).SetRequiredPrivileges(constant.UsersList).Build(ctx)
+	b.NewHandler().Register(http.MethodGet, "/roles", um.userManagementRolesGet).SetRequiredPrivileges(constant.RolesList).Build(ctx)
 }
 
 func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *http.Request) {

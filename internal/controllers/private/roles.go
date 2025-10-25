@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/carsonkrueger/main/internal/builders"
+	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/carsonkrueger/main/internal/context"
 	"github.com/carsonkrueger/main/internal/templates/datadisplay"
 	"github.com/carsonkrueger/main/internal/templates/datainput"
@@ -13,16 +14,11 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-const (
-	RoleSelectGet  = "PrivilegeRoleSelectGet"
-	SetUserRolePut = "SetUserRolePut"
-)
-
 type roles struct {
-	context.AppContext
+	*context.AppContext
 }
 
-func NewRoles(ctx context.AppContext) *roles {
+func NewRoles(ctx *context.AppContext) *roles {
 	return &roles{
 		AppContext: ctx,
 	}
@@ -33,8 +29,8 @@ func (um roles) Path() string {
 }
 
 func (um *roles) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBuilder) {
-	b.NewHandler().Register(http.MethodGet, "/select", um.rolesSelectGet).SetRequiredPrivileges([]string{RoleSelectGet}).Build(ctx)
-	b.NewHandler().Register(http.MethodPut, "/user/{user}", um.setUserRolePut).SetRequiredPrivileges([]string{SetUserRolePut}).Build(ctx)
+	b.NewHandler().Register(http.MethodGet, "/select", um.rolesSelectGet).SetRequiredPrivileges(constant.RolesList).Build(ctx)
+	b.NewHandler().Register(http.MethodPut, "/user/{user}", um.setUserRolePut).SetRequiredPrivileges(constant.UsersUpdate, constant.RolesUpdate).Build(ctx)
 }
 
 func (r *roles) rolesSelectGet(res http.ResponseWriter, req *http.Request) {

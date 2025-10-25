@@ -10,10 +10,10 @@ import (
 )
 
 type webPublic struct {
-	context.AppContext
+	*context.AppContext
 }
 
-func NewWebPublic(ctx context.AppContext) *webPublic {
+func NewWebPublic(ctx *context.AppContext) *webPublic {
 	return &webPublic{
 		AppContext: ctx,
 	}

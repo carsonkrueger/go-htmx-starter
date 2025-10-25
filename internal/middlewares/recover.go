@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	gctx "context"
 	"net/http"
 	"runtime/debug"
 
@@ -8,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func Recover(appCtx context.AppContext) func(next http.Handler) http.Handler {
+func Recover(ctx gctx.Context, appCtx *context.AppContext) func(next http.Handler) http.Handler {
 	lgr := appCtx.Lgr("NoAuth")
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
@@ -19,10 +20,10 @@ func Recover(appCtx context.AppContext) func(next http.Handler) http.Handler {
 					res.WriteHeader(http.StatusInternalServerError)
 				}
 			}()
-			ctx := req.Context()
-			ctx = context.WithDB(ctx, appCtx.DB())
+			newCtx := req.Context()
+			newCtx = context.WithDB(newCtx, context.GetDB(ctx))
 
-			next.ServeHTTP(res, req.WithContext(ctx))
+			next.ServeHTTP(res, req.WithContext(newCtx))
 		})
 	}
 }

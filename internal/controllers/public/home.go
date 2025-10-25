@@ -10,10 +10,10 @@ import (
 )
 
 type home struct {
-	context.AppContext
+	*context.AppContext
 }
 
-func NewHome(ctx context.AppContext) *home {
+func NewHome(ctx *context.AppContext) *home {
 	return &home{
 		AppContext: ctx,
 	}

@@ -17,10 +17,10 @@ import (
 )
 
 type login struct {
-	context.AppContext
+	*context.AppContext
 }
 
-func NewLogin(ctx context.AppContext) *login {
+func NewLogin(ctx *context.AppContext) *login {
 	return &login{
 		AppContext: ctx,
 	}

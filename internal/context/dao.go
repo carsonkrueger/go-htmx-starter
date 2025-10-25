@@ -4,6 +4,7 @@ import (
 	gctx "context"
 	"time"
 
+	"github.com/carsonkrueger/main/internal/constant"
 	model1 "github.com/carsonkrueger/main/pkg/model"
 	"github.com/carsonkrueger/main/pkg/model/db/auth"
 	"github.com/go-jet/jet/v2/postgres"
@@ -76,7 +77,7 @@ type PrivilegeDAO interface {
 	DAO[int64, auth.Privileges]
 	GetAllJoined(ctx gctx.Context) ([]model1.JoinedPrivilegesRaw, error)
 	GetPrivilegesByRoleID(ctx gctx.Context, roleID int64) ([]auth.Roles, error)
-	GetManyByName(ctx gctx.Context, names []string) ([]auth.Privileges, error)
+	GetManyByName(ctx gctx.Context, names []constant.PrivilegeName) ([]auth.Privileges, error)
 }
 
 type SessionsDAO interface {

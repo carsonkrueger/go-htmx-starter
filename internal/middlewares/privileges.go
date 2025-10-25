@@ -7,7 +7,7 @@ import (
 	"github.com/carsonkrueger/main/pkg/util"
 )
 
-func ApplyPermission(privileges []int64, appCtx context.AppContext) func(next http.Handler) http.Handler {
+func ApplyPermission(privileges []int64, appCtx *context.AppContext) func(next http.Handler) http.Handler {
 	lgr := appCtx.Lgr("MW ApplyPermission")
 
 	return func(next http.Handler) http.Handler {

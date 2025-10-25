@@ -1,13 +1,6 @@
 package util
 
+// This function should be used sparingly. Returning a pointer to a stack allocated value will cause heap allocations, slowing down application.
 func Ptr[T any](v T) *T {
 	return &v
-}
-
-func PtrSlice[T any](v []T) []*T {
-	result := make([]*T, len(v))
-	for i, item := range v {
-		result[i] = &item
-	}
-	return result
 }

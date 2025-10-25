@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"slices"
 
+	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/carsonkrueger/main/internal/context"
 	"github.com/carsonkrueger/main/internal/middlewares"
 	"github.com/carsonkrueger/main/pkg/model/db/auth"
@@ -14,13 +15,13 @@ import (
 )
 
 type privateHandlerBuilder struct {
-	appCtx     context.AppContext
+	appCtx     *context.AppContext
 	router     chi.Router
 	mw         []func(next http.Handler) http.Handler
 	method     string
 	pattern    string
 	handle     http.HandlerFunc
-	privileges []string // privileges required to access private endpoint
+	privileges []constant.PrivilegeName // privileges required to access private endpoint
 }
 
 func (mb *privateHandlerBuilder) Register(method string, pattern string, handle http.HandlerFunc) *privateHandlerBuilder {
@@ -31,7 +32,7 @@ func (mb *privateHandlerBuilder) Register(method string, pattern string, handle 
 }
 
 // privileges required to access private endpoint
-func (mb *privateHandlerBuilder) SetRequiredPrivileges(privileges []string) *privateHandlerBuilder {
+func (mb *privateHandlerBuilder) SetRequiredPrivileges(privileges ...constant.PrivilegeName) *privateHandlerBuilder {
 	mb.privileges = privileges
 	return mb
 }
@@ -53,15 +54,15 @@ func (mb *privateHandlerBuilder) Build(ctx gctx.Context) {
 			return
 		}
 
-		newPrivNames := slices.DeleteFunc(mb.privileges, func(privName string) bool {
+		newPrivNames := slices.DeleteFunc(mb.privileges, func(privName constant.PrivilegeName) bool {
 			return slices.ContainsFunc(privs, func(priv auth.Privileges) bool {
-				return priv.Name == privName
+				return priv.Name == string(privName)
 			})
 		})
 
 		newPrivs := make([]auth.Privileges, len(newPrivNames))
 		for i, np := range newPrivNames {
-			newPrivs[i] = auth.Privileges{Name: np}
+			newPrivs[i] = auth.Privileges{Name: string(np)}
 		}
 
 		if err := privDAO.UpsertMany(ctx, newPrivs); err != nil {

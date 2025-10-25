@@ -4,6 +4,7 @@ import (
 	gctx "context"
 	"time"
 
+	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/carsonkrueger/main/internal/context"
 	"github.com/carsonkrueger/main/internal/gen/go_starter_db/auth/table"
 	"github.com/carsonkrueger/main/pkg/model"
@@ -110,7 +111,7 @@ func (dao *privilegesDAO) GetPrivilegesByRoleID(ctx gctx.Context, roleID int64) 
 	return privileges, nil
 }
 
-func (dao *privilegesDAO) GetManyByName(ctx gctx.Context, names []string) ([]auth.Privileges, error) {
+func (dao *privilegesDAO) GetManyByName(ctx gctx.Context, names []constant.PrivilegeName) ([]auth.Privileges, error) {
 	var privileges []auth.Privileges
 
 	// Handle empty slice case
@@ -120,7 +121,7 @@ func (dao *privilegesDAO) GetManyByName(ctx gctx.Context, names []string) ([]aut
 
 	exprs := make([]postgres.Expression, len(names))
 	for i, name := range names {
-		exprs[i] = postgres.String(name)
+		exprs[i] = postgres.String(string(name))
 	}
 
 	err := table.Privileges.

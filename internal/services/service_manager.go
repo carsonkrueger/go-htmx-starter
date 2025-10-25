@@ -9,19 +9,19 @@ type ServiceManager interface {
 }
 
 type serviceManager struct {
-	svcCtx            context.AppContext
+	svcCtx            *context.AppContext
 	usersService      context.UsersService
 	privilegesService context.PrivilegesService
 	// INSERT SERVICE
 }
 
-func NewServiceManager(svcCtx context.AppContext) *serviceManager {
+func NewServiceManager(svcCtx *context.AppContext) *serviceManager {
 	return &serviceManager{
 		svcCtx: svcCtx,
 	}
 }
 
-func (sm *serviceManager) SetAppContext(svcCtx context.AppContext) {
+func (sm *serviceManager) SetAppContext(svcCtx *context.AppContext) {
 	sm.svcCtx = svcCtx
 }
 

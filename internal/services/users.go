@@ -16,10 +16,10 @@ import (
 )
 
 type usersService struct {
-	context.AppContext
+	*context.AppContext
 }
 
-func NewUsersService(ctx context.AppContext) *usersService {
+func NewUsersService(ctx *context.AppContext) *usersService {
 	return &usersService{
 		ctx,
 	}

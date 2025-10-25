@@ -23,10 +23,10 @@ type AppPublicRoute interface {
 
 type PrivateRouteBuilder struct {
 	router chi.Router
-	appCtx context.AppContext
+	appCtx *context.AppContext
 }
 
-func NewPrivateRouteBuilder(appCtx context.AppContext) PrivateRouteBuilder {
+func NewPrivateRouteBuilder(appCtx *context.AppContext) PrivateRouteBuilder {
 	return PrivateRouteBuilder{
 		router: chi.NewRouter(),
 		appCtx: appCtx,

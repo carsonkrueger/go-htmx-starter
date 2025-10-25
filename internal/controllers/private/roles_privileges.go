@@ -7,6 +7,7 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/carsonkrueger/main/internal/builders"
+	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/carsonkrueger/main/internal/context"
 	"github.com/carsonkrueger/main/internal/templates/datadisplay"
 	"github.com/carsonkrueger/main/pkg/model"
@@ -14,16 +15,11 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-const (
-	RolesPrivilegesPost   = "RolesPrivilegesPost"
-	RolesPrivilegesDelete = "RolesPrivilegesDelete"
-)
-
 type rolesPrivileges struct {
-	context.AppContext
+	*context.AppContext
 }
 
-func NewRolesPrivileges(ctx context.AppContext) *rolesPrivileges {
+func NewRolesPrivileges(ctx *context.AppContext) *rolesPrivileges {
 	return &rolesPrivileges{
 		AppContext: ctx,
 	}
@@ -34,8 +30,8 @@ func (um rolesPrivileges) Path() string {
 }
 
 func (um *rolesPrivileges) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBuilder) {
-	b.NewHandler().Register(http.MethodPost, "/", um.rolesPrivilegesPost).SetRequiredPrivileges([]string{RolesPrivilegesPost}).Build(ctx)
-	b.NewHandler().Register(http.MethodDelete, "/role/{role}/privilege/{privilege}", um.rolesPrivilegesDelete).SetRequiredPrivileges([]string{RolesPrivilegesDelete}).Build(ctx)
+	b.NewHandler().Register(http.MethodPost, "/", um.rolesPrivilegesPost).SetRequiredPrivileges(constant.RolesUpdate, constant.PrivilegesUpdate).Build(ctx)
+	b.NewHandler().Register(http.MethodDelete, "/role/{role}/privilege/{privilege}", um.rolesPrivilegesDelete).SetRequiredPrivileges(constant.RolesUpdate, constant.PrivilegesUpdate).Build(ctx)
 }
 
 func (r *rolesPrivileges) rolesPrivilegesPost(res http.ResponseWriter, req *http.Request) {

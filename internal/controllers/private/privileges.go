@@ -6,21 +6,17 @@ import (
 	"strconv"
 
 	"github.com/carsonkrueger/main/internal/builders"
+	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/carsonkrueger/main/internal/context"
 	"github.com/carsonkrueger/main/internal/templates/datainput"
 	"github.com/carsonkrueger/main/pkg/util"
 )
 
-const (
-	PrivilegesSelectGet  = "PrivilegesSelectGet"
-	PrivilegesSelectPost = "PrivilegesSelectPost"
-)
-
 type privileges struct {
-	context.AppContext
+	*context.AppContext
 }
 
-func NewPrivileges(ctx context.AppContext) *privileges {
+func NewPrivileges(ctx *context.AppContext) *privileges {
 	return &privileges{
 		AppContext: ctx,
 	}
@@ -31,7 +27,7 @@ func (um privileges) Path() string {
 }
 
 func (um *privileges) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBuilder) {
-	b.NewHandler().Register(http.MethodGet, "/select", um.privilegesSelectGet).SetRequiredPrivileges([]string{PrivilegesSelectGet}).Build(ctx)
+	b.NewHandler().Register(http.MethodGet, "/select", um.privilegesSelectGet).SetRequiredPrivileges(constant.PrivilegesList).Build(ctx)
 }
 
 func (r *privileges) privilegesSelectGet(res http.ResponseWriter, req *http.Request) {

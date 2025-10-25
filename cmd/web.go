@@ -35,7 +35,6 @@ func web() {
 		lgr,
 		sm,
 		dm,
-		db,
 	)
 	sm.SetAppContext(appCtx)
 	defer appCtx.CleanUp()

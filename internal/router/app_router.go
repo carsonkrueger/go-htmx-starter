@@ -23,10 +23,10 @@ type AppRouter struct {
 	private []builders.AppPrivateRoute
 	addr    string
 	router  chi.Router
-	appCtx  context.AppContext
+	appCtx  *context.AppContext
 }
 
-func NewAppRouter(appCtx context.AppContext) AppRouter {
+func NewAppRouter(appCtx *context.AppContext) AppRouter {
 	return AppRouter{
 		appCtx: appCtx,
 		public: []builders.AppPublicRoute{
@@ -34,7 +34,6 @@ func NewAppRouter(appCtx context.AppContext) AppRouter {
 			public.NewSignUp(appCtx),
 			public.NewWebPublic(appCtx),
 			public.NewHome(appCtx),
-			public.NewCart(appCtx),
 			// INSERT PUBLIC
 		},
 		private: []builders.AppPrivateRoute{
@@ -42,7 +41,6 @@ func NewAppRouter(appCtx context.AppContext) AppRouter {
 			private.NewPrivileges(appCtx),
 			private.NewRoles(appCtx),
 			private.NewRolesPrivileges(appCtx),
-			private.NewProducts(appCtx),
 			// INSERT PRIVATE
 		},
 	}
@@ -51,7 +49,7 @@ func NewAppRouter(appCtx context.AppContext) AppRouter {
 func (a *AppRouter) BuildRouter(ctx gctx.Context) {
 	lgr := a.appCtx.Lgr("BuildRouter")
 	a.router = chi.NewRouter()
-	a.router = a.router.With(middlewares.Recover(a.appCtx))
+	a.router = a.router.With(middlewares.Recover(ctx, a.appCtx))
 
 	a.router = a.router.Group(func(g chi.Router) {
 		// do not enforce auth

@@ -17,10 +17,10 @@ import (
 )
 
 type signUp struct {
-	context.AppContext
+	*context.AppContext
 }
 
-func NewSignUp(ctx context.AppContext) *signUp {
+func NewSignUp(ctx *context.AppContext) *signUp {
 	return &signUp{AppContext: ctx}
 }
 

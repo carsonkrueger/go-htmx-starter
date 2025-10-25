@@ -1,15 +1,15 @@
 package slice
 
-func MapIdx[T, U any](slice []T, fn func(T, int) U) []U {
-	result := make([]U, len(slice))
+func MapIdx[T, R any](slice []T, fn func(T, int) R) []R {
+	result := make([]R, len(slice))
 	for i, v := range slice {
 		result[i] = fn(v, i)
 	}
 	return result
 }
 
-func Map[T, U any](slice []T, fn func(T) U) []U {
-	result := make([]U, len(slice))
+func Map[T, R any](slice []T, fn func(T) R) []R {
+	result := make([]R, len(slice))
 	for i, v := range slice {
 		result[i] = fn(v)
 	}

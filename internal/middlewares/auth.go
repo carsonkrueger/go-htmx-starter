@@ -9,7 +9,7 @@ import (
 	"github.com/carsonkrueger/main/pkg/util"
 )
 
-func Auth(appCtx context.AppContext, enforce bool) func(next http.Handler) http.Handler {
+func Auth(appCtx *context.AppContext, enforce bool) func(next http.Handler) http.Handler {
 	usersService := appCtx.SM().UsersService()
 	usersDAO := appCtx.DM().UsersDAO()
 	sessionsDAO := appCtx.DM().SessionsDAO()
