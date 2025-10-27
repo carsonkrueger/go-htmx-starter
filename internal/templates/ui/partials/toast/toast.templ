@@ -1,0 +1,24 @@
+package toast
+
+import (
+	tuitoast "github.com/carsonkrueger/main/pkg/templui/toast"
+)
+
+templ AddToastErrors(props ...tuitoast.Props) {
+	for _, p := range props {
+		{{
+			p.Duration = max(p.Duration, 6000)
+			if p.Title == "" {
+				p.Title = "An Error Occurred"
+			}
+			p.Dismissible = true
+		}}
+		@Toasts(p)
+	}
+}
+
+templ Toasts(props ...tuitoast.Props) {
+	for _, p := range props {
+		@tuitoast.Toast(p)
+	}
+}

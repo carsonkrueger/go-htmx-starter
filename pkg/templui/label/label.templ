@@ -38,5 +38,5 @@ templ Label(props ...Props) {
 }
 
 templ Script() {
-	<script defer nonce={ templ.GetNonce(ctx) } src={ "public/label.min.js?v=" + utils.ScriptVersion }></script>
+	<script defer nonce={ templ.GetNonce(ctx) } src={ "public/js/label.min.js?v=" + utils.ScriptVersion }></script>
 }

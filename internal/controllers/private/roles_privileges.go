@@ -5,12 +5,14 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/a-h/templ"
 	"github.com/carsonkrueger/main/internal/builders"
+	"github.com/carsonkrueger/main/internal/common"
 	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/carsonkrueger/main/internal/context"
-	"github.com/carsonkrueger/main/internal/templates/datadisplay"
+	"github.com/carsonkrueger/main/internal/templates/ui/partials/basictable"
+	"github.com/carsonkrueger/main/internal/templates/ui/partials/toast"
 	"github.com/carsonkrueger/main/pkg/model"
+	tuitoast "github.com/carsonkrueger/main/pkg/templui/toast"
 	"github.com/carsonkrueger/main/pkg/util"
 	"github.com/go-chi/chi/v5"
 )
@@ -34,13 +36,13 @@ func (um *rolesPrivileges) PrivateRoute(ctx gctx.Context, b *builders.PrivateRou
 	b.NewHandler().Register(http.MethodDelete, "/role/{role}/privilege/{privilege}", um.rolesPrivilegesDelete).SetRequiredPrivileges(constant.RolesUpdate, constant.PrivilegesUpdate).Build(ctx)
 }
 
-func (r *rolesPrivileges) rolesPrivilegesPost(res http.ResponseWriter, req *http.Request) {
+func (r *rolesPrivileges) rolesPrivilegesPost(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("rolesPrivilegesPost")
 	lgr.Info("Called")
 	ctx := req.Context()
 
 	if err := req.ParseForm(); err != nil {
-		util.HandleError(req, res, lgr, err, 400, "Invalid Form")
+		common.HandleError(req, w, lgr, err, 400, "Invalid Form")
 		return
 	}
 
@@ -49,34 +51,34 @@ func (r *rolesPrivileges) rolesPrivilegesPost(res http.ResponseWriter, req *http
 
 	roleID, err := strconv.ParseInt(roles, 10, 64)
 	if err != nil {
-		util.HandleError(req, res, lgr, err, 400, "Invalid roles")
+		common.HandleError(req, w, lgr, err, 400, "Invalid roles")
 		return
 	}
 	privilegeInt, err := strconv.ParseInt(privilege, 10, 64)
 	if err != nil {
-		util.HandleError(req, res, lgr, err, 400, "Invalid privilege")
+		common.HandleError(req, w, lgr, err, 400, "Invalid privilege")
 		return
 	}
 
 	if r.SM().PrivilegesService().HasPermissionsByIDS(ctx, int16(roleID), []int64{privilegeInt}) {
-		util.HandleError(req, res, lgr, err, 400, "Privilege already exists")
+		common.HandleError(req, w, lgr, err, 400, "Privilege already exists")
 		return
 	}
 
 	priv, err := r.DM().PrivilegeDAO().GetOne(ctx, privilegeInt)
 	if err != nil {
-		util.HandleError(req, res, lgr, err, 404, "Privilege not found")
+		common.HandleError(req, w, lgr, err, 404, "Privilege not found")
 		return
 	}
 
 	role, err := r.DM().RolesDAO().GetOne(ctx, int16(roleID))
 	if err != nil {
-		util.HandleError(req, res, lgr, err, 404, "Roles not found")
+		common.HandleError(req, w, lgr, err, 404, "Roles not found")
 		return
 	}
 
 	if err = r.SM().PrivilegesService().CreatePrivilegeAssociation(ctx, int16(roleID), priv.ID); err != nil {
-		util.HandleError(req, res, lgr, err, 500, "Failed to add permission")
+		common.HandleError(req, w, lgr, err, 500, "Failed to add permission")
 		return
 	}
 
@@ -91,13 +93,12 @@ func (r *rolesPrivileges) rolesPrivilegesPost(res http.ResponseWriter, req *http
 			},
 		}
 		rows := r.SM().PrivilegesService().JoinedPrivilegesAsRowData(ctx, jpl)
-		tr := datadisplay.BasicTR(rows[0])
-		toast := datadisplay.AddTextToast(datadisplay.Success, "Success", "Added roles")
-		templ.Join(tr, toast).Render(ctx, res)
+		basictable.BasicTR(rows[0]).Render(ctx, w)
+		toast.Toasts(tuitoast.Props{Title: "Success", Description: "Privilege added to role"}).Render(ctx, w)
 	}
 }
 
-func (r *rolesPrivileges) rolesPrivilegesDelete(res http.ResponseWriter, req *http.Request) {
+func (r *rolesPrivileges) rolesPrivilegesDelete(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("rolesPrivilegesDelete")
 	lgr.Info("Called")
 	ctx := req.Context()
@@ -107,21 +108,21 @@ func (r *rolesPrivileges) rolesPrivilegesDelete(res http.ResponseWriter, req *ht
 
 	roleID, err := strconv.ParseInt(role, 10, 64)
 	if err != nil {
-		util.HandleError(req, res, lgr, err, 400, "Invalid role")
+		common.HandleError(req, w, lgr, err, 400, "Invalid role")
 		return
 	}
 	privilegeInt, err := strconv.ParseInt(privilege, 10, 64)
 	if err != nil {
-		util.HandleError(req, res, lgr, err, 400, "Invalid privilege")
+		common.HandleError(req, w, lgr, err, 400, "Invalid privilege")
 		return
 	}
 
 	if err := r.SM().PrivilegesService().DeletePrivilegeAssociation(ctx, int16(roleID), privilegeInt); err != nil {
-		util.HandleError(req, res, lgr, err, 500, "Failed to remove permission")
+		common.HandleError(req, w, lgr, err, 500, "Failed to remove permission")
 		return
 	}
 
 	if util.IsHxRequest(req) {
-		datadisplay.AddTextToast(datadisplay.Success, "Success", "Deleted role").Render(ctx, res)
+		toast.Toasts(tuitoast.Props{Title: "Success", Description: "Privilege removed from role"}).Render(ctx, w)
 	}
 }

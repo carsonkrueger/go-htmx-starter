@@ -5,15 +5,15 @@ import (
 	"net/http"
 
 	"github.com/carsonkrueger/main/internal/builders"
+	"github.com/carsonkrueger/main/internal/common"
 	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/carsonkrueger/main/internal/context"
-	"github.com/carsonkrueger/main/internal/templates/page_layouts"
-	"github.com/carsonkrueger/main/internal/templates/pages"
-	"github.com/carsonkrueger/main/pkg/util"
+	"github.com/carsonkrueger/main/internal/templates/ui/layouts"
+	"github.com/carsonkrueger/main/internal/templates/ui/pages"
 	"github.com/carsonkrueger/main/pkg/util/render"
 )
 
-var UserManagementTabModels = []page_layouts.TabModel{
+var UserManagementTabModels = []layouts.TabModel{
 	{Title: "Users", PushUrl: true, HxGet: "/user_management/users"},
 	{Title: "Roles", PushUrl: true, HxGet: "/user_management/roles"},
 }
@@ -45,7 +45,7 @@ func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *h
 	dao := um.DM().UsersDAO()
 	users, err := dao.GetUserPrivilegeJoinAll(ctx)
 	if err != nil || users == nil {
-		util.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
+		common.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return
 	}
 
@@ -55,7 +55,7 @@ func (um *userManagement) userManagementUsersGet(res http.ResponseWriter, req *h
 
 	allRoles, err := um.DM().RolesDAO().GetAll(ctx)
 	if err != nil {
-		util.HandleError(req, res, lgr, err, 500, "Error fetching roles")
+		common.HandleError(req, res, lgr, err, 500, "Error fetching roles")
 		return
 	}
 
@@ -71,7 +71,7 @@ func (um *userManagement) userManagementRolesGet(res http.ResponseWriter, req *h
 
 	privileges, err := um.DM().PrivilegeDAO().GetAllJoined(ctx)
 	if err != nil {
-		util.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
+		common.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return
 	}
 	rows := um.SM().PrivilegesService().JoinedPrivilegesAsRowData(ctx, privileges)

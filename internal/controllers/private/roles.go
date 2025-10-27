@@ -6,10 +6,12 @@ import (
 	"strconv"
 
 	"github.com/carsonkrueger/main/internal/builders"
+	"github.com/carsonkrueger/main/internal/common"
 	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/carsonkrueger/main/internal/context"
-	"github.com/carsonkrueger/main/internal/templates/datadisplay"
-	"github.com/carsonkrueger/main/internal/templates/datainput"
+	"github.com/carsonkrueger/main/internal/templates/ui/partials/selectbox"
+	"github.com/carsonkrueger/main/internal/templates/ui/partials/toast"
+	tuitoast "github.com/carsonkrueger/main/pkg/templui/toast"
 	"github.com/carsonkrueger/main/pkg/util"
 	"github.com/go-chi/chi/v5"
 )
@@ -43,19 +45,19 @@ func (r *roles) rolesSelectGet(res http.ResponseWriter, req *http.Request) {
 	dao := r.DM().RolesDAO()
 	roles, err := dao.GetAll(ctx)
 	if err != nil {
-		util.HandleError(req, res, lgr, err, 500, "Error fetching roles")
+		common.HandleError(req, res, lgr, err, 500, "Error fetching roles")
 		return
 	}
 
-	var options []datainput.SelectOptions
+	var options []selectbox.SelectOptions
 	for _, r := range roles {
-		options = append(options, datainput.SelectOptions{
+		options = append(options, selectbox.SelectOptions{
 			Value: strconv.FormatInt(int64(r.ID), 10),
 			Label: r.Name,
 		})
 	}
 
-	datainput.Select("roles-select", "roles", defaultRole, options, nil).Render(ctx, res)
+	selectbox.Select("roles-select", "roles", defaultRole, options, nil).Render(ctx, res)
 }
 
 func (r *roles) setUserRolePut(res http.ResponseWriter, req *http.Request) {
@@ -66,28 +68,28 @@ func (r *roles) setUserRolePut(res http.ResponseWriter, req *http.Request) {
 	userID := chi.URLParam(req, "user")
 	userIDInt, err := strconv.ParseInt(userID, 10, 64)
 	if err != nil {
-		util.HandleError(req, res, lgr, err, 400, "Invalid user id")
+		common.HandleError(req, res, lgr, err, 400, "Invalid user id")
 		return
 	}
 
 	if err := req.ParseForm(); err != nil {
-		util.HandleError(req, res, lgr, err, 400, "Invalid form data")
+		common.HandleError(req, res, lgr, err, 400, "Invalid form data")
 		return
 	}
 
 	rolesIDStr := req.Form.Get("role")
 	roleID, err := strconv.ParseInt(rolesIDStr, 10, 16)
 	if err != nil {
-		util.HandleError(req, res, lgr, err, 400, "Invalid role id")
+		common.HandleError(req, res, lgr, err, 400, "Invalid role id")
 		return
 	}
 
 	if err := r.SM().PrivilegesService().SetUserRole(ctx, int16(roleID), userIDInt); err != nil {
-		util.HandleError(req, res, lgr, err, 500, "Error setting user role")
+		common.HandleError(req, res, lgr, err, 500, "Error setting user role")
 		return
 	}
 
 	if util.IsHxRequest(req) {
-		datadisplay.AddTextToast(datadisplay.Success, "Success", "User Role Updated").Render(ctx, res)
+		toast.Toasts(tuitoast.Props{Title: "Success", Description: "Role assigned to user"}).Render(ctx, res)
 	}
 }

@@ -3,17 +3,16 @@ package public
 import (
 	"net/http"
 
+	"github.com/carsonkrueger/main/internal/common"
 	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/carsonkrueger/main/internal/context"
-	"github.com/carsonkrueger/main/internal/templates/datadisplay"
-	"github.com/carsonkrueger/main/internal/templates/page_layouts"
-	"github.com/carsonkrueger/main/internal/templates/pages"
+	"github.com/carsonkrueger/main/internal/templates/templatetargets"
+	"github.com/carsonkrueger/main/internal/templates/ui/pages"
 	"github.com/carsonkrueger/main/pkg/model/db/auth"
 	"github.com/carsonkrueger/main/pkg/util"
-	"github.com/carsonkrueger/main/pkg/util/slice"
+	"github.com/carsonkrueger/main/pkg/util/render"
 	"github.com/carsonkrueger/main/pkg/util/validate"
 	"github.com/go-chi/chi/v5"
-	"go.uber.org/zap"
 )
 
 type signUp struct {
@@ -33,22 +32,20 @@ func (s *signUp) PublicRoute(r chi.Router) {
 	r.Post("/", s.postSignup)
 }
 
-func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
+func (s *signUp) postSignup(w http.ResponseWriter, req *http.Request) {
 	lgr := s.Lgr("postSignup")
 	lgr.Info("Called")
 	ctx := req.Context()
 
 	if err := req.ParseForm(); err != nil {
-		util.HandleError(req, res, lgr, err, 403, "Invalid Form")
+		common.HandleError(req, w, lgr, err, 403, "Invalid Form")
 		return
 	}
 
 	form := req.Form
 	errs := validate.ValidateSignup(form)
 	if len(errs) > 0 {
-		lgr.Warn("Validation errors", zap.Errors("Signup Form", errs))
-		res.WriteHeader(422)
-		datadisplay.AddToastErrors(slice.Map(errs, error.Error)...).Render(ctx, res)
+		common.HandleError(req, w, lgr, errs[0], 400, errs[0].Error())
 		return
 	}
 
@@ -65,9 +62,7 @@ func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
 
 	usersDAO := s.DM().UsersDAO()
 	if err := usersDAO.Insert(ctx, &user); err != nil {
-		lgr.Warn("Could not insert user", zap.Error(err))
-		res.WriteHeader(422)
-		datadisplay.AddToastErrors("Email taken").Render(ctx, res)
+		common.HandleError(req, w, lgr, err, 400, "Email already taken")
 		return
 	}
 
@@ -77,32 +72,18 @@ func (s *signUp) postSignup(res http.ResponseWriter, req *http.Request) {
 	}
 	sessionDAO := s.DM().SessionsDAO()
 	if err := sessionDAO.Insert(ctx, session); err != nil {
-		lgr.Error("Could not insert session", zap.Error(err))
-		res.WriteHeader(500)
-		datadisplay.AddToastErrors("Error creating session").Render(ctx, res)
+		common.HandleError(req, w, lgr, err, 500, "Error creating session")
 		return
 	}
 
-	util.SetAuthCookie(res, &authToken, constant.AUTH_TOKEN_KEY)
+	util.SetAuthCookie(w, &authToken, constant.AUTH_TOKEN_KEY)
 
-	hxRequest := util.IsHxRequest(req)
-	page := pages.Login()
-	// If not hx request then user just arrived. Give them the index.html
-	if !hxRequest {
-		page = page_layouts.Index(page_layouts.MainPageLayout(page))
-	}
-	page.Render(ctx, res)
+	render.Layout(ctx, req, w, templatetargets.Main, pages.Login())
 }
 
-func (s *signUp) getSignup(res http.ResponseWriter, req *http.Request) {
+func (s *signUp) getSignup(w http.ResponseWriter, req *http.Request) {
 	lgr := s.Lgr("getSignup")
 	lgr.Info("Called")
 	ctx := req.Context()
-	hxRequest := util.IsHxRequest(req)
-	page := pages.Signup()
-	// If not hx request then user just arrived. Give them the index.html
-	if !hxRequest {
-		page = page_layouts.Index(page_layouts.MainPageLayout(page))
-	}
-	page.Render(ctx, res)
+	render.Layout(ctx, req, w, templatetargets.Main, pages.Signup())
 }

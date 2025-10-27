@@ -1,0 +1,23 @@
+package clickable
+
+type Props struct {
+	ID string
+	Attributes templ.Attributes
+}
+
+templ Clickable(props ...Props) {
+	{{
+		var p Props
+		if len(props) > 0 {
+			p = props[0]
+		}
+	}}
+	<a
+		id={ p.ID }
+		class="group relative inline-block flex flex-col items-center justify-center cursor-pointer"
+		{ p.Attributes... }
+	>
+		{ children... }
+		<div class="invisible group-hover:visible mt-[1px] h-[1px] bg-white rounded-full w-full"></div>
+	</a>
+}

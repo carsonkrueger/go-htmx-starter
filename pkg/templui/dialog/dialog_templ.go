@@ -7,11 +7,11 @@ package dialog
 
 //lint:file-ignore SA4006 This context is only used if a nested component is present.
 
+import "github.com/a-h/templ"
+import templruntime "github.com/a-h/templ/runtime"
+
 import (
 	"context"
-
-	"github.com/a-h/templ"
-	templruntime "github.com/a-h/templ/runtime"
 	"github.com/carsonkrueger/main/pkg/templui/icon"
 	"github.com/carsonkrueger/main/pkg/templui/utils"
 )
@@ -1097,9 +1097,9 @@ func Script() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var45 string
-		templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs("public/dialog.min.js?v=" + utils.ScriptVersion)
+		templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs("public/js/dialog.min.js?v=" + utils.ScriptVersion)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/templui/dialog/dialog.templ`, Line: 333, Col: 98}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/templui/dialog/dialog.templ`, Line: 333, Col: 101}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
 		if templ_7745c5c3_Err != nil {

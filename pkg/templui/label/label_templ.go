@@ -7,11 +7,10 @@ package label
 
 //lint:file-ignore SA4006 This context is only used if a nested component is present.
 
-import (
-	"github.com/a-h/templ"
-	templruntime "github.com/a-h/templ/runtime"
-	"github.com/carsonkrueger/main/pkg/templui/utils"
-)
+import "github.com/a-h/templ"
+import templruntime "github.com/a-h/templ/runtime"
+
+import "github.com/carsonkrueger/main/pkg/templui/utils"
 
 type Props struct {
 	ID         string
@@ -174,9 +173,9 @@ func Script() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("public/label.min.js?v=" + utils.ScriptVersion)
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("public/js/label.min.js?v=" + utils.ScriptVersion)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/templui/label/label.templ`, Line: 41, Col: 97}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/templui/label/label.templ`, Line: 41, Col: 100}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {

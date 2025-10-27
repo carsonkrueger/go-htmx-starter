@@ -1,21 +1,33 @@
 package render
 
 import (
+	"context"
+	"io"
 	"net/http"
 
 	"github.com/a-h/templ"
-	"github.com/carsonkrueger/main/internal/templates/constants"
-	"github.com/carsonkrueger/main/internal/templates/page_layouts"
 	"github.com/carsonkrueger/main/pkg/util"
 )
 
-func PageMainLayout(req *http.Request, page templ.Component) templ.Component {
+type TargetFunc func(content templ.Component) templ.ComponentFunc
+type TemplateTargets map[string]TargetFunc
+
+// templateTargets must have an "index" template
+func Layout(ctx context.Context, req *http.Request, w io.Writer, templateTargets TemplateTargets, page templ.Component) error {
 	hxRequest := util.IsHxRequest(req)
 	target := req.Header.Get("HX-Target")
-	if target == constants.PageLayoutID {
-		page = page_layouts.MainPageLayout(page)
-	} else if !hxRequest {
-		page = page_layouts.Index(page_layouts.MainPageLayout(page))
+
+	if !hxRequest {
+		if tt, ok := templateTargets["index"]; ok {
+			return tt(page).Render(ctx, w)
+		} else {
+			panic("no index template")
+		}
 	}
-	return page
+
+	if tt, ok := templateTargets[target]; ok {
+		return tt(page).Render(ctx, w)
+	}
+
+	return page.Render(ctx, w)
 }

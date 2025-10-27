@@ -50,8 +50,7 @@ func (mb *privateHandlerBuilder) Build(ctx gctx.Context) {
 	if len(mb.privileges) > 0 {
 		privs, err := privDAO.GetManyByName(ctx, mb.privileges)
 		if err != nil {
-			lgr.Error("get many privileges by name", zap.Error(err))
-			return
+			lgr.Fatal("get many privileges by name", zap.Error(err))
 		}
 
 		newPrivNames := slices.DeleteFunc(mb.privileges, func(privName constant.PrivilegeName) bool {
@@ -66,13 +65,12 @@ func (mb *privateHandlerBuilder) Build(ctx gctx.Context) {
 		}
 
 		if err := privDAO.UpsertMany(ctx, newPrivs); err != nil {
-			lgr.Error("upserting many privileges", zap.Error(err))
-			return
+			lgr.Fatal("upserting many privileges", zap.Error(err))
 		}
-		privIDs := slice.MapIdx(privs, func(priv auth.Privileges, _ int) int64 {
+		privIDs := slice.Map(privs, func(priv auth.Privileges) int64 {
 			return priv.ID
 		})
-		r = mb.router.With(middlewares.ApplyPermission(privIDs, mb.appCtx))
+		r = mb.router.With(middlewares.ApplyPrivileges(privIDs, mb.appCtx))
 	}
 	if len(mb.mw) > 0 {
 		r = r.With(mb.mw...)

@@ -57,27 +57,27 @@ func (r *{{ .NameLower }}) PrivateRoute(ctx gctx.Context, b *builders.PrivateRou
 	b.NewHandler().Register(http.MethodDelete, "/", r.{{ .NameLower }}Delete).Build(ctx)
 }
 
-func (r *{{ .NameLower }}) {{ .NameLower }}Get(res http.ResponseWriter, req *http.Request) {
+func (r *{{ .NameLower }}) {{ .NameLower }}Get(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("{{ .NameLower }}Get")
 	lgr.Info("Called")
 }
 
-func (r *{{ .NameLower }}) {{ .NameLower }}Post(res http.ResponseWriter, req *http.Request) {
+func (r *{{ .NameLower }}) {{ .NameLower }}Post(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("{{ .NameLower }}Post")
 	lgr.Info("Called")
 }
 
-func (r *{{ .NameLower }}) {{ .NameLower }}Put(res http.ResponseWriter, req *http.Request) {
+func (r *{{ .NameLower }}) {{ .NameLower }}Put(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("{{ .NameLower }}Put")
 	lgr.Info("Called")
 }
 
-func (r *{{ .NameLower }}) {{ .NameLower }}Patch(res http.ResponseWriter, req *http.Request) {
+func (r *{{ .NameLower }}) {{ .NameLower }}Patch(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("{{ .NameLower }}Patch")
 	lgr.Info("Called")
 }
 
-func (r *{{ .NameLower }}) {{ .NameLower }}Delete(res http.ResponseWriter, req *http.Request) {
+func (r *{{ .NameLower }}) {{ .NameLower }}Delete(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("{{ .NameLower }}Delete")
 	lgr.Info("Called")
 }
@@ -114,27 +114,27 @@ func (r *{{ .NameLower }}) PublicRoute(router chi.Router) {
 	router.Delete("/", r.{{ .NameLower }}Delete)
 }
 
-func (r *{{ .NameLower }}) {{ .NameLower }}Get(res http.ResponseWriter, req *http.Request) {
+func (r *{{ .NameLower }}) {{ .NameLower }}Get(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("{{ .NameLower }}Get")
 	lgr.Info("Called")
 }
 
-func (r *{{ .NameLower }}) {{ .NameLower }}Post(res http.ResponseWriter, req *http.Request) {
+func (r *{{ .NameLower }}) {{ .NameLower }}Post(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("{{ .NameLower }}Post")
 	lgr.Info("Called")
 }
 
-func (r *{{ .NameLower }}) {{ .NameLower }}Put(res http.ResponseWriter, req *http.Request) {
+func (r *{{ .NameLower }}) {{ .NameLower }}Put(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("{{ .NameLower }}Put")
 	lgr.Info("Called")
 }
 
-func (r *{{ .NameLower }}) {{ .NameLower }}Patch(res http.ResponseWriter, req *http.Request) {
+func (r *{{ .NameLower }}) {{ .NameLower }}Patch(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("{{ .NameLower }}Patch")
 	lgr.Info("Called")
 }
 
-func (r *{{ .NameLower }}) {{ .NameLower }}Delete(res http.ResponseWriter, req *http.Request) {
+func (r *{{ .NameLower }}) {{ .NameLower }}Delete(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("{{ .NameLower }}Delete")
 	lgr.Info("Called")
 }

@@ -1,0 +1,58 @@
+package selectbox
+
+import (
+	"github.com/carsonkrueger/main/pkg/templui/selectbox"
+)
+
+type SelectOptions struct {
+	Value string
+	Label string
+}
+
+templ Select(id string, name string, defaultValue string, options []SelectOptions, attrs templ.Attributes) {
+	<select id={id} name={name} {attrs...}>
+		for _, o := range options {
+			<option
+				value={o.Value}
+				if o.Value == defaultValue {
+					selected="selected"
+				}
+			>
+				{o.Label}
+			</option>
+		}
+	</select>
+}
+
+type Props struct {
+	Props selectbox.Props
+	ContentProps selectbox.ContentProps
+	TriggerProps selectbox.TriggerProps
+	Options []SelectOptions
+	Placeholder string
+}
+
+templ SelectBox(props ...Props) {
+	{{
+		var p Props
+		if len(props) > 0 {
+			p = props[0]
+		}
+	}}
+	@selectbox.SelectBox(p.Props) {
+		@selectbox.Trigger(p.TriggerProps) {
+			@selectbox.Value(selectbox.ValueProps{
+				Placeholder: p.Placeholder,
+			})
+		}
+		@selectbox.Content(p.ContentProps) {
+			for _, o := range p.Options {
+				@selectbox.Item(selectbox.ItemProps{
+					Value: o.Value,
+				}) {
+					{o.Label}
+				}
+			}
+		}
+	}
+}

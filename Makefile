@@ -21,7 +21,7 @@ templ:
 	${TEMPL_CMD} generate
 
 tw:
-	npx @tailwindcss/cli -i ./public/index.css -o ./public/output.css
+	npx @tailwindcss/cli -i index.css -o ./public/css/output.css
 
 build:
 	make tw

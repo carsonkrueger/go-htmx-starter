@@ -6,10 +6,10 @@ import (
 	"strconv"
 
 	"github.com/carsonkrueger/main/internal/builders"
+	"github.com/carsonkrueger/main/internal/common"
 	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/carsonkrueger/main/internal/context"
-	"github.com/carsonkrueger/main/internal/templates/datainput"
-	"github.com/carsonkrueger/main/pkg/util"
+	"github.com/carsonkrueger/main/internal/templates/ui/partials/selectbox"
 )
 
 type privileges struct {
@@ -38,17 +38,17 @@ func (r *privileges) privilegesSelectGet(res http.ResponseWriter, req *http.Requ
 	dao := r.DM().PrivilegeDAO()
 	privileges, err := dao.GetAll(ctx)
 	if err != nil {
-		util.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
+		common.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 		return
 	}
 
-	var options []datainput.SelectOptions
+	var options []selectbox.SelectOptions
 	for _, p := range privileges {
-		options = append(options, datainput.SelectOptions{
+		options = append(options, selectbox.SelectOptions{
 			Value: strconv.FormatInt(p.ID, 10),
 			Label: p.Name,
 		})
 	}
 
-	datainput.Select("privileges-select", "privileges", "", options, nil).Render(ctx, res)
+	selectbox.Select("privileges-select", "privileges", "", options, nil).Render(ctx, res)
 }

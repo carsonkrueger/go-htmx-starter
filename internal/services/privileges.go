@@ -8,11 +8,13 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/carsonkrueger/main/internal/context"
-	"github.com/carsonkrueger/main/internal/templates/datadisplay"
-	"github.com/carsonkrueger/main/internal/templates/datainput"
-	"github.com/carsonkrueger/main/internal/templates/partials"
-	model1 "github.com/carsonkrueger/main/pkg/model"
+	"github.com/carsonkrueger/main/internal/templates/ui/partials/basiclabel"
+	"github.com/carsonkrueger/main/internal/templates/ui/partials/basictable"
+	"github.com/carsonkrueger/main/internal/templates/ui/partials/form"
+	"github.com/carsonkrueger/main/internal/templates/ui/partials/selectbox"
+	"github.com/carsonkrueger/main/pkg/model"
 	"github.com/carsonkrueger/main/pkg/model/db/auth"
+	"github.com/carsonkrueger/main/pkg/templui/icon"
 	"go.uber.org/zap"
 )
 
@@ -58,9 +60,9 @@ func (ps *privilegesService) CreateRole(ctx gctx.Context, name string) error {
 }
 
 func (ps *privilegesService) HasPermissionsByIDS(ctx gctx.Context, roleID int16, privIDs []int64) bool {
-	pks := make([]model1.RolesPrivilegesPrimaryKey, len(privIDs))
+	pks := make([]model.RolesPrivilegesPrimaryKey, len(privIDs))
 	for i, privID := range privIDs {
-		pks[i] = model1.RolesPrivilegesPrimaryKey{
+		pks[i] = model.RolesPrivilegesPrimaryKey{
 			PrivilegeID: privID,
 			RoleID:      roleID,
 		}
@@ -73,7 +75,7 @@ func (ps *privilegesService) DeletePrivilegeAssociation(ctx gctx.Context, roleID
 	lgr := ps.Lgr("DeletePrivilegeAssociation")
 	lgr.Info("Called")
 
-	pk := model1.RolesPrivilegesPrimaryKey{
+	pk := model.RolesPrivilegesPrimaryKey{
 		PrivilegeID: privID,
 		RoleID:      roleID,
 	}
@@ -111,37 +113,37 @@ func (us *privilegesService) SetUserRole(ctx gctx.Context, roleID int16, userID 
 	return nil
 }
 
-func (us *privilegesService) UserRoleJoinAsRowData(ctx gctx.Context, upl []model1.UserRoleJoin, allRoles []auth.Roles) []datadisplay.RowData {
-	roleOptions := make([]datainput.SelectOptions, len(allRoles))
+func (us *privilegesService) UserRoleJoinAsRowData(ctx gctx.Context, upl []model.UserRoleJoin, allRoles []auth.Roles) []basictable.RowData {
+	roleOptions := make([]selectbox.SelectOptions, len(allRoles))
 	for i, role := range allRoles {
 		roleOptions[i].Label = role.Name
 		roleOptions[i].Value = strconv.FormatInt(int64(role.ID), 10)
 	}
 
-	rows := make([]datadisplay.RowData, len(upl))
+	rows := make([]basictable.RowData, len(upl))
 	for i, j := range upl {
-		selectAttrs := templ.Attributes{
-			"_": "on input trigger submit on closest <form/>",
-		}
-		selectBox := datainput.Select(fmt.Sprintf("%d-role-select", j.Users.ID), "role", strconv.FormatInt(int64(j.RoleID), 10), roleOptions, selectAttrs)
+		// selectAttrs := templ.Attributes{
+		// 	"_": "on input trigger submit on closest <form/>",
+		// }
+		// selectBox := datainput.Select(fmt.Sprintf("%d-role-select", j.Users.ID), "role", strconv.FormatInt(int64(j.RoleID), 10), roleOptions, selectAttrs)
 		formAttrs := templ.Attributes{
 			"hx-put":     fmt.Sprintf("/roles/user/%d", j.Users.ID),
 			"hx-trigger": "submit",
 			"hx-swap":    "none",
 		}
-		form := partials.FormBasic(selectBox, formAttrs)
-		rows[i] = datadisplay.RowData{
+		form := form.Form(formAttrs)
+		rows[i] = basictable.RowData{
 			ID: "row-" + strconv.Itoa(i),
-			Data: []datadisplay.CellData{
+			Data: []basictable.CellData{
 				{
 					ID:    "n-" + strconv.Itoa(i),
 					Width: 1,
-					Body:  datadisplay.Text(fmt.Sprintf("%s %s", j.FirstName, j.LastName), datadisplay.MD),
+					Body:  basiclabel.BasicLabel(fmt.Sprintf("%s %s", j.FirstName, j.LastName)),
 				},
 				{
 					ID:    "em-" + strconv.Itoa(i),
 					Width: 1,
-					Body:  datadisplay.Text(j.Email, datadisplay.MD),
+					Body:  basiclabel.BasicLabel(j.Email),
 				},
 				{
 					ID:    "pr-" + strconv.Itoa(i),
@@ -151,7 +153,7 @@ func (us *privilegesService) UserRoleJoinAsRowData(ctx gctx.Context, upl []model
 				{
 					ID:    "ca-" + strconv.Itoa(i),
 					Width: 1,
-					Body:  datadisplay.Text(j.CreatedAt.Format("2006-01-02"), datadisplay.MD),
+					Body:  basiclabel.BasicLabel(j.CreatedAt.Format("2006-01-02")),
 				},
 			},
 		}
@@ -159,26 +161,26 @@ func (us *privilegesService) UserRoleJoinAsRowData(ctx gctx.Context, upl []model
 	return rows
 }
 
-func (us *privilegesService) JoinedRoleAsRowData(ctx gctx.Context, jpl []model1.JoinedRole) []datadisplay.RowData {
-	rows := make([]datadisplay.RowData, len(jpl))
+func (us *privilegesService) JoinedRoleAsRowData(ctx gctx.Context, jpl []model.JoinedRole) []basictable.RowData {
+	rows := make([]basictable.RowData, len(jpl))
 	for i, j := range jpl {
-		rows[i] = datadisplay.RowData{
+		rows[i] = basictable.RowData{
 			ID: "row-" + strconv.Itoa(i),
-			Data: []datadisplay.CellData{
+			Data: []basictable.CellData{
 				{
 					ID:    "n-" + strconv.Itoa(i),
 					Width: 1,
-					Body:  datadisplay.Text(j.RoleName, datadisplay.MD),
+					Body:  basiclabel.BasicLabel(j.RoleName),
 				},
 				{
 					ID:    "pr-" + strconv.Itoa(i),
 					Width: 1,
-					Body:  datadisplay.Text(strconv.FormatInt(int64(j.RoleID), 10), datadisplay.MD),
+					Body:  basiclabel.BasicLabel(strconv.FormatInt(int64(j.RoleID), 10)),
 				},
 				{
 					ID:    "ca-" + strconv.Itoa(i),
 					Width: 1,
-					Body:  datadisplay.Text(j.Privileges[0].CreatedAt.Format("2006-01-02"), datadisplay.MD),
+					Body:  basiclabel.BasicLabel(j.Privileges[0].CreatedAt.Format("2006-01-02")),
 				},
 			},
 		}
@@ -186,42 +188,42 @@ func (us *privilegesService) JoinedRoleAsRowData(ctx gctx.Context, jpl []model1.
 	return rows
 }
 
-func (us *privilegesService) JoinedPrivilegesAsRowData(ctx gctx.Context, jpl []model1.JoinedPrivilegesRaw) []datadisplay.RowData {
-	rows := make([]datadisplay.RowData, len(jpl))
+func (us *privilegesService) JoinedPrivilegesAsRowData(ctx gctx.Context, jpl []model.JoinedPrivilegesRaw) []basictable.RowData {
+	rows := make([]basictable.RowData, len(jpl))
 	for i, p := range jpl {
 		ca := p.PrivilegeCreatedAt
 		caStr := "No Created At"
 		if ca != nil {
 			caStr = ca.String()
 		}
-		xAttrs := templ.Attributes{
-			"class":      "fill-red-400 size-6 p-1 rounded-xs mx-auto cursor-pointer hover:bg-[#FFFFFF44]",
-			"hx-delete":  fmt.Sprintf("/roles-privileges/role/%d/privilege/%d", p.RoleID, p.PrivilegeID),
-			"hx-trigger": "click",
-			"hx-swap":    "none",
-			"_":          "on htmx:beforeRequest remove closest <tr/>",
-		}
+		// xAttrs := templ.Attributes{
+		// 	"class":      "fill-red-400 size-6 p-1 rounded-xs mx-auto cursor-pointer hover:bg-[#FFFFFF44]",
+		// 	"hx-delete":  fmt.Sprintf("/roles-privileges/role/%d/privilege/%d", p.RoleID, p.PrivilegeID),
+		// 	"hx-trigger": "click",
+		// 	"hx-swap":    "none",
+		// 	"_":          "on htmx:beforeRequest remove closest <tr/>",
+		// }
 		rows[i].ID = "row-" + strconv.Itoa(i)
-		rows[i].Data = []datadisplay.CellData{
+		rows[i].Data = []basictable.CellData{
 			{
 				ID:    "role-" + strconv.Itoa(i),
 				Width: 1,
-				Body:  datadisplay.Text(p.RoleName, datadisplay.SM),
+				Body:  basiclabel.BasicLabel(p.RoleName),
 			},
 			{
 				ID:    "pr-" + strconv.Itoa(i),
 				Width: 1,
-				Body:  datadisplay.Text(p.PrivilegeName, datadisplay.SM),
+				Body:  basiclabel.BasicLabel(p.PrivilegeName),
 			},
 			{
 				ID:    "ca-" + strconv.Itoa(i),
 				Width: 1,
-				Body:  datadisplay.Text(caStr, datadisplay.MD),
+				Body:  basiclabel.BasicLabel(caStr),
 			},
 			{
 				ID:    "del-" + strconv.Itoa(i),
 				Width: 1,
-				Body:  datadisplay.X(xAttrs),
+				Body:  icon.X(),
 			},
 		}
 	}

@@ -3,17 +3,16 @@ package public
 import (
 	"net/http"
 
+	"github.com/carsonkrueger/main/internal/common"
 	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/carsonkrueger/main/internal/context"
 	"github.com/carsonkrueger/main/internal/controllers/private"
-	"github.com/carsonkrueger/main/internal/templates/datadisplay"
-	"github.com/carsonkrueger/main/internal/templates/pages"
+	"github.com/carsonkrueger/main/internal/templates/templatetargets"
+	"github.com/carsonkrueger/main/internal/templates/ui/pages"
 	"github.com/carsonkrueger/main/pkg/util"
 	"github.com/carsonkrueger/main/pkg/util/render"
-	"github.com/carsonkrueger/main/pkg/util/slice"
 	"github.com/carsonkrueger/main/pkg/util/validate"
 	"github.com/go-chi/chi/v5"
-	"go.uber.org/zap"
 )
 
 type login struct {
@@ -43,10 +42,7 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	db.Query("select 1;")
 
 	if err := req.ParseForm(); err != nil {
-		// lgr.Error("Could not parse form", zap.Error(err))
-		// res.WriteHeader(422)
-		// datadisplay.AddToastErrors("Error parsing form").Render(ctx, res)
-		util.HandleError(req, res, lgr, nil, 400, "Error parsing form")
+		common.HandleError(req, res, lgr, nil, 400, "Error parsing form")
 		return
 	}
 
@@ -54,9 +50,7 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	errs := validate.ValidateLogin(form)
 
 	if len(errs) > 0 {
-		lgr.Warn("Validation errors", zap.Errors("Login Form", errs))
-		res.WriteHeader(422)
-		datadisplay.AddToastErrors(slice.Map(errs, error.Error)...).Render(ctx, res)
+		common.HandleError(req, res, lgr, errs[0], 400, errs[0].Error())
 		return
 	}
 
@@ -66,7 +60,7 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	usersService := l.SM().UsersService()
 	authToken, err := usersService.Login(ctx, email, password, req)
 	if err != nil {
-		util.HandleError(req, res, lgr, err, 401, "Invalid username or password")
+		common.HandleError(req, res, lgr, err, 401, "Invalid username or password")
 		return
 	}
 
@@ -77,7 +71,7 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 		dao := l.DM().UsersDAO()
 		users, err := dao.GetUserPrivilegeJoinAll(ctx)
 		if err != nil || users == nil {
-			util.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
+			common.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
 			return
 		}
 
@@ -87,7 +81,7 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 
 		allRoles, err := l.DM().RolesDAO().GetAll(ctx)
 		if err != nil || allRoles == nil {
-			datadisplay.AddToastErrors("Error fetching roles").Render(ctx, res)
+			common.HandleError(req, res, lgr, err, 500, "Error fetching roles")
 			return
 		}
 
@@ -97,10 +91,9 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func (l *login) getLogin(res http.ResponseWriter, req *http.Request) {
+func (l *login) getLogin(w http.ResponseWriter, req *http.Request) {
 	lgr := l.Lgr("getLogin")
 	lgr.Info("Called")
 	ctx := req.Context()
-	page := pages.Login()
-	render.PageMainLayout(req, page).Render(ctx, res)
+	render.Layout(ctx, req, w, templatetargets.Main, pages.Login())
 }

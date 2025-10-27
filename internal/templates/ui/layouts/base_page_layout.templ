@@ -1,0 +1,12 @@
+package layouts
+
+import (
+	"github.com/carsonkrueger/main/internal/templates/constants"
+)
+
+// All page layouts should extend this layout
+templ BasePageLayout() {
+	<div id={ constants.PageLayoutID } class="flex flex-col grow relative">
+		{ children... }
+	</div>
+}

@@ -7,10 +7,10 @@ args_bin = ["web"]
 bin = "./tmp/main"
 cmd = "go build -buildvcs=false -o ./tmp/main"
 delay = 0
-exclude_dir = ["tmp", "vendor", "testdata", "node_modules", "_volumes"]
-exclude_file = []
-exclude_regex = ["_test.go", "_templ.go"]
-exclude_unchanged = false
+exclude_dir = ["tmp", "node_modules", "_volumes", "public"]
+exclude_file = ["*_templ.go"]
+exclude_regex = [".+_templ.go"]
+exclude_unchanged = true
 follow_symlink = false
 full_bin = ""
 include_dir = []
@@ -23,7 +23,7 @@ poll_interval = 0
 post_cmd = []
 pre_cmd = [
     "rm -f ./tmp/main",
-    "find ./templates -name '*_templ.go' -delete",
+    "find ./internal/templates -name '*_templ.go' -delete",
     "clear",
     "make templ",
     "make tw",
@@ -56,3 +56,6 @@ proxy_port = 0
 [screen]
 clear_on_rebuild = false
 keep_scroll = true
+
+[watch]
+exclude_file = ["*_templ.go"]

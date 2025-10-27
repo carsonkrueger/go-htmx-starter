@@ -1,0 +1,57 @@
+package nav
+
+import (
+	"github.com/carsonkrueger/main/pkg/templui/icon"
+	"github.com/carsonkrueger/main/pkg/templui/separator"
+	"github.com/carsonkrueger/main/pkg/templui/label"
+	"github.com/carsonkrueger/main/internal/templates/constants"
+	"github.com/carsonkrueger/main/internal/templates/ui/partials/clickable"
+)
+
+templ Nav() {
+	<nav
+		id="app-nav"
+		class="xl:py-10 flex grow flex-col items-center justify-between h-full"
+	>
+		<div class="flex flex-col items-center">
+			@label.Label() {
+				<p class="font-[science] text-lg text-center">Starter Kit</p>
+			}
+		</div>
+		<div class="flex flex-col gap-3 items-center justify-end">
+			@clickable.Clickable(
+				clickable.Props{
+					Attributes: templ.Attributes {
+						"hx-get": "/home",
+		    			"hx-push-url": "true",
+		    			"hx-target": "#"+constants.MainContentID,
+					},
+	    		},
+			) {
+				@icon.House(icon.Props{ Size:18 })
+			}
+			@clickable.Clickable(
+				clickable.Props{
+					Attributes: templ.Attributes {
+						"hx-get": "/login",
+		    			"hx-push-url": "true",
+		    			"hx-target": "#"+constants.MainContentID,
+					},
+	    		},
+			) {
+				@icon.CircleUser(icon.Props{ Size:18 })
+			}
+			@separator.Separator()
+			@clickable.Clickable(
+				clickable.Props{
+					Attributes: templ.Attributes {
+						"href": "https://github.com/carsonkrueger/go-htmx-starter",
+						"target": "_blank",
+		    		},
+				},
+			) {
+				@icon.Github(icon.Props{ Size:18 })
+			}
+		</div>
+	</nav>
+}

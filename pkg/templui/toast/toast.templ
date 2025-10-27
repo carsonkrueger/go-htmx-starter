@@ -31,7 +31,6 @@ const (
 type Props struct {
 	ID            string
 	Class         string
-	BodyClass     string
 	Attributes    templ.Attributes
 	Title         string
 	Description   string
@@ -86,7 +85,7 @@ templ Toast(props ...Props) {
 		) }
 		{ p.Attributes... }
 	>
-		<div class={ utils.TwMerge("w-full bg-popover text-popover-foreground rounded-lg shadow-xs border pt-5 pb-4 px-4 flex items-center justify-center relative overflow-hidden group", p.BodyClass ) }>
+		<div class="w-full bg-popover text-popover-foreground rounded-lg shadow-xs border pt-5 pb-4 px-4 flex items-center justify-center relative overflow-hidden group">
 			// Progress indicator
 			if p.ShowIndicator && p.Duration > 0 {
 				<div class="absolute top-0 left-0 right-0 h-1 overflow-hidden">
@@ -149,5 +148,5 @@ templ Toast(props ...Props) {
 }
 
 templ Script() {
-	<script defer nonce={ templ.GetNonce(ctx) } src={ "public/toast.min.js?v=" + utils.ScriptVersion }></script>
+	<script defer nonce={ templ.GetNonce(ctx) } src={ "public/js/toast.min.js?v=" + utils.ScriptVersion }></script>
 }

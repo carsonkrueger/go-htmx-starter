@@ -7,12 +7,12 @@ package popover
 
 //lint:file-ignore SA4006 This context is only used if a nested component is present.
 
-import (
-	"strconv"
+import "github.com/a-h/templ"
+import templruntime "github.com/a-h/templ/runtime"
 
-	"github.com/a-h/templ"
-	templruntime "github.com/a-h/templ/runtime"
+import (
 	"github.com/carsonkrueger/main/pkg/templui/utils"
+	"strconv"
 )
 
 type Placement string
@@ -460,9 +460,9 @@ func Script() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var22 string
-		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs("public/popover.min.js?v=" + utils.ScriptVersion)
+		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs("public/js/popover.min.js?v=" + utils.ScriptVersion)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/templui/popover/popover.templ`, Line: 133, Col: 99}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/templui/popover/popover.templ`, Line: 133, Col: 102}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
