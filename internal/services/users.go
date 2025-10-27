@@ -9,8 +9,8 @@ import (
 
 	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/carsonkrueger/main/internal/context"
-	model1 "github.com/carsonkrueger/main/pkg/model"
-	"github.com/carsonkrueger/main/pkg/model/db/auth"
+	dbmodel "github.com/carsonkrueger/main/pkg/db/auth/model"
+	"github.com/carsonkrueger/main/pkg/model"
 	"github.com/carsonkrueger/main/pkg/util"
 	"go.uber.org/zap"
 )
@@ -47,7 +47,7 @@ func (us *usersService) Login(ctx gctx.Context, email string, password string, r
 	token, _ := util.GenerateToken(32)
 	fullToken := fmt.Sprintf("%s$%d", token, user.ID)
 
-	row := &auth.Sessions{
+	row := &dbmodel.Sessions{
 		UserID: user.ID,
 		Token:  token,
 	}
@@ -63,7 +63,7 @@ func (us *usersService) Logout(ctx gctx.Context, id int64, token string) error {
 	lgr := us.Lgr("Logout")
 	lgr.Info("Logging out", zap.Int64("user id", id))
 
-	key := model1.SessionsPrimaryKey{
+	key := model.SessionsPrimaryKey{
 		UserID:    id,
 		AuthToken: token,
 	}

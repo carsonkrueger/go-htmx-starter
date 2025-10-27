@@ -45,38 +45,30 @@ func generateController() {
 	}
 	defer file.Close()
 
-	writeContents(file, *controller, *private)
-
-	upper := util.ToUpperFirst(*controller)
+	writeControllerContents(file, *controller, *private)
 
 	marker := ""
 	newContent := ""
 	if *private {
 		marker = "// INSERT PRIVATE"
-		newContent = fmt.Sprintf("\t\t\tprivate.New%s(appCtx),", upper)
+		newContent = fmt.Sprintf("\t\t\tprivate.New%s(appCtx),", util.ToUpperFirst(*controller))
 	} else {
 		marker = "// INSERT PUBLIC"
-		newContent = fmt.Sprintf("\t\t\tpublic.New%s(appCtx),", upper)
+		newContent = fmt.Sprintf("\t\t\tpublic.New%s(appCtx),", util.ToUpperFirst(*controller))
 	}
 
-	appRouterPath := fmt.Sprintf("%s/router/app_router.go", wd)
+	appRouterPath := fmt.Sprintf("%s/internal/router/app_router.go", wd)
 	util.InsertAt(appRouterPath, marker, true, newContent)
 }
 
-type ControllerModel struct {
-	Name      string
-	NameLower string
-}
-
-func writeContents(f io.Writer, name string, private bool) {
-	model := ControllerModel{
-		Name:      util.ToUpperFirst(name),
-		NameLower: util.ToLowerFirst(name),
+func writeControllerContents(f io.Writer, name string, private bool) {
+	model := map[string]any{
+		"Name":      util.ToUpperFirst(name),
+		"NameLower": util.ToLowerFirst(name),
 	}
 	key := template.PrivateController
 	if !private {
 		key = template.PublicController
 	}
-	fmt.Printf("Writing contents for %s controller: %v %s\n", model.Name, model, key)
 	template.ExecuteTemplate(f, key, model)
 }

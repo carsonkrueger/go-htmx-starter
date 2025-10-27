@@ -5,7 +5,7 @@
 // and will be lost if the code is regenerated
 //
 
-package auth
+package model
 
 import (
 	"time"

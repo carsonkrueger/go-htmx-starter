@@ -8,7 +8,7 @@ import (
 	"github.com/carsonkrueger/main/internal/context"
 	"github.com/carsonkrueger/main/internal/templates/templatetargets"
 	"github.com/carsonkrueger/main/internal/templates/ui/pages"
-	"github.com/carsonkrueger/main/pkg/model/db/auth"
+	"github.com/carsonkrueger/main/pkg/db/auth/model"
 	"github.com/carsonkrueger/main/pkg/util"
 	"github.com/carsonkrueger/main/pkg/util/render"
 	"github.com/carsonkrueger/main/pkg/util/validate"
@@ -52,7 +52,7 @@ func (s *signUp) postSignup(w http.ResponseWriter, req *http.Request) {
 	salt, _ := util.GenerateSalt()
 	authToken, _ := util.GenerateSalt()
 	hash := util.HashPassword(form.Get("password"), salt)
-	user := auth.Users{
+	user := model.Users{
 		FirstName: form.Get("first_name"),
 		LastName:  form.Get("last_name"),
 		Email:     form.Get("email"),
@@ -66,7 +66,7 @@ func (s *signUp) postSignup(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	session := &auth.Sessions{
+	session := &model.Sessions{
 		UserID: user.ID,
 		Token:  authToken,
 	}

@@ -3,10 +3,10 @@ package model
 import (
 	"time"
 
-	"github.com/carsonkrueger/main/pkg/model/db/auth"
+	"github.com/carsonkrueger/main/pkg/db/auth/model"
 )
 
-type PermissionCache map[int64][]auth.Privileges
+type PermissionCache map[int64][]model.Privileges
 
 type RolesPrivilegesPrimaryKey struct {
 	PrivilegeID int64
@@ -24,5 +24,5 @@ type JoinedPrivilegesRaw struct {
 type JoinedRole struct {
 	RoleID     int16
 	RoleName   string
-	Privileges []auth.Privileges
+	Privileges []model.Privileges
 }

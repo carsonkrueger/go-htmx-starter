@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/carsonkrueger/main/internal/constant"
+	"github.com/carsonkrueger/main/pkg/db/auth/model"
 	model1 "github.com/carsonkrueger/main/pkg/model"
-	"github.com/carsonkrueger/main/pkg/model/db/auth"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
@@ -67,29 +67,29 @@ type DAOManager interface {
 }
 
 type UsersDAO interface {
-	DAO[int64, auth.Users]
-	GetByEmail(ctx gctx.Context, email string) (*auth.Users, error)
+	DAO[int64, model.Users]
+	GetByEmail(ctx gctx.Context, email string) (*model.Users, error)
 	GetRoleID(ctx gctx.Context, id int64) (*int64, error)
 	GetUserPrivilegeJoinAll(ctx gctx.Context) (*[]model1.UserRoleJoin, error)
 }
 
 type PrivilegeDAO interface {
-	DAO[int64, auth.Privileges]
+	DAO[int64, model.Privileges]
 	GetAllJoined(ctx gctx.Context) ([]model1.JoinedPrivilegesRaw, error)
-	GetPrivilegesByRoleID(ctx gctx.Context, roleID int64) ([]auth.Roles, error)
-	GetManyByName(ctx gctx.Context, names []constant.PrivilegeName) ([]auth.Privileges, error)
+	GetPrivilegesByRoleID(ctx gctx.Context, roleID int64) ([]model.Roles, error)
+	GetManyByName(ctx gctx.Context, names []constant.PrivilegeName) ([]model.Privileges, error)
 }
 
 type SessionsDAO interface {
-	DAO[model1.SessionsPrimaryKey, auth.Sessions]
+	DAO[model1.SessionsPrimaryKey, model.Sessions]
 }
 
 type RolesDAO interface {
-	DAO[int16, auth.Roles]
+	DAO[int16, model.Roles]
 }
 
 type RolesPrivilegesDAO interface {
-	DAO[model1.RolesPrivilegesPrimaryKey, auth.RolesPrivileges]
+	DAO[model1.RolesPrivilegesPrimaryKey, model.RolesPrivileges]
 }
 
 // INSERT INTERFACE DAO

@@ -7,20 +7,20 @@ import (
 	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/carsonkrueger/main/internal/context"
 	"github.com/carsonkrueger/main/internal/gen/go_starter_db/auth/table"
+	dbmodel "github.com/carsonkrueger/main/pkg/db/auth/model"
 	"github.com/carsonkrueger/main/pkg/model"
-	"github.com/carsonkrueger/main/pkg/model/db/auth"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
 type privilegesDAO struct {
-	context.DAOBaseQueries[int64, auth.Privileges]
+	context.DAOBaseQueries[int64, dbmodel.Privileges]
 }
 
 func NewPrivilegesDAO() *privilegesDAO {
 	dao := &privilegesDAO{
 		DAOBaseQueries: nil,
 	}
-	queries := newDAOQueryable[int64, auth.Privileges](dao)
+	queries := newDAOQueryable[int64, dbmodel.Privileges](dao)
 	dao.DAOBaseQueries = &queries
 	return dao
 }
@@ -62,7 +62,7 @@ func (dao *privilegesDAO) PKMatch(pk int64) postgres.BoolExpression {
 	return table.Privileges.ID.EQ(postgres.Int(pk))
 }
 
-func (dao *privilegesDAO) GetUpdatedAt(row *auth.Privileges) *time.Time {
+func (dao *privilegesDAO) GetUpdatedAt(row *dbmodel.Privileges) *time.Time {
 	return row.UpdatedAt
 }
 
@@ -92,8 +92,8 @@ func (dao *privilegesDAO) GetAllJoined(ctx gctx.Context) ([]model.JoinedPrivileg
 	return res, nil
 }
 
-func (dao *privilegesDAO) GetPrivilegesByRoleID(ctx gctx.Context, roleID int64) ([]auth.Roles, error) {
-	var privileges []auth.Roles
+func (dao *privilegesDAO) GetPrivilegesByRoleID(ctx gctx.Context, roleID int64) ([]dbmodel.Roles, error) {
+	var privileges []dbmodel.Roles
 	err := table.RolesPrivileges.
 		SELECT(
 			table.RolesPrivileges.RoleID,
@@ -111,8 +111,8 @@ func (dao *privilegesDAO) GetPrivilegesByRoleID(ctx gctx.Context, roleID int64) 
 	return privileges, nil
 }
 
-func (dao *privilegesDAO) GetManyByName(ctx gctx.Context, names []constant.PrivilegeName) ([]auth.Privileges, error) {
-	var privileges []auth.Privileges
+func (dao *privilegesDAO) GetManyByName(ctx gctx.Context, names []constant.PrivilegeName) ([]dbmodel.Privileges, error) {
+	var privileges []dbmodel.Privileges
 
 	// Handle empty slice case
 	if len(names) == 0 {

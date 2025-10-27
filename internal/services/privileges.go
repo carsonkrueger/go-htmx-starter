@@ -12,8 +12,8 @@ import (
 	"github.com/carsonkrueger/main/internal/templates/ui/partials/basictable"
 	"github.com/carsonkrueger/main/internal/templates/ui/partials/form"
 	"github.com/carsonkrueger/main/internal/templates/ui/partials/selectbox"
+	dbmodel "github.com/carsonkrueger/main/pkg/db/auth/model"
 	"github.com/carsonkrueger/main/pkg/model"
-	"github.com/carsonkrueger/main/pkg/model/db/auth"
 	"github.com/carsonkrueger/main/pkg/templui/icon"
 	"go.uber.org/zap"
 )
@@ -30,7 +30,7 @@ func (ps *privilegesService) CreatePrivilegeAssociation(ctx gctx.Context, roleID
 	lgr := ps.Lgr("AddPermission")
 	lgr.Info("Role:Privilege", zap.String(strconv.FormatInt(int64(roleID), 10), strconv.FormatInt(int64(privID), 10)))
 
-	joinRow := auth.RolesPrivileges{
+	joinRow := dbmodel.RolesPrivileges{
 		RoleID:      roleID,
 		PrivilegeID: privID,
 	}
@@ -48,7 +48,7 @@ func (ps *privilegesService) CreateRole(ctx gctx.Context, name string) error {
 	lgr := ps.Lgr("CreateRole")
 	lgr.Info("Called")
 
-	row := auth.Roles{
+	row := dbmodel.Roles{
 		Name: name,
 	}
 	rolesDAO := ps.DM().RolesDAO()
@@ -113,7 +113,7 @@ func (us *privilegesService) SetUserRole(ctx gctx.Context, roleID int16, userID 
 	return nil
 }
 
-func (us *privilegesService) UserRoleJoinAsRowData(ctx gctx.Context, upl []model.UserRoleJoin, allRoles []auth.Roles) []basictable.RowData {
+func (us *privilegesService) UserRoleJoinAsRowData(ctx gctx.Context, upl []model.UserRoleJoin, allRoles []dbmodel.Roles) []basictable.RowData {
 	roleOptions := make([]selectbox.SelectOptions, len(allRoles))
 	for i, role := range allRoles {
 		roleOptions[i].Label = role.Name
@@ -138,12 +138,12 @@ func (us *privilegesService) UserRoleJoinAsRowData(ctx gctx.Context, upl []model
 				{
 					ID:    "n-" + strconv.Itoa(i),
 					Width: 1,
-					Body:  basiclabel.BasicLabel(fmt.Sprintf("%s %s", j.FirstName, j.LastName)),
+					Body:  basiclabel.BasicLabel(fmt.Sprintf("%s %s", j.Users.FirstName, j.Users.LastName)),
 				},
 				{
 					ID:    "em-" + strconv.Itoa(i),
 					Width: 1,
-					Body:  basiclabel.BasicLabel(j.Email),
+					Body:  basiclabel.BasicLabel(j.Users.Email),
 				},
 				{
 					ID:    "pr-" + strconv.Itoa(i),
@@ -153,7 +153,7 @@ func (us *privilegesService) UserRoleJoinAsRowData(ctx gctx.Context, upl []model
 				{
 					ID:    "ca-" + strconv.Itoa(i),
 					Width: 1,
-					Body:  basiclabel.BasicLabel(j.CreatedAt.Format("2006-01-02")),
+					Body:  basiclabel.BasicLabel(j.Users.CreatedAt.Format("2006-01-02")),
 				},
 			},
 		}

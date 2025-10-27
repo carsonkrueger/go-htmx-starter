@@ -2,6 +2,6 @@
 
 cd /app
 
-make migrate-internal
+make migrate INTERNAL=true
 
 ./bin/main -internal=true web

@@ -5,20 +5,20 @@ import (
 
 	"github.com/carsonkrueger/main/internal/context"
 	"github.com/carsonkrueger/main/internal/gen/go_starter_db/auth/table"
+	dbmodel "github.com/carsonkrueger/main/pkg/db/auth/model"
 	"github.com/carsonkrueger/main/pkg/model"
-	"github.com/carsonkrueger/main/pkg/model/db/auth"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
 type sessionsDAO struct {
-	context.DAOBaseQueries[model.SessionsPrimaryKey, auth.Sessions]
+	context.DAOBaseQueries[model.SessionsPrimaryKey, dbmodel.Sessions]
 }
 
 func NewSessionsDAO() *sessionsDAO {
 	dao := &sessionsDAO{
 		DAOBaseQueries: nil,
 	}
-	queries := newDAOQueryable[model.SessionsPrimaryKey, auth.Sessions](dao)
+	queries := newDAOQueryable[model.SessionsPrimaryKey, dbmodel.Sessions](dao)
 	dao.DAOBaseQueries = &queries
 	return dao
 }
@@ -59,6 +59,6 @@ func (dao *sessionsDAO) PKMatch(pk model.SessionsPrimaryKey) postgres.BoolExpres
 		AND(table.Sessions.Token.EQ(postgres.String(pk.AuthToken)))
 }
 
-func (dao *sessionsDAO) GetUpdatedAt(row *auth.Sessions) *time.Time {
+func (dao *sessionsDAO) GetUpdatedAt(row *dbmodel.Sessions) *time.Time {
 	return nil
 }

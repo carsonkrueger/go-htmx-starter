@@ -1,9 +1,9 @@
 package model
 
-import "github.com/carsonkrueger/main/pkg/model/db/auth"
+import "github.com/carsonkrueger/main/pkg/db/auth/model"
 
 type UserRoleJoin struct {
-	auth.Users
+	model.Users
 	PLID   int64
 	PLName string
 }

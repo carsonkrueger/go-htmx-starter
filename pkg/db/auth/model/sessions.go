@@ -5,19 +5,15 @@
 // and will be lost if the code is regenerated
 //
 
-package auth
+package model
 
 import (
 	"time"
 )
 
-type Users struct {
-	ID        int64 `sql:"primary_key"`
-	Email     string
-	Password  string
-	FirstName string
-	LastName  string
-	RoleID    int16
+type Sessions struct {
+	UserID    int64  `sql:"primary_key"`
+	Token     string `sql:"primary_key"`
+	ExpiresAt *time.Time
 	CreatedAt *time.Time
-	UpdatedAt *time.Time
 }

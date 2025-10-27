@@ -5,20 +5,20 @@ import (
 
 	"github.com/carsonkrueger/main/internal/context"
 	"github.com/carsonkrueger/main/internal/gen/go_starter_db/auth/table"
+	dbmodel "github.com/carsonkrueger/main/pkg/db/auth/model"
 	"github.com/carsonkrueger/main/pkg/model"
-	"github.com/carsonkrueger/main/pkg/model/db/auth"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
 type RolesPrivilegesDAO struct {
-	context.DAOBaseQueries[model.RolesPrivilegesPrimaryKey, auth.RolesPrivileges]
+	context.DAOBaseQueries[model.RolesPrivilegesPrimaryKey, dbmodel.RolesPrivileges]
 }
 
 func NewRolesPrivilegesDAO() *RolesPrivilegesDAO {
 	dao := &RolesPrivilegesDAO{
 		DAOBaseQueries: nil,
 	}
-	queries := newDAOQueryable[model.RolesPrivilegesPrimaryKey, auth.RolesPrivileges](dao)
+	queries := newDAOQueryable[model.RolesPrivilegesPrimaryKey, dbmodel.RolesPrivileges](dao)
 	dao.DAOBaseQueries = &queries
 	return dao
 }
@@ -63,6 +63,6 @@ func (dao *RolesPrivilegesDAO) PKMatch(pk model.RolesPrivilegesPrimaryKey) postg
 		AND(table.RolesPrivileges.RoleID.EQ(postgres.Int16(pk.RoleID)))
 }
 
-func (dao *RolesPrivilegesDAO) GetUpdatedAt(row *auth.RolesPrivileges) *time.Time {
+func (dao *RolesPrivilegesDAO) GetUpdatedAt(row *dbmodel.RolesPrivileges) *time.Time {
 	return nil
 }

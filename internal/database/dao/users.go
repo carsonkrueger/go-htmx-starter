@@ -6,20 +6,20 @@ import (
 
 	"github.com/carsonkrueger/main/internal/context"
 	"github.com/carsonkrueger/main/internal/gen/go_starter_db/auth/table"
+	dbmodel "github.com/carsonkrueger/main/pkg/db/auth/model"
 	"github.com/carsonkrueger/main/pkg/model"
-	"github.com/carsonkrueger/main/pkg/model/db/auth"
 	"github.com/go-jet/jet/v2/postgres"
 )
 
 type usersDAO struct {
-	context.DAOBaseQueries[int64, auth.Users]
+	context.DAOBaseQueries[int64, dbmodel.Users]
 }
 
 func NewUsersDAO() context.UsersDAO {
 	dao := &usersDAO{
 		DAOBaseQueries: nil,
 	}
-	queries := newDAOQueryable[int64, auth.Users](dao)
+	queries := newDAOQueryable[int64, dbmodel.Users](dao)
 	dao.DAOBaseQueries = &queries
 	return dao
 }
@@ -59,12 +59,12 @@ func (dao *usersDAO) PKMatch(pk int64) postgres.BoolExpression {
 	return table.Users.ID.EQ(postgres.Int(pk))
 }
 
-func (dao *usersDAO) GetUpdatedAt(row *auth.Users) *time.Time {
+func (dao *usersDAO) GetUpdatedAt(row *dbmodel.Users) *time.Time {
 	return row.UpdatedAt
 }
 
-func (dao *usersDAO) GetByEmail(ctx gctx.Context, email string) (*auth.Users, error) {
-	var user auth.Users
+func (dao *usersDAO) GetByEmail(ctx gctx.Context, email string) (*dbmodel.Users, error) {
+	var user dbmodel.Users
 	err := table.Users.
 		SELECT(table.Users.AllColumns).
 		FROM(table.Users).

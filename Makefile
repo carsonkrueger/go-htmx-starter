@@ -4,14 +4,21 @@
 include .env
 
 GO_BIN_PATH := ~/go/bin
+DB_URL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_EXTERNAL_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable"
+
+ifeq ($(INTERNAL),true)
+	DB_URL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_INTERNAL_HOST}:${DB_INTERNAL_PORT}/${DB_NAME}?sslmode=disable"
+	GO_BIN_PATH := /go/bin
+else
+	DB_HOST := ${DB_EXTERNAL_HOST}
+	DB_PORT := ${DB_EXTERNAL_PORT}
+endif
+
 AIR_CMD := ${GO_BIN_PATH}/air
 TEMPL_CMD := ${GO_BIN_PATH}/templ
-
 MIGRATE_CMD := ${GO_BIN_PATH}/migrate
 JET_CMD := ${GO_BIN_PATH}/jet
-DB_URL_EXTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_EXTERNAL_HOST}:${DB_EXTERNAL_PORT}/${DB_NAME}?sslmode=disable"
-DB_URL_INTERNAL := "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
-JET_MODEL_PATH := ../../../../pkg/model/db
+JET_MODEL_PATH := ../../../../pkg/db
 
 live:
 	make docker-postgres
@@ -24,8 +31,6 @@ tw:
 	npx @tailwindcss/cli -i index.css -o ./public/css/output.css
 
 build:
-	make tw
-	make templ
 	go build -ldflags="-s -w" -o ./bin/main .
 
 docker:
@@ -46,15 +51,33 @@ docker-postgres-down:
 	docker compose down go_starter_db
 
 migrate:
-	${MIGRATE_CMD} -database ${DB_URL_EXTERNAL} -path migrations up
+	${MIGRATE_CMD} -database ${DB_URL} -path migrations up
 
 migrate-internal:
-	${MIGRATE_CMD} -database ${DB_URL_INTERNAL} -path migrations up
+	${MIGRATE_CMD} -database ${DB_URL} -path migrations up
 
 migrate-down:
-	${MIGRATE_CMD} -database ${DB_URL_EXTERNAL} -path migrations down 1
+	${MIGRATE_CMD} -database ${DB_URL} -path migrations down
 
-migrate-generate:
+migrate-down-one:
+	${MIGRATE_CMD} -database ${DB_URL} -path migrations down 1
+
+seed:
+	go run . seed
+
+seed-undo:
+	go run . -undo=true seed
+
+jet-all:
+	@echo "Fetching schemas from database..."
+	SCHEMAS=$$(PGPASSWORD='${DB_PASSWORD}' psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -Atc "SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'pg_toast')"); \
+	echo "Schemas found: $$SCHEMAS"; \
+	for SCHEMA in $$SCHEMAS; do \
+	    echo "------ Generating models for schema: $$SCHEMA ------"; \
+		${JET_CMD} -dsn=${DB_URL} -schema=$$SCHEMA -ignore-tables=schema_migrations -rel-model-path=${JET_MODEL_PATH}/$$SCHEMA/model -path=./internal/gen; \
+	done
+
+generate-migration:
 	@read -p "Enter migration name: " name; \
 	${MIGRATE_CMD} create -ext sql -dir migrations -seq $$name
 
@@ -79,27 +102,3 @@ generate-public-controller:
 	@echo "Enter camelCase controller name: "; \
 	read controller; \
 	go run . -name="$$controller" -private=false genController
-
-# seed:
-	go run . seed
-
-seed-undo:
-	go run . -undo=true seed
-
-jet-all:
-	@echo "Fetching schemas from database..."
-	SCHEMAS=$$(PGPASSWORD='${DB_PASSWORD}' psql -h ${DB_EXTERNAL_HOST} -p ${DB_EXTERNAL_PORT} -U ${DB_USER} -d ${DB_NAME} -Atc "SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'pg_toast')"); \
-	echo "Schemas found: $$SCHEMAS"; \
-	for SCHEMA in $$SCHEMAS; do \
-	    echo "------ Generating models for schema: $$SCHEMA ------"; \
-		${JET_CMD} -dsn=${DB_URL_EXTERNAL} -schema=$$SCHEMA -rel-model-path=${JET_MODEL_PATH}/$$SCHEMA -path=./internal/gen; \
-	done
-
-jet-all-internal:
-	@echo "Fetching schemas from database..."
-	SCHEMAS=$$(PGPASSWORD='${DB_PASSWORD}' psql -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -Atc "SELECT schema_name FROM information_schema.schemata WHERE schema_name NOT IN ('pg_catalog', 'information_schema', 'pg_toast')"); \
-	echo "Schemas found: $$SCHEMAS"; \
-	for SCHEMA in $$SCHEMAS; do \
-	    echo "------ Generating models for schema: $$SCHEMA ------"; \
-		${JET_CMD} -dsn=${DB_URL_INTERNAL} -schema=$$SCHEMA -rel-model-path=${JET_MODEL_PATH}/$$SCHEMA -path=./internal/gen; \
-	done

@@ -9,10 +9,13 @@ import (
 const (
 	PrivateController = "private-controller"
 	PublicController  = "public-controller"
+	DAO               = "dao"
 )
 
 var templates = map[string]string{
 	PrivateController: privateController,
+	PublicController:  publicController,
+	DAO:               dao,
 }
 
 func ExecuteTemplate(wr io.Writer, name string, model any) {
@@ -93,10 +96,10 @@ import (
 )
 
 type {{ .NameLower }} struct {
-	context.AppContext
+	*context.AppContext
 }
 
-func New{{ .Name }}(ctx context.AppContext) *{{ .NameLower }} {
+func New{{ .Name }}(ctx *context.AppContext) *{{ .NameLower }} {
 	return &{{ .NameLower }}{
 		AppContext: ctx,
 	}
@@ -137,5 +140,74 @@ func (r *{{ .NameLower }}) {{ .NameLower }}Patch(w http.ResponseWriter, req *htt
 func (r *{{ .NameLower }}) {{ .NameLower }}Delete(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("{{ .NameLower }}Delete")
 	lgr.Info("Called")
+}
+`
+
+var dao = `package dao
+
+import (
+	"database/sql"
+	"time"
+
+	"github.com/carsonkrueger/main/internal/context"
+	"github.com/carsonkrueger/main/pkg/db/{{ .Schema }}/model"
+	"github.com/carsonkrueger/main/internal/gen/{{ .DB }}/{{ .Schema }}/table"
+	"github.com/go-jet/jet/v2/postgres"
+)
+
+type {{ .Name }}PrimaryKey int64;
+
+type {{ .NameLower }}DAO struct {
+	db *sql.DB
+	context.DAOBaseQueries[{{ .Name }}PrimaryKey, model.{{ .Name }}]
+}
+
+func New{{ .Name }}DAO(db *sql.DB) *{{ .NameLower }}DAO {
+	dao := &{{ .NameLower }}DAO{
+		db:              db,
+		DAOBaseQueries: nil,
+	}
+	queries := newDAOQueryable[{{ .Name }}PrimaryKey, model.{{ .Name }}](dao)
+	dao.DAOBaseQueries = &queries
+	return dao
+}
+
+func (dao *{{ .NameLower }}DAO) Table() context.PostgresTable {
+	return table.{{ .Name }}
+}
+
+func (dao *{{ .NameLower }}DAO) InsertCols() postgres.ColumnList {
+	return table.{{ .Name }}.AllColumns.Except(
+		table.{{ .Name }}.ID,
+		table.{{ .Name }}.CreatedAt,
+		table.{{ .Name }}.UpdatedAt,
+	)
+}
+
+func (dao *{{ .NameLower }}DAO) UpdateCols() postgres.ColumnList {
+	return table.{{ .Name }}.AllColumns.Except(
+		table.{{ .Name }}.ID,
+		table.{{ .Name }}.CreatedAt,
+	)
+}
+
+func (dao *{{ .NameLower }}DAO) AllCols() postgres.ColumnList {
+	return table.{{ .Name }}.AllColumns
+}
+
+func (dao *{{ .NameLower }}DAO) OnConflictCols() postgres.ColumnList {
+	return []postgres.Column{}
+}
+
+func (dao *{{ .NameLower }}DAO) UpdateOnConflictCols() []postgres.ColumnAssigment {
+	return []postgres.ColumnAssigment{}
+}
+
+func (dao *{{ .NameLower }}DAO) PKMatch(pk {{ .Name }}PrimaryKey) postgres.BoolExpression {
+	return table.{{ .Name }}.ID.EQ(postgres.Int64(int64(pk)))
+}
+
+func (dao *{{ .NameLower }}DAO) GetUpdatedAt(row *model.{{ .Name }}) *time.Time {
+	return row.UpdatedAt
 }
 `
