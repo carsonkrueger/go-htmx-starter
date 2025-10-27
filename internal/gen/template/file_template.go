@@ -10,12 +10,14 @@ const (
 	PrivateController = "private-controller"
 	PublicController  = "public-controller"
 	DAO               = "dao"
+	Service           = "service"
 )
 
 var templates = map[string]string{
 	PrivateController: privateController,
 	PublicController:  publicController,
 	DAO:               dao,
+	Service:           service,
 }
 
 func ExecuteTemplate(wr io.Writer, name string, model any) {
@@ -209,5 +211,20 @@ func (dao *{{ .NameLower }}DAO) PKMatch(pk {{ .Name }}PrimaryKey) postgres.BoolE
 
 func (dao *{{ .NameLower }}DAO) GetUpdatedAt(row *model.{{ .Name }}) *time.Time {
 	return row.UpdatedAt
+}
+`
+
+var service = `package services
+
+import "github.com/carsonkrueger/main/internal/context"
+
+type {{ .NameLower }}Service struct {
+	*context.AppContext
+}
+
+func New{{ .Name }}Service(ctx *context.AppContext) *{{ .NameLower }}Service {
+	return &{{ .NameLower }}Service{
+		ctx,
+	}
 }
 `

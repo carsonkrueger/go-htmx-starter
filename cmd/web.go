@@ -36,7 +36,7 @@ func web() {
 		sm,
 		dm,
 	)
-	sm.SetAppContext(appCtx)
+	sm.AppContext = appCtx
 	defer appCtx.CleanUp()
 
 	appRouter := router.NewAppRouter(appCtx)
