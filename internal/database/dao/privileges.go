@@ -66,16 +66,13 @@ func (dao *privilegesDAO) GetUpdatedAt(row *dbmodel.Privileges) *time.Time {
 	return row.UpdatedAt
 }
 
-func (dao *privilegesDAO) GetAllJoined(ctx gctx.Context) ([]model.JoinedPrivilegesRaw, error) {
-	var res []model.JoinedPrivilegesRaw
+func (dao *privilegesDAO) GetAllJoined(ctx gctx.Context) ([]model.RolesPrivilegeJoin, error) {
+	var res []model.RolesPrivilegeJoin
 
 	err := table.Roles.
 		SELECT(
-			table.RolesPrivileges.RoleID.AS("JoinedPrivilegesRaw.RoleID"),
-			table.Roles.Name.AS("JoinedPrivilegesRaw.RoleName"),
-			table.RolesPrivileges.PrivilegeID.AS("JoinedPrivilegesRaw.PrivilegeID"),
-			table.Privileges.Name.AS("JoinedPrivilegesRaw.PrivilegeName"),
-			table.Privileges.CreatedAt.AS("JoinedPrivilegesRaw.PrivilegeCreatedAt"),
+			table.Roles.AllColumns,
+			table.Privileges.AllColumns,
 		).
 		FROM(
 			table.RolesPrivileges.

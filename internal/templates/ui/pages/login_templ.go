@@ -179,8 +179,9 @@ func Login() templ.Component {
 				templ_7745c5c3_Err = button.Button(button.Props{
 					Class: "self-end bg-foreground hover:bg-accent-foreground hover:shadow-lg animate-all duration-300",
 					Attributes: templ.Attributes{
-						"hx-post":   "/login",
-						"hx-target": "#" + constants.MainContentID,
+						"hx-post":     "/login",
+						"hx-target":   "#" + constants.MainContentID,
+						"hx-push-url": "/management/users",
 					},
 				}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var7), templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {

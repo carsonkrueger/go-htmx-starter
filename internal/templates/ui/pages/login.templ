@@ -52,6 +52,7 @@ templ Login() {
 							Attributes: templ.Attributes {
 								"hx-post": "/login",
 								"hx-target": "#"+constants.MainContentID,
+								"hx-push-url": "/management/users",
 							},
 						}) {
 							Log In

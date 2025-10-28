@@ -173,9 +173,9 @@ func Script() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var8 string
-		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("public/js/label.min.js?v=" + utils.ScriptVersion)
+		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs("/public/js/label.min.js?v=" + utils.ScriptVersion)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/templui/label/label.templ`, Line: 41, Col: 100}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/templui/label/label.templ`, Line: 41, Col: 101}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {

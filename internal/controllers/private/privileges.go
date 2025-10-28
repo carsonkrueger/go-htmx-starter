@@ -3,7 +3,6 @@ package private
 import (
 	gctx "context"
 	"net/http"
-	"strconv"
 
 	"github.com/carsonkrueger/main/internal/builders"
 	"github.com/carsonkrueger/main/internal/common"
@@ -30,7 +29,7 @@ func (um *privileges) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBui
 	b.NewHandler().Register(http.MethodGet, "/select", um.privilegesSelectGet).SetRequiredPrivileges(constant.PrivilegesList).Build(ctx)
 }
 
-func (r *privileges) privilegesSelectGet(res http.ResponseWriter, req *http.Request) {
+func (r *privileges) privilegesSelectGet(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("privilegesSelectGet")
 	lgr.Info("Called")
 	ctx := req.Context()
@@ -38,17 +37,9 @@ func (r *privileges) privilegesSelectGet(res http.ResponseWriter, req *http.Requ
 	dao := r.DM().PrivilegeDAO()
 	privileges, err := dao.GetAll(ctx)
 	if err != nil {
-		common.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
+		common.HandleError(req, w, lgr, err, 500, "Error fetching privileges")
 		return
 	}
 
-	var options []selectbox.SelectOptions
-	for _, p := range privileges {
-		options = append(options, selectbox.SelectOptions{
-			Value: strconv.FormatInt(p.ID, 10),
-			Label: p.Name,
-		})
-	}
-
-	selectbox.Select("privileges-select", "privileges", "", options, nil).Render(ctx, res)
+	selectbox.PrivilegeSelectBox(selectbox.PrivilegeSelectBoxProps{Privileges: privileges}).Render(ctx, w)
 }

@@ -35,32 +35,25 @@ func (um *roles) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBuilder)
 	b.NewHandler().Register(http.MethodPut, "/user/{user}", um.setUserRolePut).SetRequiredPrivileges(constant.UsersUpdate, constant.RolesUpdate).Build(ctx)
 }
 
-func (r *roles) rolesSelectGet(res http.ResponseWriter, req *http.Request) {
+func (r *roles) rolesSelectGet(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("rolesSelectGet")
 	lgr.Info("Called")
 	ctx := req.Context()
 
-	defaultRole := req.URL.Query().Get("role")
+	selected := req.URL.Query().Get("role")
+	selectedID, _ := strconv.ParseInt(selected, 10, 64)
 
 	dao := r.DM().RolesDAO()
 	roles, err := dao.GetAll(ctx)
 	if err != nil {
-		common.HandleError(req, res, lgr, err, 500, "Error fetching roles")
+		common.HandleError(req, w, lgr, err, 500, "Error fetching roles")
 		return
 	}
 
-	var options []selectbox.SelectOptions
-	for _, r := range roles {
-		options = append(options, selectbox.SelectOptions{
-			Value: strconv.FormatInt(int64(r.ID), 10),
-			Label: r.Name,
-		})
-	}
-
-	selectbox.Select("roles-select", "roles", defaultRole, options, nil).Render(ctx, res)
+	selectbox.RoleSelectBox(selectbox.RoleSelectBoxProps{Roles: roles, SelectedRoleID: int16(selectedID)}).Render(ctx, w)
 }
 
-func (r *roles) setUserRolePut(res http.ResponseWriter, req *http.Request) {
+func (r *roles) setUserRolePut(w http.ResponseWriter, req *http.Request) {
 	lgr := r.Lgr("setUserRolePut")
 	lgr.Info("Called")
 	ctx := req.Context()
@@ -68,28 +61,28 @@ func (r *roles) setUserRolePut(res http.ResponseWriter, req *http.Request) {
 	userID := chi.URLParam(req, "user")
 	userIDInt, err := strconv.ParseInt(userID, 10, 64)
 	if err != nil {
-		common.HandleError(req, res, lgr, err, 400, "Invalid user id")
+		common.HandleError(req, w, lgr, err, 400, "Invalid user id")
 		return
 	}
 
 	if err := req.ParseForm(); err != nil {
-		common.HandleError(req, res, lgr, err, 400, "Invalid form data")
+		common.HandleError(req, w, lgr, err, 400, "Invalid form data")
 		return
 	}
 
 	rolesIDStr := req.Form.Get("role")
 	roleID, err := strconv.ParseInt(rolesIDStr, 10, 16)
 	if err != nil {
-		common.HandleError(req, res, lgr, err, 400, "Invalid role id")
+		common.HandleError(req, w, lgr, err, 400, "Invalid role id")
 		return
 	}
 
 	if err := r.SM().PrivilegesService().SetUserRole(ctx, int16(roleID), userIDInt); err != nil {
-		common.HandleError(req, res, lgr, err, 500, "Error setting user role")
+		common.HandleError(req, w, lgr, err, 500, "Error setting user role")
 		return
 	}
 
 	if util.IsHxRequest(req) {
-		toast.Toasts(tuitoast.Props{Title: "Success", Description: "Role assigned to user"}).Render(ctx, res)
+		toast.ToastsSwap(tuitoast.Props{Title: "Success", Description: "Role assigned to user"}).Render(ctx, w)
 	}
 }

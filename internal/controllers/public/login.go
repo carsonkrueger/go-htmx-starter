@@ -9,6 +9,7 @@ import (
 	"github.com/carsonkrueger/main/internal/controllers/private"
 	"github.com/carsonkrueger/main/internal/templates/templatetargets"
 	"github.com/carsonkrueger/main/internal/templates/ui/pages"
+	"github.com/carsonkrueger/main/internal/templates/ui/tables"
 	"github.com/carsonkrueger/main/pkg/util"
 	"github.com/carsonkrueger/main/pkg/util/render"
 	"github.com/carsonkrueger/main/pkg/util/validate"
@@ -34,7 +35,7 @@ func (l *login) PublicRoute(r chi.Router) {
 	r.Post("/", l.postLogin)
 }
 
-func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
+func (l *login) postLogin(w http.ResponseWriter, req *http.Request) {
 	lgr := l.Lgr("postLogin")
 	lgr.Info("Called")
 	ctx := req.Context()
@@ -42,7 +43,7 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	db.Query("select 1;")
 
 	if err := req.ParseForm(); err != nil {
-		common.HandleError(req, res, lgr, nil, 400, "Error parsing form")
+		common.HandleError(req, w, lgr, nil, 400, "Error parsing form")
 		return
 	}
 
@@ -50,7 +51,7 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	errs := validate.ValidateLogin(form)
 
 	if len(errs) > 0 {
-		common.HandleError(req, res, lgr, errs[0], 400, errs[0].Error())
+		common.HandleError(req, w, lgr, errs[0], 400, errs[0].Error())
 		return
 	}
 
@@ -60,34 +61,33 @@ func (l *login) postLogin(res http.ResponseWriter, req *http.Request) {
 	usersService := l.SM().UsersService()
 	authToken, err := usersService.Login(ctx, email, password, req)
 	if err != nil {
-		common.HandleError(req, res, lgr, err, 401, "Invalid username or password")
+		common.HandleError(req, w, lgr, err, 401, "Invalid username or password")
 		return
 	}
 
-	util.SetAuthCookie(res, authToken, constant.AUTH_TOKEN_KEY)
+	util.SetAuthCookie(w, authToken, constant.AUTH_TOKEN_KEY)
 
 	hxRequest := util.IsHxRequest(req)
 	if hxRequest {
 		dao := l.DM().UsersDAO()
 		users, err := dao.GetUserPrivilegeJoinAll(ctx)
 		if err != nil || users == nil {
-			common.HandleError(req, res, lgr, err, 500, "Error fetching privileges")
+			common.HandleError(req, w, lgr, err, 500, "Error fetching privileges")
 			return
 		}
 
-		if len(*users) == 0 {
+		if len(users) == 0 {
 			return
 		}
 
 		allRoles, err := l.DM().RolesDAO().GetAll(ctx)
 		if err != nil || allRoles == nil {
-			common.HandleError(req, res, lgr, err, 500, "Error fetching roles")
+			common.HandleError(req, w, lgr, err, 500, "Error fetching roles")
 			return
 		}
 
-		rows := l.SM().PrivilegesService().UserRoleJoinAsRowData(ctx, *users, allRoles)
-		page := pages.UserManagementUsers(rows)
-		render.Tab(req, private.UserManagementTabModels, 0, page).Render(ctx, res)
+		table := tables.ManageUsersTable(users, allRoles)
+		render.Tab(req, private.UserManagementTabModels, 0, table).Render(ctx, w)
 	}
 }
 

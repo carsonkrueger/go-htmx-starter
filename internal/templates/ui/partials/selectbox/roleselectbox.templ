@@ -1,0 +1,37 @@
+package selectbox
+
+import (
+	"strconv"
+
+	"github.com/carsonkrueger/main/pkg/db/auth/model"
+	"github.com/carsonkrueger/main/pkg/templui/selectbox"
+)
+
+type RoleSelectBoxProps struct {
+	Roles []model.Roles
+	SelectedRoleID int16
+}
+
+templ RoleSelectBox(props ...RoleSelectBoxProps) {
+	{{
+		var p RoleSelectBoxProps
+		if len(props) > 0 {
+			p = props[0]
+		}
+		options := make([]SelectOptions, len(p.Roles))
+		for i, r := range p.Roles {
+			options[i] = SelectOptions{
+				Value: strconv.FormatInt(int64(r.ID), 10),
+				Label: r.Name,
+				Selected: r.ID == p.SelectedRoleID,
+			}
+		}
+	}}
+	@SelectBox(Props{
+		Options: options,
+		Placeholder: "Select a Role...",
+		TriggerProps: selectbox.TriggerProps{
+			Name: "roles",
+		},
+	})
+}

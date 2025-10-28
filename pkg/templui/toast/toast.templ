@@ -148,5 +148,5 @@ templ Toast(props ...Props) {
 }
 
 templ Script() {
-	<script defer nonce={ templ.GetNonce(ctx) } src={ "public/js/toast.min.js?v=" + utils.ScriptVersion }></script>
+	<script defer nonce={ templ.GetNonce(ctx) } src={ "/public/js/toast.min.js?v=" + utils.ScriptVersion }></script>
 }

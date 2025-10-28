@@ -1,0 +1,112 @@
+package tables
+
+import (
+	"strconv"
+
+	"github.com/carsonkrueger/main/internal/templates/ui/partials/selectbox"
+	tuiselectbox "github.com/carsonkrueger/main/pkg/templui/selectbox"
+	"github.com/carsonkrueger/main/pkg/templui/label"
+	"github.com/carsonkrueger/main/pkg/templui/table"
+	"github.com/carsonkrueger/main/pkg/model"
+	dbmodel "github.com/carsonkrueger/main/pkg/db/auth/model"
+)
+
+templ ManageUsersTable(data []model.UserRoleJoin, allRoles []dbmodel.Roles) {
+	{{
+		roleOptions := make([]selectbox.SelectOptions, len(allRoles))
+		for i, role := range allRoles {
+			roleOptions[i].Label = role.Name
+			roleOptions[i].Value = strconv.FormatInt(int64(role.ID), 10)
+		}
+	}}
+	@table.Table(table.Props{
+		ID: "users-management",
+		Class: "text-secondary",
+	}) {
+		@table.Header() {
+			@table.Row() {
+				@table.Head() {
+					@label.Label() {
+						ID
+					}
+				}
+				@table.Head() {
+					@label.Label() {
+						Name
+					}
+				}
+				@table.Head() {
+					@label.Label() {
+						Email
+					}
+				}
+				@table.Head() {
+					@label.Label() {
+						Role
+					}
+				}
+				@table.Head() {
+					@label.Label() {
+						Joined At
+					}
+				}
+			}
+		}
+		@table.Body() {
+			for _, d := range data {
+				@managementUsersRow(d, roleOptions)
+			}
+		}
+	}
+}
+
+templ managementUsersRow(data model.UserRoleJoin, options []selectbox.SelectOptions) {
+	@table.Row() {
+		@table.Cell() {
+			@label.Label() {
+				{ strconv.FormatInt(data.Users.ID, 10) }
+			}
+		}
+		@table.Cell() {
+			@label.Label() {
+				{ data.Users.FirstName + ", " + data.Users.LastName }
+			}
+		}
+		@table.Cell() {
+			@label.Label() {
+				{ data.Users.Email }
+			}
+		}
+		@table.Cell() {
+			<form
+				hx-put={ "/roles/user/"+strconv.FormatInt(data.Users.ID, 10) }
+				hx-swap="none"
+				hx-trigger="submit"
+			>
+				{{
+					for i := range options {
+						id, _ := strconv.ParseInt(options[i].Value, 10, 64)
+						options[i].Selected = int64(data.Users.RoleID) == id
+					}
+				}}
+				@selectbox.SelectBox(selectbox.Props{
+					Props: tuiselectbox.Props{
+						Class: "max-w-xs",
+					},
+					TriggerProps: tuiselectbox.TriggerProps{
+						Name: "role",
+						Attributes: templ.Attributes{
+							"_": "on change send submit to closest <form/>",
+						},
+					},
+					Options: options,
+				})
+			</form>
+		}
+		@table.Cell() {
+			@label.Label() {
+				{ data.Users.CreatedAt.Format("2006-01-02") }
+			}
+		}
+	}
+}

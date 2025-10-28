@@ -12,7 +12,7 @@ type TabModel struct {
 }
 
 templ Tabs(tabs []TabModel, selectedTabIndex int) {
-	<div class="flex text-lg shadow-md">
+	<div class="flex text-lg shadow-md text-secondary">
 		for i, tab := range tabs {
 			{{
 				class := "border-b-transparent"

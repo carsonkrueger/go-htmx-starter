@@ -3,5 +3,5 @@
     "utilsDir": "pkg/templui/utils",
     "moduleName": "github.com/carsonkrueger/main",
     "jsDir": "public/js",
-    "jsPublicPath": "public/js"
+    "jsPublicPath": "/public/js"
 }

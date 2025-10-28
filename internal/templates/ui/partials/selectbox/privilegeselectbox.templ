@@ -1,0 +1,37 @@
+package selectbox
+
+import (
+	"strconv"
+
+	"github.com/carsonkrueger/main/pkg/db/auth/model"
+	"github.com/carsonkrueger/main/pkg/templui/selectbox"
+)
+
+type PrivilegeSelectBoxProps struct {
+	Privileges []model.Privileges
+	SelectedPrivilegeID int64
+}
+
+templ PrivilegeSelectBox(props ...PrivilegeSelectBoxProps) {
+	{{
+		var p PrivilegeSelectBoxProps
+		if len(props) > 0 {
+			p = props[0]
+		}
+		options := make([]SelectOptions, len(p.Privileges))
+		for i, pr := range p.Privileges {
+			options[i] = SelectOptions{
+				Value: strconv.FormatInt(int64(pr.ID), 10),
+				Label: pr.Name,
+				Selected: pr.ID == p.SelectedPrivilegeID,
+			}
+		}
+	}}
+	@SelectBox(Props{
+		Options: options,
+		Placeholder: "Select a Privilege...",
+		TriggerProps: selectbox.TriggerProps{
+			Name: "privileges",
+		},
+	})
+}

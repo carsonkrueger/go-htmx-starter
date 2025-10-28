@@ -28,7 +28,7 @@ templ:
 	${TEMPL_CMD} generate
 
 tw:
-	npx @tailwindcss/cli -i index.css -o ./public/css/output.css
+	npx @tailwindcss/cli -i app.css -o ./public/css/index.css
 
 build:
 	go build -ldflags="-s -w" -o ./bin/main .

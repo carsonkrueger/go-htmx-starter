@@ -7,6 +7,7 @@ import (
 type SelectOptions struct {
 	Value string
 	Label string
+	Selected bool
 }
 
 templ Select(id string, name string, defaultValue string, options []SelectOptions, attrs templ.Attributes) {
@@ -33,12 +34,10 @@ type Props struct {
 }
 
 templ SelectBox(props ...Props) {
-	{{
-		var p Props
-		if len(props) > 0 {
-			p = props[0]
-		}
-	}}
+	{{ var p Props }}
+	if len(props) > 0 {
+		{{ p = props[0] }}
+	}
 	@selectbox.SelectBox(p.Props) {
 		@selectbox.Trigger(p.TriggerProps) {
 			@selectbox.Value(selectbox.ValueProps{
@@ -49,6 +48,7 @@ templ SelectBox(props ...Props) {
 			for _, o := range p.Options {
 				@selectbox.Item(selectbox.ItemProps{
 					Value: o.Value,
+					Selected: o.Selected,
 				}) {
 					{o.Label}
 				}

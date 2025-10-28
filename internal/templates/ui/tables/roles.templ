@@ -1,0 +1,88 @@
+package tables
+
+import (
+	"fmt"
+	"strconv"
+
+	"github.com/carsonkrueger/main/internal/templates/ui/partials/clickable"
+	"github.com/carsonkrueger/main/pkg/templui/label"
+	"github.com/carsonkrueger/main/pkg/templui/table"
+	"github.com/carsonkrueger/main/pkg/templui/icon"
+	"github.com/carsonkrueger/main/pkg/model"
+)
+
+templ ManageRolesTable(data []model.RolesPrivilegeJoin) {
+	@table.Table(table.Props{
+		ID: "users-management",
+		Class: "text-secondary",
+	}) {
+		@table.Header() {
+			@table.Row() {
+				@table.Head() {
+					@label.Label() {
+						Role ID
+					}
+				}
+				@table.Head() {
+					@label.Label() {
+						Role
+					}
+				}
+				@table.Head() {
+					@label.Label() {
+						Privilege ID
+					}
+				}
+				@table.Head() {
+					@label.Label() {
+						Privilege
+					}
+				}
+				@table.Head()
+			}
+		}
+		@table.Body(table.BodyProps{ ID: "roles-tbody" }) {
+			for _, d := range data {
+				@RolesRow(d)
+			}
+		}
+	}
+}
+
+templ RolesRow(data model.RolesPrivilegeJoin) {
+	@table.Row() {
+		@table.Cell() {
+			@label.Label() {
+				{ strconv.FormatInt(int64(data.Roles.ID), 10) }
+			}
+		}
+		@table.Cell() {
+			@label.Label() {
+				{ data.Roles.Name }
+			}
+		}
+		@table.Cell() {
+			@label.Label() {
+				{ strconv.FormatInt(data.Privileges.ID, 10) }
+			}
+		}
+		@table.Cell() {
+			@label.Label() {
+				{ data.Privileges.Name }
+			}
+		}
+		@table.Cell() {
+			@label.Label() {
+				@clickable.Clickable(clickable.Props{
+					Attributes: templ.Attributes{
+						"hx-delete": fmt.Sprintf("/roles-privileges/role/%d/privilege/%d", data.Roles.ID, data.Privileges.ID),
+						"hx-swap": "none",
+						"_": "on htmx:afterRequest remove closest <tr/>",
+					},
+				}) {
+					@icon.X()
+				}
+			}
+		}
+	}
+}

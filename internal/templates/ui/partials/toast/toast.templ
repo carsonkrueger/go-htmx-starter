@@ -1,10 +1,11 @@
 package toast
 
 import (
+	"github.com/carsonkrueger/main/internal/templates/constants"
 	tuitoast "github.com/carsonkrueger/main/pkg/templui/toast"
 )
 
-templ AddToastErrors(props ...tuitoast.Props) {
+templ ToastErrors(props ...tuitoast.Props) {
 	for _, p := range props {
 		{{
 			p.Duration = max(p.Duration, 6000)
@@ -21,4 +22,16 @@ templ Toasts(props ...tuitoast.Props) {
 	for _, p := range props {
 		@tuitoast.Toast(p)
 	}
+}
+
+templ ToastsSwap(props ...tuitoast.Props) {
+	@ToastSwapWrapper() {
+		@Toasts(props...)
+	}
+}
+
+templ ToastSwapWrapper() {
+	<div hx-swap-oob={ "beforeend:#"+constants.GlobalToastID }>
+		{ children... }
+	</div>
 }

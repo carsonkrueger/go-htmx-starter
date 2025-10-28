@@ -1,0 +1,40 @@
+package pages
+
+import (
+	"github.com/carsonkrueger/main/internal/templates/ui/tables"
+	"github.com/carsonkrueger/main/pkg/templui/button"
+	"github.com/carsonkrueger/main/pkg/model"
+)
+
+templ ManagementRoles(data []model.RolesPrivilegeJoin) {
+	<div class="flex flex-col grow justify-between">
+		@tables.ManageRolesTable(data)
+		<form
+			class="flex gap-4 py-4 items-center justify-center"
+			hx-post="/roles-privileges"
+			hx-target="#roles-tbody"
+			hx-swap="beforeend"
+			hx-disable-elt="this"
+		>
+			<div
+				class="max-w-xs w-full"
+				hx-get="/roles/select"
+				hx-target="this"
+				hx-swap="innerHTML"
+				hx-trigger="load"
+			></div>
+			<div
+				class="max-w-xs w-full"
+				hx-get="/privileges/select"
+				hx-target="this"
+				hx-swap="innerHTML"
+				hx-trigger="load"
+			></div>
+			@button.Button(button.Props{
+				Type: "submit",
+			}) {
+				Add Privilege
+			}
+		</form>
+	</div>
+}

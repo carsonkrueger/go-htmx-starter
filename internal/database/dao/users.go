@@ -97,14 +97,14 @@ func (dao *usersDAO) GetRoleID(ctx gctx.Context, userID int64) (*int64, error) {
 	return &res.PrivilegeID, nil
 }
 
-func (dao *usersDAO) GetUserPrivilegeJoinAll(ctx gctx.Context) (*[]model.UserRoleJoin, error) {
+func (dao *usersDAO) GetUserPrivilegeJoinAll(ctx gctx.Context) ([]model.UserRoleJoin, error) {
 	var rows []model.UserRoleJoin
 	err := table.Users.
 		LEFT_JOIN(table.Roles, table.Users.RoleID.EQ(table.Roles.ID)).
-		SELECT(table.Users.AllColumns, table.Roles.Name).
+		SELECT(table.Users.AllColumns, table.Roles.AllColumns).
 		Query(context.GetDB(ctx), &rows)
 	if err != nil {
 		return nil, err
 	}
-	return &rows, nil
+	return rows, nil
 }

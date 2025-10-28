@@ -9,8 +9,8 @@ import (
 	"github.com/carsonkrueger/main/internal/common"
 	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/carsonkrueger/main/internal/context"
-	"github.com/carsonkrueger/main/internal/templates/ui/partials/basictable"
 	"github.com/carsonkrueger/main/internal/templates/ui/partials/toast"
+	"github.com/carsonkrueger/main/internal/templates/ui/tables"
 	"github.com/carsonkrueger/main/pkg/model"
 	tuitoast "github.com/carsonkrueger/main/pkg/templui/toast"
 	"github.com/carsonkrueger/main/pkg/util"
@@ -83,18 +83,8 @@ func (r *rolesPrivileges) rolesPrivilegesPost(w http.ResponseWriter, req *http.R
 	}
 
 	if util.IsHxRequest(req) {
-		jpl := []model.JoinedPrivilegesRaw{
-			{
-				RoleID:             int16(roleID),
-				RoleName:           role.Name,
-				PrivilegeID:        priv.ID,
-				PrivilegeName:      priv.Name,
-				PrivilegeCreatedAt: priv.CreatedAt,
-			},
-		}
-		rows := r.SM().PrivilegesService().JoinedPrivilegesAsRowData(ctx, jpl)
-		basictable.BasicTR(rows[0]).Render(ctx, w)
-		toast.Toasts(tuitoast.Props{Title: "Success", Description: "Privilege added to role"}).Render(ctx, w)
+		tables.RolesRow(model.RolesPrivilegeJoin{Privileges: priv, Roles: role}).Render(ctx, w)
+		toast.ToastsSwap(tuitoast.Props{Title: "Success", Description: "Privilege added to role"}).Render(ctx, w)
 	}
 }
 
@@ -123,6 +113,6 @@ func (r *rolesPrivileges) rolesPrivilegesDelete(w http.ResponseWriter, req *http
 	}
 
 	if util.IsHxRequest(req) {
-		toast.Toasts(tuitoast.Props{Title: "Success", Description: "Privilege removed from role"}).Render(ctx, w)
+		toast.ToastsSwap(tuitoast.Props{Title: "Success", Description: "Privilege removed from role"}).Render(ctx, w)
 	}
 }

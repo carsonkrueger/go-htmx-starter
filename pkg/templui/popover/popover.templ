@@ -130,5 +130,5 @@ templ Content(props ...ContentProps) {
 }
 
 templ Script() {
-	<script defer nonce={ templ.GetNonce(ctx) } src={ "public/js/popover.min.js?v=" + utils.ScriptVersion }></script>
+	<script defer nonce={ templ.GetNonce(ctx) } src={ "/public/js/popover.min.js?v=" + utils.ScriptVersion }></script>
 }

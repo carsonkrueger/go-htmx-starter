@@ -23,7 +23,7 @@ func HandleError(req *http.Request, w http.ResponseWriter, lgr *zap.Logger, err 
 	if util.IsHxRequest(req) {
 		w.Header().Add("hx-toast-err", "true")
 		w.WriteHeader(status)
-		toast.AddToastErrors(tuitoast.Props{Description: msg}).Render(ctx, w)
+		toast.ToastErrors(tuitoast.Props{Description: msg}).Render(ctx, w)
 	} else {
 		w.WriteHeader(status)
 		w.Write([]byte(msg))

@@ -16,14 +16,14 @@ func Auth(appCtx *context.AppContext, enforce bool) func(next http.Handler) http
 	lgr := appCtx.Lgr("MW EnforceAuth")
 
 	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			ctx := req.Context()
 
 			token, id, err := usersService.GetAuthParts(ctx, req)
 			if err != nil {
 				if enforce {
-					res.Header().Set("Hx-Redirect", "/login")
-					common.HandleError(req, res, lgr, err, 403, "Malformed auth token")
+					w.Header().Set("Hx-Redirect", "/login")
+					common.HandleError(req, w, lgr, err, 403, "Malformed auth token")
 					return
 				}
 			}
@@ -32,8 +32,8 @@ func Auth(appCtx *context.AppContext, enforce bool) func(next http.Handler) http
 			if err != nil {
 				req.Header.Del(constant.AUTH_TOKEN_KEY)
 				if enforce {
-					res.Header().Set("Hx-Redirect", "/login")
-					common.HandleError(req, res, lgr, err, 403, "Malformed auth token")
+					w.Header().Set("Hx-Redirect", "/login")
+					common.HandleError(req, w, lgr, err, 403, "Malformed auth token")
 					return
 				}
 			}
@@ -47,8 +47,8 @@ func Auth(appCtx *context.AppContext, enforce bool) func(next http.Handler) http
 			if err != nil {
 				req.Header.Del(constant.AUTH_TOKEN_KEY)
 				if enforce {
-					res.Header().Set("Hx-Redirect", "/login")
-					common.HandleError(req, res, lgr, err, 403, "Malformed auth token")
+					w.Header().Set("Hx-Redirect", "/login")
+					common.HandleError(req, w, lgr, err, 403, "Malformed auth token")
 					return
 				}
 			}
@@ -56,8 +56,8 @@ func Auth(appCtx *context.AppContext, enforce bool) func(next http.Handler) http
 			if session.Token != token {
 				req.Header.Del(constant.AUTH_TOKEN_KEY)
 				if enforce {
-					res.Header().Set("Hx-Redirect", "/login")
-					common.HandleError(req, res, lgr, err, 403, "Malformed auth token")
+					w.Header().Set("Hx-Redirect", "/login")
+					common.HandleError(req, w, lgr, err, 403, "Malformed auth token")
 					return
 				}
 			}
@@ -66,7 +66,7 @@ func Auth(appCtx *context.AppContext, enforce bool) func(next http.Handler) http
 			ctx = context.WithUserId(ctx, id)
 			ctx = context.WithRoleID(ctx, user.RoleID)
 
-			next.ServeHTTP(res, req.WithContext(ctx))
+			next.ServeHTTP(w, req.WithContext(ctx))
 		})
 	}
 }

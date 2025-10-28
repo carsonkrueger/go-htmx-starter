@@ -977,9 +977,9 @@ func Script() templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var37 string
-		templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs("public/js/selectbox.min.js?v=" + utils.ScriptVersion)
+		templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs("/public/js/selectbox.min.js?v=" + utils.ScriptVersion)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/templui/selectbox/selectbox.templ`, Line: 326, Col: 104}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pkg/templui/selectbox/selectbox.templ`, Line: 326, Col: 105}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 		if templ_7745c5c3_Err != nil {

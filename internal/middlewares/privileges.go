@@ -11,20 +11,18 @@ func ApplyPrivileges(privileges []int64, appCtx *context.AppContext) func(next h
 	lgr := appCtx.Lgr("MW ApplyPermission")
 
 	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			ctx := req.Context()
-
-			lgr.Debug("applying permissions")
 
 			roleID := context.GetRoleID(ctx)
 			privelegeService := appCtx.SM().PrivilegesService()
 			permitted := privelegeService.HasPermissionsByIDS(ctx, roleID, privileges)
 			if !permitted {
-				common.HandleError(req, res, lgr, nil, 403, "Insufficient privileges")
+				common.HandleError(req, w, lgr, nil, 403, "Insufficient privileges")
 				return
 			}
 
-			next.ServeHTTP(res, req)
+			next.ServeHTTP(w, req)
 		})
 	}
 }

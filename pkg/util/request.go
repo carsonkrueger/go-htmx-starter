@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func SetAuthCookie(res http.ResponseWriter, authToken *string, key string) {
+func SetAuthCookie(w http.ResponseWriter, authToken *string, key string) {
 	cookie := http.Cookie{
 		Name:     key,
 		Value:    *authToken,
@@ -15,7 +15,7 @@ func SetAuthCookie(res http.ResponseWriter, authToken *string, key string) {
 		Path:     "/",
 		SameSite: http.SameSiteLaxMode,
 	}
-	http.SetCookie(res, &cookie)
+	http.SetCookie(w, &cookie)
 }
 
 func GetAuthCookie(req *http.Request, key string) (*http.Cookie, error) {

@@ -14,7 +14,7 @@ Go is a statically typed, compiled language designed at Google. It is a fast, ef
 ### Auth with Sessions and Private Route Privileges
 - This project uses auth tokens in the request headers and verifies them by checking the token against the database stored in the `sessions` table.
 - Each router endpoint with privileges attached is protected by a privilege check. Users without proper privileges will be unauthorized. Attaching a privilege to the
-endpoint can be done using the `PrivateRouteBuilder`. See [UserManagement](https://github.com/carsonkrueger/go-test/blob/main/controllers/private/user_management.go) private route for an example. Attaching a privilege to an endpoint using the `PrivateRouteBuilder` will automatically insert the privilege into the database. Each user has a privilege level. Privileges are associated with the privilege levels to know which privileges a user has. Using the `make seed` command will give all associations to the admin level.
+endpoint can be done using the `PrivateRouteBuilder`. See [UserManagement](https://github.com/carsonkrueger/go-test/blob/main/controllers/private/management.go) private route for an example. Attaching a privilege to an endpoint using the `PrivateRouteBuilder` will automatically insert the privilege into the database. Each user has a privilege level. Privileges are associated with the privilege levels to know which privileges a user has. Using the `make seed` command will give all associations to the admin level.
 
 ### Postgres
 PostgreSQL is a beloved, open-source object-relational database system. It is a popular choice for building scalable and reliable web applications.

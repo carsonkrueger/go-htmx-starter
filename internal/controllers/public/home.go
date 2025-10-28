@@ -29,8 +29,8 @@ func (hw *home) PublicRoute(r chi.Router) {
 	r.Get("/home", hw.home)
 }
 
-func (hw *home) redirect_home(res http.ResponseWriter, req *http.Request) {
-	http.Redirect(res, req, "/home", http.StatusMovedPermanently)
+func (hw *home) redirect_home(w http.ResponseWriter, req *http.Request) {
+	http.Redirect(w, req, "/home", http.StatusMovedPermanently)
 }
 
 func (hw *home) home(w http.ResponseWriter, req *http.Request) {

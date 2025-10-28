@@ -13,8 +13,9 @@ import (
 )
 
 type SelectOptions struct {
-	Value string
-	Label string
+	Value    string
+	Label    string
+	Selected bool
 }
 
 func Select(id string, name string, defaultValue string, options []SelectOptions, attrs templ.Attributes) templ.Component {
@@ -45,7 +46,7 @@ func Select(id string, name string, defaultValue string, options []SelectOptions
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/ui/partials/selectbox/selectbox.templ`, Line: 13, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/ui/partials/selectbox/selectbox.templ`, Line: 14, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -58,7 +59,7 @@ func Select(id string, name string, defaultValue string, options []SelectOptions
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/ui/partials/selectbox/selectbox.templ`, Line: 13, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/ui/partials/selectbox/selectbox.templ`, Line: 14, Col: 27}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -84,7 +85,7 @@ func Select(id string, name string, defaultValue string, options []SelectOptions
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(o.Value)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/ui/partials/selectbox/selectbox.templ`, Line: 16, Col: 18}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/ui/partials/selectbox/selectbox.templ`, Line: 17, Col: 18}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -107,7 +108,7 @@ func Select(id string, name string, defaultValue string, options []SelectOptions
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(o.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/ui/partials/selectbox/selectbox.templ`, Line: 21, Col: 12}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/templates/ui/partials/selectbox/selectbox.templ`, Line: 22, Col: 12}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -155,7 +156,6 @@ func SelectBox(props ...Props) templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-
 		var p Props
 		if len(props) > 0 {
 			p = props[0]
@@ -237,7 +237,8 @@ func SelectBox(props ...Props) templ.Component {
 						return nil
 					})
 					templ_7745c5c3_Err = selectbox.Item(selectbox.ItemProps{
-						Value: o.Value,
+						Value:    o.Value,
+						Selected: o.Selected,
 					}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var10), templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err

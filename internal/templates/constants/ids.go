@@ -1,6 +1,8 @@
 package constants
 
-const PageLayoutID = "page-layout"
-const MainContentID = "main-content"
-const TabContentID = "tab-content"
-const GlobalToastID = "global-toast"
+const (
+	PageLayoutID  = "page-layout"
+	MainContentID = "main-content"
+	TabContentID  = "tab-content"
+	GlobalToastID = "global-toast"
+)

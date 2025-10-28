@@ -3,18 +3,11 @@ package services
 import (
 	gctx "context"
 	"errors"
-	"fmt"
 	"strconv"
 
-	"github.com/a-h/templ"
 	"github.com/carsonkrueger/main/internal/context"
-	"github.com/carsonkrueger/main/internal/templates/ui/partials/basiclabel"
-	"github.com/carsonkrueger/main/internal/templates/ui/partials/basictable"
-	"github.com/carsonkrueger/main/internal/templates/ui/partials/form"
-	"github.com/carsonkrueger/main/internal/templates/ui/partials/selectbox"
 	dbmodel "github.com/carsonkrueger/main/pkg/db/auth/model"
 	"github.com/carsonkrueger/main/pkg/model"
-	"github.com/carsonkrueger/main/pkg/templui/icon"
 	"go.uber.org/zap"
 )
 
@@ -111,121 +104,4 @@ func (us *privilegesService) SetUserRole(ctx gctx.Context, roleID int16, userID 
 	}
 
 	return nil
-}
-
-func (us *privilegesService) UserRoleJoinAsRowData(ctx gctx.Context, upl []model.UserRoleJoin, allRoles []dbmodel.Roles) []basictable.RowData {
-	roleOptions := make([]selectbox.SelectOptions, len(allRoles))
-	for i, role := range allRoles {
-		roleOptions[i].Label = role.Name
-		roleOptions[i].Value = strconv.FormatInt(int64(role.ID), 10)
-	}
-
-	rows := make([]basictable.RowData, len(upl))
-	for i, j := range upl {
-		// selectAttrs := templ.Attributes{
-		// 	"_": "on input trigger submit on closest <form/>",
-		// }
-		// selectBox := datainput.Select(fmt.Sprintf("%d-role-select", j.Users.ID), "role", strconv.FormatInt(int64(j.RoleID), 10), roleOptions, selectAttrs)
-		formAttrs := templ.Attributes{
-			"hx-put":     fmt.Sprintf("/roles/user/%d", j.Users.ID),
-			"hx-trigger": "submit",
-			"hx-swap":    "none",
-		}
-		form := form.Form(formAttrs)
-		rows[i] = basictable.RowData{
-			ID: "row-" + strconv.Itoa(i),
-			Data: []basictable.CellData{
-				{
-					ID:    "n-" + strconv.Itoa(i),
-					Width: 1,
-					Body:  basiclabel.BasicLabel(fmt.Sprintf("%s %s", j.Users.FirstName, j.Users.LastName)),
-				},
-				{
-					ID:    "em-" + strconv.Itoa(i),
-					Width: 1,
-					Body:  basiclabel.BasicLabel(j.Users.Email),
-				},
-				{
-					ID:    "pr-" + strconv.Itoa(i),
-					Width: 1,
-					Body:  form,
-				},
-				{
-					ID:    "ca-" + strconv.Itoa(i),
-					Width: 1,
-					Body:  basiclabel.BasicLabel(j.Users.CreatedAt.Format("2006-01-02")),
-				},
-			},
-		}
-	}
-	return rows
-}
-
-func (us *privilegesService) JoinedRoleAsRowData(ctx gctx.Context, jpl []model.JoinedRole) []basictable.RowData {
-	rows := make([]basictable.RowData, len(jpl))
-	for i, j := range jpl {
-		rows[i] = basictable.RowData{
-			ID: "row-" + strconv.Itoa(i),
-			Data: []basictable.CellData{
-				{
-					ID:    "n-" + strconv.Itoa(i),
-					Width: 1,
-					Body:  basiclabel.BasicLabel(j.RoleName),
-				},
-				{
-					ID:    "pr-" + strconv.Itoa(i),
-					Width: 1,
-					Body:  basiclabel.BasicLabel(strconv.FormatInt(int64(j.RoleID), 10)),
-				},
-				{
-					ID:    "ca-" + strconv.Itoa(i),
-					Width: 1,
-					Body:  basiclabel.BasicLabel(j.Privileges[0].CreatedAt.Format("2006-01-02")),
-				},
-			},
-		}
-	}
-	return rows
-}
-
-func (us *privilegesService) JoinedPrivilegesAsRowData(ctx gctx.Context, jpl []model.JoinedPrivilegesRaw) []basictable.RowData {
-	rows := make([]basictable.RowData, len(jpl))
-	for i, p := range jpl {
-		ca := p.PrivilegeCreatedAt
-		caStr := "No Created At"
-		if ca != nil {
-			caStr = ca.String()
-		}
-		// xAttrs := templ.Attributes{
-		// 	"class":      "fill-red-400 size-6 p-1 rounded-xs mx-auto cursor-pointer hover:bg-[#FFFFFF44]",
-		// 	"hx-delete":  fmt.Sprintf("/roles-privileges/role/%d/privilege/%d", p.RoleID, p.PrivilegeID),
-		// 	"hx-trigger": "click",
-		// 	"hx-swap":    "none",
-		// 	"_":          "on htmx:beforeRequest remove closest <tr/>",
-		// }
-		rows[i].ID = "row-" + strconv.Itoa(i)
-		rows[i].Data = []basictable.CellData{
-			{
-				ID:    "role-" + strconv.Itoa(i),
-				Width: 1,
-				Body:  basiclabel.BasicLabel(p.RoleName),
-			},
-			{
-				ID:    "pr-" + strconv.Itoa(i),
-				Width: 1,
-				Body:  basiclabel.BasicLabel(p.PrivilegeName),
-			},
-			{
-				ID:    "ca-" + strconv.Itoa(i),
-				Width: 1,
-				Body:  basiclabel.BasicLabel(caStr),
-			},
-			{
-				ID:    "del-" + strconv.Itoa(i),
-				Width: 1,
-				Body:  icon.X(),
-			},
-		}
-	}
-	return rows
 }

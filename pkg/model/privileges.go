@@ -1,8 +1,6 @@
 package model
 
 import (
-	"time"
-
 	"github.com/carsonkrueger/main/pkg/db/auth/model"
 )
 
@@ -13,12 +11,14 @@ type RolesPrivilegesPrimaryKey struct {
 	RoleID      int16
 }
 
-type JoinedPrivilegesRaw struct {
-	RoleID             int16
-	RoleName           string
-	PrivilegeID        int64
-	PrivilegeName      string
-	PrivilegeCreatedAt *time.Time
+type RolesPrivilegeJoin struct {
+	model.Privileges
+	model.Roles
+	// RoleID             int16
+	// RoleName           string
+	// PrivilegeID        int64
+	// PrivilegeName      string
+	// PrivilegeCreatedAt *time.Time
 }
 
 type JoinedRole struct {
