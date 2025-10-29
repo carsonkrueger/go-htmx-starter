@@ -1,57 +1,75 @@
 ![webpage](https://github.com/carsonkrueger/go-htmx-starter/blob/main/webpage.png)
 
-# A Starter Kit for Web Servers Using Go + HTMX
-An easy way to get started with web servers using key features: Go, HTMX, and PostgreSQL.
+# ⚡ Go + HTMX Starter Kit
 
-# Features
-### Go
-Go is a statically typed, compiled language designed at Google. It is a fast, efficient, and easy-to-learn language that is well-suited for building web applications.
+A powerful, minimal starter kit for building fast and beautiful web servers using **Go**, **HTMX**, and **PostgreSQL**.
+Everything you need to move from idea to production — quickly, cleanly, and with style.
 
-### [HTMX](https://htmx.org/) (with [Templ](https://templ.guide) & [Templui](https://templui.io)) + [Hyperscript](https://hyperscript.org/) + [TailwindCSS](https://tailwindcss.com/)
-- HTMX is a library that allows you to build modern web applications using HTML, CSS, and JavaScript. It provides a set of custom attributes that you can use to add interactivity to your web pages without having to write any JavaScript code.
-- Templ is a templating engine that allows you to build dynamic web pages using HTML, HTMX and Go code.
-- Templui is built from `templ` to build powerful and simple UI components.
-- Hyperscript is a scripting language for doing front end web development. It is designed to make it very easy to respond to events and do simple DOM manipulation in code that is directly embedded on elements on a web page.
-- TailwindCSS is a utility-first CSS framework that provides a set of pre-built classes that you can use to style your web pages. It is a popular choice for building modern web applications.
+---
 
-### Auth with Sessions and Private Route Privileges
-- This project uses auth tokens in the request headers and verifies them by checking the token against the database stored in the `sessions` table.
-- Each router endpoint with privileges attached is protected by a privilege check. Users without proper privileges will be unauthorized. Attaching a privilege to the
-endpoint can be done using the `PrivateRouteBuilder`. See [Management](https://github.com/carsonkrueger/go-htmx-starter/blob/main/internal/controllers/private/management.go) private route for an example. Attaching a privilege to an endpoint using the `PrivateRouteBuilder` will automatically insert the privilege into the database. Each user has a privilege level. Privileges are associated with the privilege levels to know which privileges a user has. Using the `make seed` command will give all associations to the admin level.
+## ✨ Core Stack
 
-### Postgres
-PostgreSQL is a beloved, open-source object-relational database system. It is a popular choice for building scalable and reliable web applications.
+### 🐹 Go
+A fast, reliable, and easy-to-learn language — perfect for modern web backends.
 
-### [Jet](https://github.com/go-jet/jet) Query Builder
-Jet is a powerful Query Builder for Go. It provides a simple and highly customizable way to build type safe queries and automatically generate Go code from your database.
+### 🌐 HTMX + Templ + Templui + Hyperscript + TailwindCSS
+Build rich, reactive web interfaces using **HTML-first** development.
+- **HTMX** brings interactivity without JavaScript frameworks.
+- **Templ** and **Templui** power clean, type-safe UI components in Go.
+- **Hyperscript** makes DOM interactions effortless.
+- **TailwindCSS** gives you instant, elegant styling.
 
-### [Zap](https://github.com/uber-go/zap) Logging
-Zap is a powerful, lightweight logging library for Go. Configured with level logging using the `APP_ENV` in your `.env` file.
+---
 
-### Docker
-This project uses Docker to containerize the application and its dependencies. Docker provides a consistent and reproducible environment for running the application, making it easy to deploy and manage.
+## 🔒 Authentication & Authorization
+Session-based authentication with role-based privilege checks.
+Private routes can easily be secured with the [PrivateRouteBuilder](https://github.com/carsonkrueger/go-htmx-starter/blob/main/internal/builders/router.go), which auto-manages privilege creation and enforcement.
 
-### [Air](https://github.com/air-verse/air)
-Air enabled live reloading of the application for local development.
+---
 
-### Make
-Make is a build automation tool that is used to automate the building of software. Many recipes are provided to help you build your application quickly and easily.
-- After following the installation instructions, you can run the application using the following command: `make live`.
-- Creating a new migration can be done using the following command: `make migrate-generate`.
-- View the rest of the `make` targets and recipes [here](https://github.com/carsonkrueger/go-htmx-starter/blob/main/Makefile).
-- Targets with a -external suffix use the DB_EXTERNAL_PORT env variable. This is used when running the server outside of the docker container.
-- Conversly targets with a -internal suffix use the DB_PORT env variable. This is used when running the server within the docker container OR if using a local database (not a docker database).
+## 🗄️ PostgreSQL + Jet
+Type-safe database access with **[go-jet](https://github.com/go-jet/jet)**, a powerful query builder that generates Go code directly from your schema.
+
+---
+
+## 🧾 Logging with Zap
+Clean, structured logging powered by **[Zap](https://github.com/uber-go/zap)**.
+Logging levels are automatically configured via your `.env` environment.
+
+---
+
+## 🐳 Docker Support
+Run everything in a consistent, reproducible environment with **Docker**.
+Perfect for local development and deployment.
+
+---
+
+## 🔁 Live Reloading with Air
+Enjoy fast iteration cycles using **[Air](https://github.com/air-verse/air)** — your app reloads instantly on file changes.
+
+---
+
+## 🧰 Makefile Shortcuts
+Automation made easy with `make` commands:
+- `make live` — run the app with live reload
+- `make migrate-generate` — create a new migration
+- Explore more in the [Makefile »](https://github.com/carsonkrueger/go-htmx-starter/blob/main/Makefile)
+
+---
+
+> **Start fast. Scale beautifully.**
+> The Go + HTMX Starter Kit is your foundation for building production-ready web apps — effortlessly.
+
+---
 
 # Dependencies
-- Go
-- Docker
-- Postgres
 - [Templ](https://templ.guide)
 - [Templui](https://templui.io)
-- NPM (for TailwindCSS)
 - [Air](https://github.com/air-verse/air)
 - [Migrate](https://github.com/golang-migrate/migrate)
 - [Jet](https://github.com/go-jet/jet)
+
+---
 
 # Installation
 To run the application locally, follow these steps:
