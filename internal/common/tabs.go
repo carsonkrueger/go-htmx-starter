@@ -1,4 +1,4 @@
-package render
+package common
 
 import (
 	"net/http"

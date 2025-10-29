@@ -61,7 +61,7 @@ func (um *userManagement) userManagementUsersGet(w http.ResponseWriter, req *htt
 		return
 	}
 
-	tabs := render.Tab(req, UserManagementTabModels, 0, tables.ManageUsersTable(users, roles))
+	tabs := common.Tab(req, UserManagementTabModels, 0, tables.ManageUsersTable(users, roles))
 	render.Layout(ctx, req, w, templatetargets.Main, tabs)
 }
 
@@ -76,6 +76,6 @@ func (um *userManagement) userManagementRolesGet(w http.ResponseWriter, req *htt
 		return
 	}
 
-	tabs := render.Tab(req, UserManagementTabModels, 1, pages.ManagementRoles(privileges))
+	tabs := common.Tab(req, UserManagementTabModels, 1, pages.ManagementRoles(privileges))
 	render.Layout(ctx, req, w, templatetargets.Main, tabs)
 }

@@ -87,7 +87,7 @@ func (l *login) postLogin(w http.ResponseWriter, req *http.Request) {
 		}
 
 		table := tables.ManageUsersTable(users, allRoles)
-		render.Tab(req, private.UserManagementTabModels, 0, table).Render(ctx, w)
+		common.Tab(req, private.UserManagementTabModels, 0, table).Render(ctx, w)
 	}
 }
 
