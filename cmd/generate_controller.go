@@ -7,7 +7,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/carsonkrueger/main/internal/gen/template"
+	"github.com/carsonkrueger/main/internal/templates/text"
 	"github.com/carsonkrueger/main/pkg/util"
 )
 
@@ -66,9 +66,9 @@ func writeControllerContents(f io.Writer, name string, private bool) {
 		"Name":      util.ToUpperFirst(name),
 		"NameLower": util.ToLowerFirst(name),
 	}
-	key := template.PrivateController
+	key := text.PrivateController
 	if !private {
-		key = template.PublicController
+		key = text.PublicController
 	}
-	template.ExecuteTemplate(f, key, model)
+	text.ExecuteTemplate(f, key, model)
 }

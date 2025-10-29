@@ -21,7 +21,7 @@ func HandleError(req *http.Request, w http.ResponseWriter, lgr *zap.Logger, err 
 		msg = "Internal Server Error"
 	}
 	if util.IsHxRequest(req) {
-		w.Header().Add("hx-toast-err", "true")
+		w.Header().Add("hx-toast", "true")
 		w.WriteHeader(status)
 		toast.ToastErrors(tuitoast.Props{Description: msg}).Render(ctx, w)
 	} else {

@@ -74,7 +74,7 @@ jet-all:
 	echo "Schemas found: $$SCHEMAS"; \
 	for SCHEMA in $$SCHEMAS; do \
 	    echo "------ Generating models for schema: $$SCHEMA ------"; \
-		${JET_CMD} -dsn=${DB_URL} -schema=$$SCHEMA -ignore-tables=schema_migrations -rel-model-path=${JET_MODEL_PATH}/$$SCHEMA/model -path=./internal/gen; \
+		${JET_CMD} -dsn=${DB_URL} -schema=$$SCHEMA -ignore-tables=schema_migrations -rel-model-path=${JET_MODEL_PATH}/$$SCHEMA/model -path=./internal/database/gen; \
 	done
 
 generate-migration:

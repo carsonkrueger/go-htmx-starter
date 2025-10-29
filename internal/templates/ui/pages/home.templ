@@ -1,34 +1,186 @@
 package pages
 
 import (
-	"github.com/carsonkrueger/main/internal/templates/ui/partials/basiccard"
+	"github.com/carsonkrueger/main/pkg/templui/button"
+	"github.com/carsonkrueger/main/pkg/templui/aspectratio"
 )
 
 templ Home() {
-	<div class="flex flex-col lg:gap-16 lg:pt-16 pt-8 pb-6 gap-6 items-center">
-		<section id="hero" class="flex flex-col items-center lg:gap-12 gap-6 text-secondary min-h-[60vh]">
-			<div id="attributes" class="flex items-center justify-center lg:gap-12 gap-6 text-secondary">
-			</div>
+	<div class="grid grid-cols-12 items-center justify-between text-secondary h-screen overflow-hidden">
+		<section id="hero" class="col-span-4 flex flex-col xl:pl-10 pl-5 pb-20 items-start justify-center gap-6 h-full">
+			<p class="text-7xl">The ultimate kit <br> { "for" } <b class="text-7xl font-black">your next <br> passion project.</b></p>
+			<p class="text-xl">
+				The ultimate Go toolkit — craft stunning, production-ready apps in record time.
+				Every package is purpose-built to stay clean, modular, and reusable — so you can focus on what matters most.
+			</p>
+			@button.Button(button.Props{
+				Variant: button.VariantSecondary,
+			}) {
+				<a href="https://github.com/carsonkrueger/go-htmx-starter" target="_blank">Follow the Project</a>
+			}
 		</section>
-
-
-		<section id="products" class="flex flex-col gap-4 w-full py-8 px-4 text-secondary">
-			<section-header class="text-xl text-center">Featured Products</section-header>
-			<div class="flex items-center justify-center flex-wrap lg:gap-10 gap-4">
-				@basiccard.BasicCard(basiccard.Props{
-					Header: "Test",
+		<div class="col-span-2"/>
+		<section class="col-span-6 pr-4 overflow-hidden flex justify-center">
+			<div class="max-w-xl grid grid-cols-2 gap-4 place-content-end w-full">
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
 				}) {
-					Test 2
+					<img
+						src="/public/img/example1.png"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
 				}
-				@basiccard.BasicCard(basiccard.Props{
-					Header: "Test",
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
 				}) {
-					Test 2
+					<img
+						src="/public/img/example2.png"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
 				}
-				@basiccard.BasicCard(basiccard.Props{
-					Header: "Test",
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
 				}) {
-					Test 2
+					<img
+						src="/public/img/example3.png"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
+				}
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
+				}) {
+					<img
+						src="/public/img/example4.png"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
+				}
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
+				}) {
+					<img
+						src="/public/img/example5.jpeg"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
+				}
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
+				}) {
+					<img
+						src="/public/img/example6.png"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
+				}
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
+				}) {
+					<img
+						src="/public/img/example7.jpeg"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
+				}
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
+				}) {
+					<img
+						src="/public/img/example8.jpg"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
+				}
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
+				}) {
+					<img
+						src="/public/img/example1.png"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
+				}
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
+				}) {
+					<img
+						src="/public/img/example2.png"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
+				}
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
+				}) {
+					<img
+						src="/public/img/example3.png"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
+				}
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
+				}) {
+					<img
+						src="/public/img/example4.png"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
+				}
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
+				}) {
+					<img
+						src="/public/img/example5.jpeg"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
+				}
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
+				}) {
+					<img
+						src="/public/img/example6.png"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
+				}
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
+				}) {
+					<img
+						src="/public/img/example7.jpeg"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
+				}
+				@aspectratio.AspectRatio(aspectratio.Props{
+					Ratio: aspectratio.RatioVideo,
+					Class: "rounded-md overflow-hidden",
+				}) {
+					<img
+						src="/public/img/example8.jpg"
+						alt="Example image"
+						class="h-full w-full object-cover"
+					/>
 				}
 			</div>
 		</section>

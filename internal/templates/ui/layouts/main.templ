@@ -3,20 +3,23 @@ package layouts
 import (
 	"github.com/carsonkrueger/main/internal/templates/constants"
 	"github.com/carsonkrueger/main/internal/templates/ui/partials/nav"
-	"github.com/carsonkrueger/main/internal/templates/ui/partials/footer"
 )
 
 
 templ MainPageLayout() {
 	@BasePageLayout() {
-		<div class="min-h-screen flex flex-col bg-primary text-main bg-[url('/public/img/purple-bg.jpg')] bg-no-repeat bg-center bg-fixed">
+		<div class="min-h-screen bg-primary text-main bg-[url('/public/img/purple-bg.jpg')] bg-no-repeat bg-center bg-fixed">
 			<header class="backdrop-blur-xs hover:backdrop-blur-lg text-secondary fixed lg:p-4 p-6 top-0 z-10 w-30 h-screen drop-shadow-lg hover:drop-shadow-2xl animate-all duration-300">
 				@nav.Nav()
 			</header>
-			<main id={ constants.MainContentID } class="flex flex-col grow pl-30 backdrop-blur-md">
-				{ children... }
-			</main>
-			@footer.Footer()
+			<div class="pl-30 flex flex-col">
+				<main id={ constants.MainContentID } class="flex flex-col grow">
+					{ children... }
+				</main>
+				<footer>
+
+				</footer>
+			</div>
 		</div>
 	}
 }

@@ -8,8 +8,8 @@ import (
 	"path"
 
 	"github.com/carsonkrueger/main/internal/cfg"
-	"github.com/carsonkrueger/main/internal/gen/template"
 	"github.com/carsonkrueger/main/internal/logger"
+	"github.com/carsonkrueger/main/internal/templates/text"
 	"github.com/carsonkrueger/main/pkg/util"
 	"go.uber.org/zap"
 )
@@ -72,5 +72,5 @@ func writeServiceContents(w io.Writer, name string) {
 		"Name":      util.ToUpperFirst(name),
 		"NameLower": util.ToLowerFirst(name),
 	}
-	template.ExecuteTemplate(w, template.Service, model)
+	text.ExecuteTemplate(w, text.Service, model)
 }

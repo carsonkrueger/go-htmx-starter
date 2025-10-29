@@ -54,7 +54,7 @@ templ Index() {
                     }
 
                     const xhr = event.detail.xhr;
-                    const displayToast = xhr.getResponseHeader("hx-toast-err") === "true";
+                    const displayToast = xhr.getResponseHeader("hx-toast") === "true";
 
                     if (xhr.status === 0) {
                         errorBox.textContent = "Network error — please check your connection.";

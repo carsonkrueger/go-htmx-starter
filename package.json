@@ -1,14 +1,14 @@
 {
-    "name": "go-test",
+    "name": "go-htmx-starter",
     "version": "1.0.0",
     "description": "",
-    "homepage": "https://github.com/carsonkrueger/go-test#readme",
+    "homepage": "https://github.com/carsonkrueger/go-htmx-starter#readme",
     "bugs": {
-        "url": "https://github.com/carsonkrueger/go-test/issues"
+        "url": "https://github.com/carsonkrueger/go-htmx-starter/issues"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/carsonkrueger/go-test.git"
+        "url": "git+https://github.com/carsonkrueger/go-htmx-starter.git"
     },
     "license": "ISC",
     "author": "",

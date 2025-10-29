@@ -49,9 +49,9 @@ func NewAppRouter(appCtx *context.AppContext) AppRouter {
 func (a *AppRouter) BuildRouter(ctx gctx.Context) {
 	lgr := a.appCtx.Lgr("BuildRouter")
 	a.router = chi.NewRouter()
-	a.router = a.router.With(middlewares.Recover(ctx, a.appCtx))
+	a.router.Use(middlewares.Recover(ctx, a.appCtx))
 
-	a.router = a.router.Group(func(g chi.Router) {
+	a.router.Group(func(g chi.Router) {
 		// do not enforce auth
 		g.Use(middlewares.Auth(a.appCtx, false))
 		for _, r := range a.public {
@@ -62,7 +62,7 @@ func (a *AppRouter) BuildRouter(ctx gctx.Context) {
 		}
 	})
 
-	a.router = a.router.Group(func(g chi.Router) {
+	a.router.Group(func(g chi.Router) {
 		// enforce auth middleware
 		g.Use(middlewares.Auth(a.appCtx, true))
 		for _, r := range a.private {

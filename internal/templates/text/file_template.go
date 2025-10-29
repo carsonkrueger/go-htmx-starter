@@ -1,4 +1,4 @@
-package template
+package text
 
 import (
 	"io"
@@ -153,7 +153,7 @@ import (
 
 	"github.com/carsonkrueger/main/internal/context"
 	"github.com/carsonkrueger/main/pkg/db/{{ .Schema }}/model"
-	"github.com/carsonkrueger/main/internal/gen/{{ .DB }}/{{ .Schema }}/table"
+	"github.com/carsonkrueger/main/internal/database/gen/{{ .DB }}/{{ .Schema }}/table"
 	"github.com/go-jet/jet/v2/postgres"
 )
 

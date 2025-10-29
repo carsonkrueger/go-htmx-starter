@@ -8,8 +8,8 @@ import (
 	"path"
 
 	"github.com/carsonkrueger/main/internal/cfg"
-	"github.com/carsonkrueger/main/internal/gen/template"
 	"github.com/carsonkrueger/main/internal/logger"
+	"github.com/carsonkrueger/main/internal/templates/text"
 	"github.com/carsonkrueger/main/pkg/util"
 	"go.uber.org/zap"
 )
@@ -89,5 +89,5 @@ func writeDAOContents(w io.Writer, dbName, schema, table string) {
 		"Schema":    schema,
 		"DB":        dbName,
 	}
-	template.ExecuteTemplate(w, template.DAO, model)
+	text.ExecuteTemplate(w, text.DAO, model)
 }
