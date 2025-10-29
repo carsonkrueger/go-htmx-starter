@@ -17,4 +17,4 @@ RUN make build
 
 EXPOSE 8080
 
-CMD ["tini", "--", "./entrypoint.sh"]
+CMD ["/bin/sh", "./entrypoint.sh"]
