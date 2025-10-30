@@ -45,3 +45,11 @@ func GetAuthParts(cookie *http.Cookie) (string, int64, error) {
 func IsHxRequest(req *http.Request) bool {
 	return req.Header.Get("HX-Request") == "true"
 }
+
+func HandleRedirect(req *http.Request, w http.ResponseWriter, url string) {
+	if IsHxRequest(req) {
+		w.Header().Set("Hx-Redirect", url)
+	} else {
+		http.Redirect(w, req, url, http.StatusFound)
+	}
+}

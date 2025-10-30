@@ -39,8 +39,6 @@ func (l *login) postLogin(w http.ResponseWriter, req *http.Request) {
 	lgr := l.Lgr("postLogin")
 	lgr.Info("Called")
 	ctx := req.Context()
-	db := context.GetDB(ctx)
-	db.Query("select 1;")
 
 	if err := req.ParseForm(); err != nil {
 		common.HandleError(req, w, lgr, nil, 400, "Error parsing form")
