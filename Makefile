@@ -18,7 +18,7 @@ AIR_CMD := ${GO_BIN_PATH}/air
 TEMPL_CMD := ${GO_BIN_PATH}/templ
 MIGRATE_CMD := ${GO_BIN_PATH}/migrate
 JET_CMD := ${GO_BIN_PATH}/jet
-JET_MODEL_PATH := ../../../../pkg/db
+JET_MODEL_PATH := ../../../../../pkg/db
 
 live:
 	make docker-postgres
