@@ -2,7 +2,7 @@
 
 # ⚡ Go + HTMX Starter Kit
 
-A powerful, minimal starter kit for building fast and beautiful web servers using **Go**, **HTMX**, and **PostgreSQL**.
+A powerful, starter kit for building fast and beautiful web servers using **Go**, **HTMX**, and **PostgreSQL**.
 Everything you need to move from idea to production — quickly, cleanly, and with style.
 
 ---
@@ -12,12 +12,12 @@ Everything you need to move from idea to production — quickly, cleanly, and wi
 ### 🐹 Go
 A fast, reliable, and easy-to-learn language — perfect for modern web backends.
 
-### 🌐 HTMX + Templ + Templui + Hyperscript + TailwindCSS
+### 🌐 HTMX + Templ/TemplUI/Tailwind + Postgres + Jet
 Build rich, reactive web interfaces using **HTML-first** development.
 - **HTMX** brings interactivity without JavaScript frameworks.
-- **Templ** and **Templui** power clean, type-safe UI components in Go.
-- **Hyperscript** makes DOM interactions effortless.
-- **TailwindCSS** gives you instant, elegant styling.
+- **Templ** easy type-safe UI components in Go.
+- **Postgres** powerful, open-source relational database management system.
+- **Jet** type-safe database access with **[go-jet](https://github.com/go-jet/jet)**, a powerful query builder that generates Go code directly from your schema.
 
 ---
 
@@ -25,51 +25,21 @@ Build rich, reactive web interfaces using **HTML-first** development.
 Session-based authentication with role-based privilege checks.
 Private routes can easily be secured with the [PrivateRouteBuilder](https://github.com/carsonkrueger/go-htmx-starter/blob/main/internal/builders/router.go), which auto-manages privilege creation and enforcement.
 
----
-
-## 🗄️ PostgreSQL + Jet
+## PostgreSQL + Jet
 Type-safe database access with **[go-jet](https://github.com/go-jet/jet)**, a powerful query builder that generates Go code directly from your schema.
 
----
-
-## 🧾 Logging with Zap
+## Logging with Zap
 Clean, structured logging powered by **[Zap](https://github.com/uber-go/zap)**.
 Logging levels are automatically configured via your `.env` environment.
 
----
-
-## 🐳 Docker Support
-Run everything in a consistent, reproducible environment with **Docker**.
-Perfect for local development and deployment.
-
----
-
-## 🔁 Live Reloading with Air
+## Live Reloading with Air
 Enjoy fast iteration cycles using **[Air](https://github.com/air-verse/air)** — your app reloads instantly on file changes.
 
----
-
-## 🧰 Makefile Shortcuts
+## Makefile Shortcuts
 Automation made easy with `make` commands:
 - `make live` — run the app with live reload
 - `make migrate-generate` — create a new migration
 - Explore more in the [Makefile »](https://github.com/carsonkrueger/go-htmx-starter/blob/main/Makefile)
-
----
-
-> **Start fast. Scale beautifully.**
-> The Go + HTMX Starter Kit is your foundation for building production-ready web apps — effortlessly.
-
----
-
-# Dependencies
-- [Templ](https://templ.guide)
-- [Templui](https://templui.io)
-- [Air](https://github.com/air-verse/air)
-- [Migrate](https://github.com/golang-migrate/migrate)
-- [Jet](https://github.com/go-jet/jet)
-
----
 
 # Installation
 To run the application locally, follow these steps:
