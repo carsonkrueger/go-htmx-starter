@@ -8,19 +8,19 @@ import (
 	"github.com/carsonkrueger/main/internal/logger"
 	"github.com/carsonkrueger/main/internal/seeders"
 	_ "github.com/lib/pq"
+	"go.uber.org/zap"
 )
 
 func seed() {
 	undo := flag.Bool("undo", false, "-undo=true")
 	flag.Parse()
 	cfg := cfg.LoadConfig()
+	lgr := logger.NewLogger(&cfg)
 
 	db, err := sql.Open("postgres", cfg.DbUrl())
 	if err != nil {
-		panic(err)
+		lgr.Fatal("failed to connect to database", zap.Error(err))
 	}
-
-	lgr := logger.NewLogger(&cfg)
 
 	if *undo {
 		lgr.Info("Starting undo...")
@@ -30,7 +30,7 @@ func seed() {
 		err = seeders.SeedPermissions(db)
 	}
 	if err != nil {
-		panic(err)
+		lgr.Fatal("failed to seed database", zap.Error(err))
 	}
 	lgr.Info("Finished")
 }

@@ -18,6 +18,11 @@ func generateService() {
 	service := flag.String("service", "", "camelCase Name of the service")
 	flag.Parse()
 
+	if service == nil || *service == "" {
+		flag.Usage()
+		os.Exit(1)
+	}
+
 	// lower first letter of table name
 	service = util.Ptr(util.ToLowerFirst(*service))
 
@@ -26,26 +31,22 @@ func generateService() {
 
 	wd, err := os.Getwd()
 	if err != nil {
-		lgr.Error("failed to get working directory", zap.Error(err))
-		os.Exit(1)
+		lgr.Fatal("failed to get working directory", zap.Error(err))
 	}
 
 	snakeCaseService := util.ToSnakeCase(*service)
 
 	filePath := fmt.Sprintf("%s/internal/services/%s.go", wd, snakeCaseService)
 	if err := os.MkdirAll(path.Dir(filePath), 0755); err != nil {
-		lgr.Error("failed to create directory", zap.Error(err))
-		os.Exit(1)
+		lgr.Fatal("failed to create directory", zap.Error(err))
 	}
 
 	file, err := os.OpenFile(filePath, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0644)
 	if err != nil {
 		if os.IsExist(err) {
-			lgr.Error("File already exists\n")
-			return
+			lgr.Fatal("File already exists\n")
 		}
-		lgr.Error("failed to open file", zap.Error(err))
-		return
+		lgr.Fatal("failed to open file", zap.Error(err))
 	}
 	defer file.Close()
 	writeServiceContents(file, *service)

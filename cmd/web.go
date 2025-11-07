@@ -10,6 +10,7 @@ import (
 	"github.com/carsonkrueger/main/internal/logger"
 	"github.com/carsonkrueger/main/internal/router"
 	"github.com/carsonkrueger/main/internal/services"
+	"go.uber.org/zap"
 
 	_ "github.com/lib/pq"
 )
@@ -22,11 +23,11 @@ func web() {
 
 	db, err := sql.Open("postgres", cfg.DbUrl())
 	if err != nil {
-		panic(err)
+		lgr.Fatal("failed to connect to database", zap.Error(err))
 	}
 	defer db.Close()
 	if db == nil {
-		panic("Database connection is nil")
+		lgr.Fatal("Database connection is nil")
 	}
 	ctx = context.WithDB(ctx, db)
 	ctx = context.WithLogger(ctx, lgr)
@@ -42,6 +43,6 @@ func web() {
 	appRouter := router.NewAppRouter(appCtx)
 	appRouter.BuildRouter(ctx)
 	if err := appRouter.Start(cfg); err != nil {
-		panic(err)
+		lgr.Fatal("failed to start app router", zap.Error(err))
 	}
 }

@@ -25,19 +25,14 @@ func generateDAO() {
 	cfg := cfg.LoadConfig()
 	lgr := logger.NewLogger(&cfg).Named("generateDAO")
 
-	if table == nil || *table == "" {
-		lgr.Error("table is required")
-		os.Exit(1)
-	}
-	if schema == nil || *schema == "" {
-		lgr.Error("schema is required")
+	if table == nil || *table == "" || schema == nil || *schema == "" {
+		flag.Usage()
 		os.Exit(1)
 	}
 
 	wd, err := os.Getwd()
 	if err != nil {
-		lgr.Error("failed to get working directory", zap.Error(err))
-		os.Exit(1)
+		lgr.Fatal("failed to get working directory", zap.Error(err))
 	}
 
 	snakeCaseTable := util.ToSnakeCase(*table)
@@ -45,18 +40,15 @@ func generateDAO() {
 	daoMgrFilePath := fmt.Sprintf("%s/internal/database/dao/dao_manager.go", wd)
 	daoFilePath := fmt.Sprintf("%s/internal/database/dao/%s.go", wd, snakeCaseTable)
 	if err := os.MkdirAll(path.Dir(daoFilePath), 0755); err != nil {
-		lgr.Error("failed to create directory", zap.Error(err))
-		os.Exit(1)
+		lgr.Fatal("failed to create directory", zap.Error(err))
 	}
 
 	file, err := os.OpenFile(daoFilePath, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0644)
 	if err != nil {
 		if os.IsExist(err) {
-			lgr.Error("File already exists\n")
-			return
+			lgr.Fatal("file already exists\n")
 		}
-		lgr.Error("failed to open file", zap.Error(err))
-		return
+		lgr.Fatal("failed to open file", zap.Error(err))
 	}
 	defer file.Close()
 	writeDAOContents(file, cfg.DbConfig.Name, *schema, *table)

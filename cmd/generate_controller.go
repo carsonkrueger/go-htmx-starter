@@ -16,6 +16,11 @@ func generateController() {
 	private := flag.Bool("private", true, "Is a private controller")
 	flag.Parse()
 
+	if controller == nil || *controller == "" {
+		flag.Usage()
+		os.Exit(1)
+	}
+
 	// lower first letter of table name
 	controller = util.Ptr(util.ToLowerFirst(*controller))
 
