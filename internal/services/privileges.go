@@ -2,13 +2,11 @@ package services
 
 import (
 	gctx "context"
-	"errors"
-	"strconv"
+	"fmt"
 
 	"github.com/carsonkrueger/main/internal/context"
 	dbmodel "github.com/carsonkrueger/main/pkg/db/auth/model"
 	"github.com/carsonkrueger/main/pkg/model"
-	"go.uber.org/zap"
 )
 
 type privilegesService struct {
@@ -20,9 +18,6 @@ func NewPrivilegesService(ctx *context.AppContext) *privilegesService {
 }
 
 func (ps *privilegesService) CreatePrivilegeAssociation(ctx gctx.Context, roleID int16, privID int64) error {
-	lgr := ps.Lgr("AddPermission")
-	lgr.Info("Role:Privilege", zap.String(strconv.FormatInt(int64(roleID), 10), strconv.FormatInt(int64(privID), 10)))
-
 	joinRow := dbmodel.RolesPrivileges{
 		RoleID:      roleID,
 		PrivilegeID: privID,
@@ -30,24 +25,19 @@ func (ps *privilegesService) CreatePrivilegeAssociation(ctx gctx.Context, roleID
 	rolesPrivsDAO := ps.DM().RolesPrivilegesDAO()
 
 	if err := rolesPrivsDAO.Upsert(ctx, &joinRow); err != nil {
-		lgr.Error("Failed to insert roles privileges", zap.Error(err), zap.Any("rolesPrivileges", joinRow))
-		return err
+		return fmt.Errorf("failed to associate role to privilege %d-%d: %w", roleID, privID, err)
 	}
 
 	return nil
 }
 
 func (ps *privilegesService) CreateRole(ctx gctx.Context, name string) error {
-	lgr := ps.Lgr("CreateRole")
-	lgr.Info("Called")
-
 	row := dbmodel.Roles{
 		Name: name,
 	}
 	rolesDAO := ps.DM().RolesDAO()
 	if err := rolesDAO.Insert(ctx, &row); err != nil {
-		lgr.Error("Failed to create role", zap.Error(err))
-		return errors.New("Failed to create role")
+		return fmt.Errorf("failed to create role: %w", err)
 	}
 	return nil
 }
@@ -65,42 +55,33 @@ func (ps *privilegesService) HasPermissionsByIDS(ctx gctx.Context, roleID int16,
 }
 
 func (ps *privilegesService) DeletePrivilegeAssociation(ctx gctx.Context, roleID int16, privID int64) error {
-	lgr := ps.Lgr("DeletePrivilegeAssociation")
-	lgr.Info("Called")
-
 	pk := model.RolesPrivilegesPrimaryKey{
 		PrivilegeID: privID,
 		RoleID:      roleID,
 	}
 	if err := ps.DM().RolesPrivilegesDAO().Delete(ctx, pk); err != nil {
-		return nil
+		return fmt.Errorf("failed to delete privilege association: %w", err)
 	}
 
 	return nil
 }
 
 func (us *privilegesService) SetUserRole(ctx gctx.Context, roleID int16, userID int64) error {
-	lgr := us.Lgr("SetUserRole")
-	lgr.Info("Called")
-
 	roleDAO := us.DM().RolesDAO()
 	role, err := roleDAO.GetOne(ctx, roleID)
 	if err != nil {
-		lgr.Error("Error fetching role", zap.Error(err))
-		return err
+		return fmt.Errorf("failed to fetch role %d: %w", roleID, err)
 	}
 
 	userDAO := us.DM().UsersDAO()
 	user, err := userDAO.GetOne(ctx, userID)
 	if err != nil {
-		lgr.Error("Error fetching user", zap.Error(err))
-		return err
+		return fmt.Errorf("failed to fetch user %d: %w", userID, err)
 	}
 
 	user.RoleID = role.ID
 	if err := userDAO.Update(ctx, &user, user.ID); err != nil {
-		lgr.Error("Error updating user", zap.Error(err))
-		return err
+		return fmt.Errorf("failed to update user %d: %w", userID, err)
 	}
 
 	return nil

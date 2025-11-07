@@ -7,6 +7,7 @@ import (
 
 	"github.com/carsonkrueger/main/internal/constant"
 	"github.com/go-jet/jet/v2/qrm"
+	"go.uber.org/zap"
 )
 
 var (
@@ -57,17 +58,18 @@ func GetDB(ctx gctx.Context) qrm.DB {
 // Returns a new context that contains the transaction. Caller must Rollback and Commit manually. The new tx ctx cannot and should NOT be used after a rollback or commit.
 //
 // Suggested usage:
-// ctx, tx, err := BeginTx(ctx)
+//
+//	ctx, tx, err := BeginTx(ctx)
 //
 //	if err != nil {
 //	    return err
 //	}
 //
-// defer tx.Rollback()
+//	defer tx.Rollback()
 //
 // // Perform database operations using new ctx
 //
-// tx.Commit()
+//	tx.Commit()
 func BeginTx(ctx gctx.Context) (gctx.Context, *sql.Tx, error) {
 	switch db := GetDB(ctx).(type) {
 	case *sql.DB:
@@ -81,4 +83,29 @@ func BeginTx(ctx gctx.Context) (gctx.Context, *sql.Tx, error) {
 	default:
 		return ctx, nil, ErrUnsupportedDatabase
 	}
+}
+
+var LOGGER_KEY = "LOGGER"
+
+func WithLogger(ctx gctx.Context, logger *zap.Logger) gctx.Context {
+	return gctx.WithValue(ctx, LOGGER_KEY, logger)
+}
+
+func GetLogger(ctx gctx.Context, name ...string) *zap.Logger {
+	lgr := ctx.Value(LOGGER_KEY).(*zap.Logger)
+	if len(name) == 0 {
+		return lgr
+	}
+	return lgr.Named(name[0])
+}
+
+var REQ_ID = "REQ_ID"
+
+func WithReqId(ctx gctx.Context, id string) gctx.Context {
+	return gctx.WithValue(ctx, REQ_ID, id)
+}
+
+func GetReqId(ctx gctx.Context) string {
+	id, _ := ctx.Value(REQ_ID).(string)
+	return id
 }

@@ -36,9 +36,9 @@ func (um *roles) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBuilder)
 }
 
 func (r *roles) rolesSelectGet(w http.ResponseWriter, req *http.Request) {
-	lgr := r.Lgr("rolesSelectGet")
-	lgr.Info("Called")
 	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "roles.rolesSelectGet")
+	lgr.Info("Called")
 
 	selected := req.URL.Query().Get("role")
 	selectedID, _ := strconv.ParseInt(selected, 10, 64)
@@ -54,9 +54,9 @@ func (r *roles) rolesSelectGet(w http.ResponseWriter, req *http.Request) {
 }
 
 func (r *roles) setUserRolePut(w http.ResponseWriter, req *http.Request) {
-	lgr := r.Lgr("setUserRolePut")
-	lgr.Info("Called")
 	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "roles.setUserRolePut")
+	lgr.Info("Called")
 
 	userID := chi.URLParam(req, "user")
 	userIDInt, err := strconv.ParseInt(userID, 10, 64)

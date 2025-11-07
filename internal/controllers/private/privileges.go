@@ -30,9 +30,9 @@ func (um *privileges) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBui
 }
 
 func (r *privileges) privilegesSelectGet(w http.ResponseWriter, req *http.Request) {
-	lgr := r.Lgr("privilegesSelectGet")
-	lgr.Info("Called")
 	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "privileges.privilegesSelectGet")
+	lgr.Info("Called")
 
 	dao := r.DM().PrivilegeDAO()
 	privileges, err := dao.GetAll(ctx)

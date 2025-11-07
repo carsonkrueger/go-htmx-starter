@@ -34,8 +34,8 @@ func (hw *home) redirect_home(w http.ResponseWriter, req *http.Request) {
 }
 
 func (hw *home) home(w http.ResponseWriter, req *http.Request) {
-	lgr := hw.Lgr("home")
-	lgr.Info("Called")
 	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "home.home")
+	lgr.Info("Called")
 	render.Layout(ctx, req, w, templatetargets.Main, pages.Home())
 }

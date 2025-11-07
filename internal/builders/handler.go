@@ -43,7 +43,7 @@ func (mb *privateHandlerBuilder) SetMiddlewares(middlewares ...func(next http.Ha
 }
 
 func (mb *privateHandlerBuilder) Build(ctx gctx.Context) {
-	lgr := mb.appCtx.Lgr("privateHandlerBuilder.Build")
+	lgr := context.GetLogger(ctx, "privateHandlerBuilder.Build")
 	privDAO := mb.appCtx.DM().PrivilegeDAO()
 
 	r := mb.router

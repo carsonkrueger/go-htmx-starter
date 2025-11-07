@@ -20,29 +20,29 @@ var UserManagementTabModels = []layouts.TabModel{
 	{Title: "Roles", PushUrl: true, HxGet: "/management/roles"},
 }
 
-type userManagement struct {
+type management struct {
 	*context.AppContext
 }
 
-func NewUserManagement(ctx *context.AppContext) *userManagement {
-	return &userManagement{
+func NewUserManagement(ctx *context.AppContext) *management {
+	return &management{
 		AppContext: ctx,
 	}
 }
 
-func (um userManagement) Path() string {
+func (um management) Path() string {
 	return "/management"
 }
 
-func (um *userManagement) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBuilder) {
-	b.NewHandler().Register(http.MethodGet, "/users", um.userManagementUsersGet).SetRequiredPrivileges(constant.UsersList).Build(ctx)
-	b.NewHandler().Register(http.MethodGet, "/roles", um.userManagementRolesGet).SetRequiredPrivileges(constant.RolesList).Build(ctx)
+func (um *management) PrivateRoute(ctx gctx.Context, b *builders.PrivateRouteBuilder) {
+	b.NewHandler().Register(http.MethodGet, "/users", um.managementUsersGet).SetRequiredPrivileges(constant.UsersList).Build(ctx)
+	b.NewHandler().Register(http.MethodGet, "/roles", um.managementRolesGet).SetRequiredPrivileges(constant.RolesList).Build(ctx)
 }
 
-func (um *userManagement) userManagementUsersGet(w http.ResponseWriter, req *http.Request) {
-	lgr := um.Lgr("userManagementUsersGet")
-	lgr.Info("Called")
+func (um *management) managementUsersGet(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "management.userManagementUsersGet")
+	lgr.Info("Called")
 
 	dao := um.DM().UsersDAO()
 	users, err := dao.GetUserPrivilegeJoinAll(ctx)
@@ -65,10 +65,10 @@ func (um *userManagement) userManagementUsersGet(w http.ResponseWriter, req *htt
 	render.Layout(ctx, req, w, templatetargets.Main, tabs)
 }
 
-func (um *userManagement) userManagementRolesGet(w http.ResponseWriter, req *http.Request) {
-	lgr := um.Lgr("userManagementRolesGet")
-	lgr.Info("Called")
+func (um *management) managementRolesGet(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "management.managementRolesGet")
+	lgr.Info("Called")
 
 	privileges, err := um.DM().PrivilegeDAO().GetAllJoined(ctx)
 	if err != nil {

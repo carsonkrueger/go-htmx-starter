@@ -8,11 +8,10 @@ import (
 )
 
 func ApplyPrivileges(privileges []int64, appCtx *context.AppContext) func(next http.Handler) http.Handler {
-	lgr := appCtx.Lgr("MW ApplyPermission")
-
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			ctx := req.Context()
+			lgr := context.GetLogger(ctx, "mw.ApplyPrivileges")
 
 			roleID := context.GetRoleID(ctx)
 			privelegeService := appCtx.SM().PrivilegesService()

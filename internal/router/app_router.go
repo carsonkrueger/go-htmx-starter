@@ -47,7 +47,7 @@ func NewAppRouter(appCtx *context.AppContext) AppRouter {
 }
 
 func (a *AppRouter) BuildRouter(ctx gctx.Context) {
-	lgr := a.appCtx.Lgr("BuildRouter")
+	lgr := context.GetLogger(ctx, "AppRouter.BuildRouter")
 	a.router = chi.NewRouter()
 	a.router.Use(middlewares.Recover(ctx, a.appCtx))
 

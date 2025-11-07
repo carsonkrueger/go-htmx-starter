@@ -36,9 +36,9 @@ func (l *login) PublicRoute(r chi.Router) {
 }
 
 func (l *login) postLogin(w http.ResponseWriter, req *http.Request) {
-	lgr := l.Lgr("postLogin")
-	lgr.Info("Called")
 	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "login.postLogin")
+	lgr.Info("Called")
 
 	if err := req.ParseForm(); err != nil {
 		common.HandleError(req, w, lgr, nil, 400, "Error parsing form")
@@ -90,8 +90,8 @@ func (l *login) postLogin(w http.ResponseWriter, req *http.Request) {
 }
 
 func (l *login) getLogin(w http.ResponseWriter, req *http.Request) {
-	lgr := l.Lgr("getLogin")
-	lgr.Info("Called")
 	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "login.getLogin")
+	lgr.Info("Called")
 	render.Layout(ctx, req, w, templatetargets.Main, pages.Login())
 }

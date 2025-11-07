@@ -14,11 +14,11 @@ func Auth(appCtx *context.AppContext, enforce bool) func(next http.Handler) http
 	usersService := appCtx.SM().UsersService()
 	usersDAO := appCtx.DM().UsersDAO()
 	sessionsDAO := appCtx.DM().SessionsDAO()
-	lgr := appCtx.Lgr("MW EnforceAuth")
 
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 			ctx := req.Context()
+			lgr := context.GetLogger(ctx, "mw.Auth")
 
 			token, id, err := usersService.GetAuthParts(ctx, req)
 			if err != nil {

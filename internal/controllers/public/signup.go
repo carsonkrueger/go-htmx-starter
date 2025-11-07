@@ -33,9 +33,9 @@ func (s *signUp) PublicRoute(r chi.Router) {
 }
 
 func (s *signUp) postSignup(w http.ResponseWriter, req *http.Request) {
-	lgr := s.Lgr("postSignup")
-	lgr.Info("Called")
 	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "signup.postSignup")
+	lgr.Info("Called")
 
 	if err := req.ParseForm(); err != nil {
 		common.HandleError(req, w, lgr, err, 403, "Invalid Form")
@@ -82,8 +82,8 @@ func (s *signUp) postSignup(w http.ResponseWriter, req *http.Request) {
 }
 
 func (s *signUp) getSignup(w http.ResponseWriter, req *http.Request) {
-	lgr := s.Lgr("getSignup")
-	lgr.Info("Called")
 	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "signup.getSignup")
+	lgr.Info("Called")
 	render.Layout(ctx, req, w, templatetargets.Main, pages.Signup())
 }

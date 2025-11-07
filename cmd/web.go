@@ -18,6 +18,7 @@ func web() {
 	ctx := gctx.Background()
 	cfg := cfg.LoadConfig()
 	lgr := logger.NewLogger(&cfg)
+	defer lgr.Sync()
 
 	db, err := sql.Open("postgres", cfg.DbUrl())
 	if err != nil {
@@ -28,16 +29,15 @@ func web() {
 		panic("Database connection is nil")
 	}
 	ctx = context.WithDB(ctx, db)
+	ctx = context.WithLogger(ctx, lgr)
 
 	dm := dao.NewDAOManager()
 	sm := services.NewServiceManager(nil)
 	appCtx := context.NewAppContext(
-		lgr,
 		sm,
 		dm,
 	)
 	sm.AppContext = appCtx
-	defer appCtx.CleanUp()
 
 	appRouter := router.NewAppRouter(appCtx)
 	appRouter.BuildRouter(ctx)

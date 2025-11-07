@@ -37,9 +37,9 @@ func (um *rolesPrivileges) PrivateRoute(ctx gctx.Context, b *builders.PrivateRou
 }
 
 func (r *rolesPrivileges) rolesPrivilegesPost(w http.ResponseWriter, req *http.Request) {
-	lgr := r.Lgr("rolesPrivilegesPost")
-	lgr.Info("Called")
 	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "rolesPrivileges.rolesPrivilegesPost")
+	lgr.Info("Called")
 
 	if err := req.ParseForm(); err != nil {
 		common.HandleError(req, w, lgr, err, 400, "Invalid Form")
@@ -89,9 +89,9 @@ func (r *rolesPrivileges) rolesPrivilegesPost(w http.ResponseWriter, req *http.R
 }
 
 func (r *rolesPrivileges) rolesPrivilegesDelete(w http.ResponseWriter, req *http.Request) {
-	lgr := r.Lgr("rolesPrivilegesDelete")
-	lgr.Info("Called")
 	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "rolesPrivileges.rolesPrivilegesDelete")
+	lgr.Info("Called")
 
 	role := chi.URLParam(req, "role")
 	privilege := chi.URLParam(req, "privilege")
