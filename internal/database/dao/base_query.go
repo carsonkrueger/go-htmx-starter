@@ -60,9 +60,9 @@ func insert[PK any, R any, D context.DAO[PK, R]](ctx gctx.Context, dao D, model 
 func insertMany[PK any, R any, D context.DAO[PK, R]](ctx gctx.Context, dao D, models []R, db qrm.Queryable) error {
 	return dao.Table().
 		INSERT(dao.InsertCols()).
-		MODELS(&models).
+		MODELS(models).
 		RETURNING(dao.AllCols()).
-		QueryContext(ctx, db, models)
+		QueryContext(ctx, db, &models)
 }
 
 func upsert[PK any, R any, D context.DAO[PK, R]](ctx gctx.Context, dao D, model *R, db qrm.Queryable) error {
