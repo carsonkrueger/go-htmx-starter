@@ -63,27 +63,32 @@ func (r *{{ .NameLower }}) PrivateRoute(ctx gctx.Context, b *builders.PrivateRou
 }
 
 func (r *{{ .NameLower }}) {{ .NameLower }}Get(w http.ResponseWriter, req *http.Request) {
-	lgr := r.Lgr("{{ .NameLower }}Get")
+	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "{{ .NameLower }}.{{ .NameLower }}Get")
 	lgr.Info("Called")
 }
 
 func (r *{{ .NameLower }}) {{ .NameLower }}Post(w http.ResponseWriter, req *http.Request) {
-	lgr := r.Lgr("{{ .NameLower }}Post")
+	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "{{ .NameLower }}.{{ .NameLower }}Post")
 	lgr.Info("Called")
 }
 
 func (r *{{ .NameLower }}) {{ .NameLower }}Put(w http.ResponseWriter, req *http.Request) {
-	lgr := r.Lgr("{{ .NameLower }}Put")
+	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "{{ .NameLower }}.{{ .NameLower }}Put")
 	lgr.Info("Called")
 }
 
 func (r *{{ .NameLower }}) {{ .NameLower }}Patch(w http.ResponseWriter, req *http.Request) {
-	lgr := r.Lgr("{{ .NameLower }}Patch")
+	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "{{ .NameLower }}.{{ .NameLower }}Patch")
 	lgr.Info("Called")
 }
 
 func (r *{{ .NameLower }}) {{ .NameLower }}Delete(w http.ResponseWriter, req *http.Request) {
-	lgr := r.Lgr("{{ .NameLower }}Delete")
+	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "{{ .NameLower }}.{{ .NameLower }}Delete")
 	lgr.Info("Called")
 }
 `
@@ -120,27 +125,32 @@ func (r *{{ .NameLower }}) PublicRoute(router chi.Router) {
 }
 
 func (r *{{ .NameLower }}) {{ .NameLower }}Get(w http.ResponseWriter, req *http.Request) {
-	lgr := r.Lgr("{{ .NameLower }}Get")
+	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "{{ .NameLower }}.{{ .NameLower }}Get")
 	lgr.Info("Called")
 }
 
 func (r *{{ .NameLower }}) {{ .NameLower }}Post(w http.ResponseWriter, req *http.Request) {
-	lgr := r.Lgr("{{ .NameLower }}Post")
+	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "{{ .NameLower }}.{{ .NameLower }}Post")
 	lgr.Info("Called")
 }
 
 func (r *{{ .NameLower }}) {{ .NameLower }}Put(w http.ResponseWriter, req *http.Request) {
-	lgr := r.Lgr("{{ .NameLower }}Put")
+	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "{{ .NameLower }}.{{ .NameLower }}Put")
 	lgr.Info("Called")
 }
 
 func (r *{{ .NameLower }}) {{ .NameLower }}Patch(w http.ResponseWriter, req *http.Request) {
-	lgr := r.Lgr("{{ .NameLower }}Patch")
+	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "{{ .NameLower }}.{{ .NameLower }}Patch")
 	lgr.Info("Called")
 }
 
 func (r *{{ .NameLower }}) {{ .NameLower }}Delete(w http.ResponseWriter, req *http.Request) {
-	lgr := r.Lgr("{{ .NameLower }}Delete")
+	ctx := req.Context()
+	lgr := context.GetLogger(ctx, "{{ .NameLower }}.{{ .NameLower }}Delete")
 	lgr.Info("Called")
 }
 `
