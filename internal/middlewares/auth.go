@@ -8,6 +8,7 @@ import (
 	"github.com/carsonkrueger/main/internal/context"
 	"github.com/carsonkrueger/main/pkg/model"
 	"github.com/carsonkrueger/main/pkg/util"
+	"go.uber.org/zap"
 )
 
 func Auth(appCtx *context.AppContext, enforce bool) func(next http.Handler) http.Handler {
@@ -66,6 +67,7 @@ func Auth(appCtx *context.AppContext, enforce bool) func(next http.Handler) http
 			ctx = context.WithToken(ctx, token)
 			ctx = context.WithUserId(ctx, id)
 			ctx = context.WithRoleID(ctx, user.RoleID)
+			ctx = context.WithLogger(ctx, lgr.With(zap.Int64("user_id", id)))
 
 			next.ServeHTTP(w, req.WithContext(ctx))
 		})
