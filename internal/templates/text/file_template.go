@@ -167,19 +167,15 @@ import (
 	"github.com/go-jet/jet/v2/postgres"
 )
 
-type {{ .Name }}PrimaryKey int64;
-
 type {{ .NameLower }}DAO struct {
-	db *sql.DB
-	context.DAOBaseQueries[{{ .Name }}PrimaryKey, model.{{ .Name }}]
+	context.DAOBaseQueries[int64, model.{{ .Name }}]
 }
 
-func New{{ .Name }}DAO(db *sql.DB) *{{ .NameLower }}DAO {
+func New{{ .Name }}DAO() *{{ .NameLower }}DAO {
 	dao := &{{ .NameLower }}DAO{
-		db:              db,
 		DAOBaseQueries: nil,
 	}
-	queries := newDAOQueryable[{{ .Name }}PrimaryKey, model.{{ .Name }}](dao)
+	queries := newDAOQueryable(dao)
 	dao.DAOBaseQueries = &queries
 	return dao
 }
@@ -215,8 +211,8 @@ func (dao *{{ .NameLower }}DAO) UpdateOnConflictCols() []postgres.ColumnAssigmen
 	return []postgres.ColumnAssigment{}
 }
 
-func (dao *{{ .NameLower }}DAO) PKMatch(pk {{ .Name }}PrimaryKey) postgres.BoolExpression {
-	return table.{{ .Name }}.ID.EQ(postgres.Int64(int64(pk)))
+func (dao *{{ .NameLower }}DAO) PKMatch(pk int64) postgres.BoolExpression {
+	return table.{{ .Name }}.ID.EQ(postgres.Int64(pk))
 }
 
 func (dao *{{ .NameLower }}DAO) GetUpdatedAt(row *model.{{ .Name }}) *time.Time {
