@@ -73,7 +73,7 @@ func upsert[PK any, R any, D context.DAO[PK, R]](ctx gctx.Context, dao D, model 
 	conflictCols := dao.OnConflictCols()
 	updateCols := dao.UpdateOnConflictCols()
 	query := dao.Table().
-		INSERT(dao.UpdateCols()).
+		INSERT(dao.InsertCols()).
 		MODEL(model)
 	if len(updateCols) > 0 && len(conflictCols) > 0 {
 		query = query.
@@ -98,7 +98,7 @@ func upsertMany[PK any, R any, D context.DAO[PK, R]](ctx gctx.Context, dao D, mo
 	conflictCols := dao.OnConflictCols()
 	updateCols := dao.UpdateOnConflictCols()
 	query := dao.Table().
-		INSERT(dao.UpdateCols()).
+		INSERT(dao.InsertCols()).
 		MODELS(&models)
 	if len(updateCols) > 0 && len(conflictCols) > 0 {
 		query = query.
