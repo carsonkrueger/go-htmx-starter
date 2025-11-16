@@ -42,9 +42,9 @@ type DAOBaseQueries[PK PrimaryKey, R any] interface {
 	GetOne(ctx gctx.Context, pk PK) (R, error)
 	GetMany(ctx gctx.Context, pks []PK) ([]R, error)
 	Insert(ctx gctx.Context, model *R) error
-	InsertMany(ctx gctx.Context, models []R) error
+	InsertMany(ctx gctx.Context, models []R) ([]R, error)
 	Upsert(ctx gctx.Context, model *R) error
-	UpsertMany(ctx gctx.Context, models []R) error
+	UpsertMany(ctx gctx.Context, models []R) ([]R, error)
 	Update(ctx gctx.Context, model *R, pk PK) error
 	Delete(ctx gctx.Context, pk PK) error
 }

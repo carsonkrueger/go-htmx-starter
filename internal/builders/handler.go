@@ -64,9 +64,11 @@ func (mb *privateHandlerBuilder) Build(ctx gctx.Context) {
 			newPrivs[i] = model.Privileges{Name: string(np)}
 		}
 
-		if err := privDAO.UpsertMany(ctx, newPrivs); err != nil {
+		newPrivs, err = privDAO.UpsertMany(ctx, newPrivs)
+		if err != nil {
 			lgr.Fatal("upserting many privileges", zap.Error(err))
 		}
+		privs = append(privs, newPrivs...)
 		privIDs := slice.Map(privs, func(priv model.Privileges) int64 {
 			return priv.ID
 		})

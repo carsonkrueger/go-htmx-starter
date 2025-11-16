@@ -57,12 +57,17 @@ func insert[PK any, R any, D context.DAO[PK, R]](ctx gctx.Context, dao D, model 
 		QueryContext(ctx, db, model)
 }
 
-func insertMany[PK any, R any, D context.DAO[PK, R]](ctx gctx.Context, dao D, models []R, db qrm.Queryable) error {
-	return dao.Table().
+func insertMany[PK any, R any, D context.DAO[PK, R]](ctx gctx.Context, dao D, models []R, db qrm.Queryable) ([]R, error) {
+	var newRows []R
+	err := dao.Table().
 		INSERT(dao.InsertCols()).
 		MODELS(models).
 		RETURNING(dao.AllCols()).
-		QueryContext(ctx, db, &models)
+		QueryContext(ctx, db, &newRows)
+	if err != nil {
+		return nil, err
+	}
+	return newRows, nil
 }
 
 func upsert[PK any, R any, D context.DAO[PK, R]](ctx gctx.Context, dao D, model *R, db qrm.Queryable) error {
@@ -85,9 +90,10 @@ func upsert[PK any, R any, D context.DAO[PK, R]](ctx gctx.Context, dao D, model 
 		QueryContext(ctx, db, model)
 }
 
-func upsertMany[PK any, R any, D context.DAO[PK, R]](ctx gctx.Context, dao D, models []R, db qrm.Queryable) error {
+func upsertMany[PK any, R any, D context.DAO[PK, R]](ctx gctx.Context, dao D, models []R, db qrm.Queryable) ([]R, error) {
+	var newRows []R
 	if len(models) == 0 {
-		return nil
+		return newRows, nil
 	}
 	for _, v := range models {
 		up := dao.GetUpdatedAt(&v)
@@ -105,9 +111,13 @@ func upsertMany[PK any, R any, D context.DAO[PK, R]](ctx gctx.Context, dao D, mo
 			ON_CONFLICT(conflictCols...).
 			DO_UPDATE(postgres.SET(updateCols...))
 	}
-	return query.
+	err := query.
 		RETURNING(dao.AllCols()).
-		QueryContext(ctx, db, &models)
+		QueryContext(ctx, db, &newRows)
+	if err != nil {
+		return nil, err
+	}
+	return newRows, nil
 }
 
 func update[PK any, R any, D context.DAO[PK, R]](ctx gctx.Context, dao D, model *R, pk PK, db qrm.Queryable) error {
@@ -157,7 +167,7 @@ func (q *baseDAOQueryable[PK, R]) Insert(ctx gctx.Context, model *R) error {
 	return insert(ctx, q.Dao, model, context.GetDB(ctx))
 }
 
-func (q *baseDAOQueryable[PK, R]) InsertMany(ctx gctx.Context, models []R) error {
+func (q *baseDAOQueryable[PK, R]) InsertMany(ctx gctx.Context, models []R) ([]R, error) {
 	return insertMany(ctx, q.Dao, models, context.GetDB(ctx))
 }
 
@@ -165,7 +175,7 @@ func (q *baseDAOQueryable[PK, R]) Upsert(ctx gctx.Context, model *R) error {
 	return upsert(ctx, q.Dao, model, context.GetDB(ctx))
 }
 
-func (q *baseDAOQueryable[PK, R]) UpsertMany(ctx gctx.Context, models []R) error {
+func (q *baseDAOQueryable[PK, R]) UpsertMany(ctx gctx.Context, models []R) ([]R, error) {
 	return upsertMany(ctx, q.Dao, models, context.GetDB(ctx))
 }
 
