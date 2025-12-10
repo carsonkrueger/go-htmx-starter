@@ -33,8 +33,7 @@ tw:
 build:
 	go build -ldflags="-s -w" -o ./bin/main .
 
-docker:
-	make docker-down
+docker: docker-down tw templ
 	docker compose up -d --build \
 	    go_starter_db \
 		go_starter_backend \
